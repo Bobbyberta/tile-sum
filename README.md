@@ -155,10 +155,17 @@ All dependencies are loaded via CDN, so no build process or package manager is n
 
 ## Test Mode
 
-To test puzzles before their unlock date, add `?test=true` to the URL:
+To test puzzles before their unlock date, add `?test=true` to the URL. This is useful for testing and development.
 
-- **Home page**: `index.html?test=true` - Unlocks all 25 days
-- **Puzzle page**: `puzzle.html?day=1&test=true` - Access any puzzle directly
+### Local Testing
+- **Home page**: `http://localhost:8000/index.html?test=true` - Unlocks all 25 days
+- **Puzzle page**: `http://localhost:8000/puzzle.html?day=1&test=true` - Access any puzzle directly
+
+### GitHub Pages Testing
+- **Home page**: `https://bobbyberta.github.io/tile-sum/?test=true` - Unlocks all 25 days
+- **Puzzle page**: `https://bobbyberta.github.io/tile-sum/puzzle.html?day=1&test=true` - Access any puzzle directly
+
+**Note**: Replace `day=1` with any number from 1-25 to test different puzzles.
 
 When test mode is active, a test mode indicator will appear at the top of the calendar page.
 
