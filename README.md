@@ -138,7 +138,7 @@ A `CNAME` file has been created in the repository root containing `sum-tile.uk`.
 4. **Add CNAME Record for www subdomain (optional):**
    - **Type**: CNAME
    - **Name**: www
-   - **Value**: `YOUR_USERNAME.github.io` (replace with your GitHub username)
+   - **Value**: `bobbyberta.github.io` (replace with your GitHub username)
    - **TTL**: 600 (or default)
 
 5. **Save Changes:**
