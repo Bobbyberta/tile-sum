@@ -1,3 +1,59 @@
+// Update Christmas countdown overlay
+function updateCountdown() {
+    const countdownOverlay = document.getElementById('countdown-overlay');
+    const countdownDays = document.getElementById('countdown-days');
+    const mainContent = document.getElementById('main-content');
+    
+    if (!countdownOverlay || !countdownDays) return;
+    
+    // Check for test mode - hide countdown in test mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const testMode = urlParams.get('test') === 'true';
+    
+    if (testMode) {
+        countdownOverlay.classList.add('hidden');
+        if (mainContent) {
+            mainContent.style.paddingTop = '';
+        }
+        return;
+    }
+    
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const decemberFirst = new Date(currentYear, 11, 1); // Month is 0-indexed, so 11 = December
+    
+    // Set time to start of day for accurate comparison
+    today.setHours(0, 0, 0, 0);
+    decemberFirst.setHours(0, 0, 0, 0);
+    
+    // Calculate days remaining
+    const timeDiff = decemberFirst.getTime() - today.getTime();
+    const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    
+    // Show countdown only if we're before December 1st
+    if (daysRemaining > 0) {
+        countdownOverlay.classList.remove('hidden');
+        
+        // Update countdown text
+        if (daysRemaining === 1) {
+            countdownDays.textContent = '1 day remaining!';
+        } else {
+            countdownDays.textContent = `${daysRemaining} days remaining!`;
+        }
+        
+        // Add padding to main content to account for overlay
+        if (mainContent) {
+            mainContent.style.paddingTop = '80px';
+        }
+    } else {
+        // Hide countdown if it's December 1st or later
+        countdownOverlay.classList.add('hidden');
+        if (mainContent) {
+            mainContent.style.paddingTop = '';
+        }
+    }
+}
+
 // Calendar initialization
 function initCalendar() {
     const calendar = document.getElementById('calendar');
