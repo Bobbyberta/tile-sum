@@ -2,7 +2,7 @@
 
 A daily puzzle site hosted on GitHub Pages featuring an advent calendar with 25 word puzzle challenges. Each puzzle is an anagram game where players arrange letter tiles to form two words, with Scrabble scoring.
 
-**Live Site**: [https://bobbyberta.github.io/tile-sum/](https://bobbyberta.github.io/tile-sum/) *(Update this URL after deploying)*
+**Live Site**: [https://sum-tile.uk](https://sum-tile.uk)
 
 ## Features
 
@@ -105,12 +105,75 @@ A daily puzzle site hosted on GitHub Pages featuring an advent calendar with 25 
    - Replace `YOUR_USERNAME` in the README with your actual GitHub username
    - Update the "Live Site" link at the top of this README
 
-### Custom Domain (Optional)
+### Custom Domain Setup
 
-If you want to use a custom domain:
-1. Add a `CNAME` file to your repository root with your domain name
-2. Configure DNS settings with your domain provider
-3. Update the custom domain in GitHub Pages settings
+This site uses the custom domain `sum-tile.uk`. To set up a custom domain for GitHub Pages:
+
+#### 1. Create CNAME File
+
+A `CNAME` file has been created in the repository root containing `sum-tile.uk`. This file tells GitHub Pages which custom domain to use.
+
+#### 2. Configure DNS in GoDaddy
+
+1. **Log in to GoDaddy:**
+   - Go to [GoDaddy.com](https://www.godaddy.com) and sign in
+   - Navigate to your domain management page
+
+2. **Access DNS Management:**
+   - Find your domain `sum-tile.uk` in the list
+   - Click on "DNS" or "Manage DNS"
+
+3. **Add A Records:**
+   - Add the following four A records (these point to GitHub Pages IP addresses):
+     - **Type**: A
+     - **Name**: @ (or leave blank for root domain)
+     - **Value**: `185.199.108.153`
+     - **TTL**: 600 (or default)
+   
+   Repeat for these additional IP addresses:
+     - **Type**: A, **Name**: @, **Value**: `185.199.109.153`
+     - **Type**: A, **Name**: @, **Value**: `185.199.110.153`
+     - **Type**: A, **Name**: @, **Value**: `185.199.111.153`
+
+4. **Add CNAME Record for www subdomain (optional):**
+   - **Type**: CNAME
+   - **Name**: www
+   - **Value**: `YOUR_USERNAME.github.io` (replace with your GitHub username)
+   - **TTL**: 600 (or default)
+
+5. **Save Changes:**
+   - Click "Save" or "Add Record" for each entry
+   - DNS changes may take up to 48 hours to propagate, though usually much faster
+
+#### 3. Configure GitHub Pages Custom Domain
+
+1. **Go to GitHub Repository Settings:**
+   - Navigate to your repository on GitHub
+   - Click on **Settings** → **Pages**
+
+2. **Add Custom Domain:**
+   - In the "Custom domain" section, enter: `sum-tile.uk`
+   - Click **Save**
+
+3. **Verify Domain:**
+   - GitHub will automatically verify the domain ownership
+   - You may see a "DNS check in progress" message
+   - Once verified, you'll see a green checkmark
+
+4. **Enforce HTTPS:**
+   - After domain verification, check the "Enforce HTTPS" checkbox
+   - GitHub will automatically provision an SSL certificate (may take a few minutes)
+
+#### 4. Verify Setup
+
+- Wait for DNS propagation (check with `dig sum-tile.uk` or use online DNS checker tools)
+- Visit `https://sum-tile.uk` in your browser
+- The site should load with HTTPS enabled
+
+**Note**: If you encounter issues, ensure:
+- The CNAME file is committed and pushed to your repository
+- DNS records are correctly configured in GoDaddy
+- You've waited sufficient time for DNS propagation (up to 48 hours)
 
 ### Troubleshooting
 
@@ -126,6 +189,7 @@ tile-sum/
 ├── puzzle.html         # Puzzle page
 ├── puzzle-data.js      # Puzzle definitions and Scrabble scores
 ├── script.js           # Main JavaScript logic
+├── CNAME               # Custom domain configuration for GitHub Pages
 ├── .nojekyll           # Prevents Jekyll processing on GitHub Pages
 ├── .gitignore          # Git ignore file
 └── README.md           # This file
@@ -162,8 +226,8 @@ To test puzzles before their unlock date, add `?test=true` to the URL. This is u
 - **Puzzle page**: `http://localhost:8000/puzzle.html?day=1&test=true` - Access any puzzle directly
 
 ### GitHub Pages Testing
-- **Home page**: `https://bobbyberta.github.io/tile-sum/?test=true` - Unlocks all 25 days
-- **Puzzle page**: `https://bobbyberta.github.io/tile-sum/puzzle.html?day=1&test=true` - Access any puzzle directly
+- **Home page**: `https://sum-tile.uk/?test=true` - Unlocks all 25 days
+- **Puzzle page**: `https://sum-tile.uk/puzzle.html?day=1&test=true` - Access any puzzle directly
 
 **Note**: Replace `day=1` with any number from 1-25 to test different puzzles.
 
