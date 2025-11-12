@@ -236,25 +236,127 @@
 
     <!-- Help Modal -->
     <div id="help-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
-        <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4 relative">
-            <button 
-                id="close-help-modal"
-                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1"
-                aria-label="Close modal"
-            >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-            <h2 id="help-modal-title" class="text-2xl font-bold text-indigo-900 mb-4">How to Play</h2>
-            <p class="text-lg text-indigo-900 mb-4">Arrange the tiles to form two words. Each tile shows a letter and its Scrabble score. Drag tiles into the word slots to build your solution.</p>
-            <div class="flex justify-center">
-                <button 
-                    id="close-help-modal-btn"
-                    class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
-                >
-                    Got it
-                </button>
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] flex flex-col">
+            <!-- Sticky Header -->
+            <div class="sticky top-0 bg-white rounded-t-lg border-b border-gray-200 px-6 md:px-8 pt-6 md:pt-8 pb-4 z-10">
+                <div class="flex items-center justify-between">
+                    <h2 id="help-modal-title" class="text-2xl font-bold text-indigo-900">How to Play</h2>
+                    <button 
+                        id="close-help-modal"
+                        class="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1"
+                        aria-label="Close modal"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Scrollable Content -->
+            <div id="help-modal-content" class="overflow-y-auto px-6 md:px-8 pt-6 md:pt-8 pb-6 md:pb-8">
+                <!-- Step 1: Tile Appearance -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-indigo-900 mb-3">1. Understand the Tiles</h3>
+                    <p class="text-indigo-900 mb-3">Each tile shows a letter and its Scrabble point value.</p>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="bg-indigo-600 text-white rounded-lg p-3 w-14 h-14 flex flex-col items-center justify-center shadow-md">
+                            <div class="text-2xl font-bold">A</div>
+                            <div class="text-xs mt-1 opacity-90">1</div>
+                        </div>
+                        <div class="bg-indigo-600 text-white rounded-lg p-3 w-14 h-14 flex flex-col items-center justify-center shadow-md">
+                            <div class="text-2xl font-bold">Q</div>
+                            <div class="text-xs mt-1 opacity-90">10</div>
+                        </div>
+                        <div class="bg-indigo-600 text-white rounded-lg p-3 w-14 h-14 flex flex-col items-center justify-center shadow-md">
+                            <div class="text-2xl font-bold">Z</div>
+                            <div class="text-xs mt-1 opacity-90">10</div>
+                        </div>
+                    </div>
+                    <p class="text-sm text-indigo-900">The large letter is what you use to form words. The small number is the Scrabble score.</p>
+                </div>
+
+                <!-- Step 2: Dragging Tiles -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-indigo-900 mb-3">2. Drag Tiles to Slots</h3>
+                    <p class="text-indigo-900 mb-3">Click and drag tiles from the top container into the word slots below.</p>
+                    <div class="flex items-center gap-4 mb-2 flex-wrap">
+                        <div class="bg-indigo-600 text-white rounded-lg p-3 w-14 h-14 flex flex-col items-center justify-center shadow-md relative">
+                            <div class="text-2xl font-bold">T</div>
+                            <div class="text-xs mt-1 opacity-90">1</div>
+                            <!-- Drag cursor indicator -->
+                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <!-- Arrow SVG -->
+                        <svg class="w-8 h-8 text-indigo-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                        <!-- Empty slot -->
+                        <div class="w-14 h-14 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 bg-gray-50">
+                            <span class="text-gray-400 text-xs">Slot</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-indigo-900">You can also click a tile, then click a slot to place it. Use keyboard navigation for accessibility.</p>
+                </div>
+
+                <!-- Step 3: Completed Word -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold text-indigo-900 mb-3">3. Form Words</h3>
+                    <p class="text-indigo-900 mb-3">Arrange tiles to form two words that match the scrabble score value.</p>
+                    <div class="bg-white rounded-lg shadow-md p-4 mb-2">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
+                            <span class="text-sm font-semibold text-indigo-900 whitespace-nowrap">Word 1:</span>
+                            <div class="flex gap-1">
+                                <div class="bg-indigo-600 text-white rounded-lg p-2 w-12 h-12 flex flex-col items-center justify-center shadow-md">
+                                    <div class="text-xl font-bold">C</div>
+                                    <div class="text-xs opacity-90">3</div>
+                                </div>
+                                <div class="bg-indigo-600 text-white rounded-lg p-2 w-12 h-12 flex flex-col items-center justify-center shadow-md">
+                                    <div class="text-xl font-bold">A</div>
+                                    <div class="text-xs opacity-90">1</div>
+                                </div>
+                                <div class="bg-indigo-600 text-white rounded-lg p-2 w-12 h-12 flex flex-col items-center justify-center shadow-md">
+                                    <div class="text-xl font-bold">T</div>
+                                    <div class="text-xs opacity-90">1</div>
+                                </div>
+                            </div>
+                            <span class="text-sm text-indigo-900 sm:ml-2">Score: 5</span>
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                            <span class="text-sm font-semibold text-indigo-900 whitespace-nowrap">Word 2:</span>
+                            <div class="flex gap-1">
+                                <div class="bg-indigo-600 text-white rounded-lg p-2 w-12 h-12 flex flex-col items-center justify-center shadow-md">
+                                    <div class="text-xl font-bold">D</div>
+                                    <div class="text-xs opacity-90">2</div>
+                                </div>
+                                <div class="bg-indigo-600 text-white rounded-lg p-2 w-12 h-12 flex flex-col items-center justify-center shadow-md">
+                                    <div class="text-xl font-bold">O</div>
+                                    <div class="text-xs opacity-90">1</div>
+                                </div>
+                                <div class="bg-indigo-600 text-white rounded-lg p-2 w-12 h-12 flex flex-col items-center justify-center shadow-md">
+                                    <div class="text-xl font-bold">G</div>
+                                    <div class="text-xs opacity-90">2</div>
+                                </div>
+                            </div>
+                            <span class="text-sm text-indigo-900 sm:ml-2">Score: 5</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-indigo-900">Fill all slots for both words, then submit to check your solution!</p>
+                </div>
+
+                <!-- Close Button -->
+                <div class="flex justify-center pt-4 border-t border-gray-200 mt-6">
+                    <button 
+                        id="close-help-modal-btn"
+                        class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                    >
+                        Got it
+                    </button>
+                </div>
             </div>
         </div>
     </div>

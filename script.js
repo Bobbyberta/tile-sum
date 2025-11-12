@@ -1306,6 +1306,41 @@ function getDaySuffix(day) {
     }
 }
 
+// Focus trap handler for help modal
+function handleHelpModalKeyDown(e) {
+    const modal = document.getElementById('help-modal');
+    if (!modal || modal.classList.contains('hidden')) return;
+    
+    // Only handle Tab key
+    if (e.key !== 'Tab') return;
+    
+    // Get all focusable elements within the modal
+    const focusableSelectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    const focusableElements = Array.from(modal.querySelectorAll(focusableSelectors))
+        .filter(el => {
+            // Filter out disabled and hidden elements
+            return !el.disabled && 
+                   !el.hasAttribute('hidden') && 
+                   el.offsetParent !== null;
+        });
+    
+    if (focusableElements.length === 0) return;
+    
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    
+    // If Shift+Tab on first element, wrap to last
+    if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement.focus();
+    }
+    // If Tab on last element, wrap to first
+    else if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement.focus();
+    }
+}
+
 // Show help modal
 function showHelpModal(e) {
     if (e) e.preventDefault();
@@ -1315,10 +1350,24 @@ function showHelpModal(e) {
     modal.classList.remove('hidden');
     modal.setAttribute('aria-hidden', 'false');
     
-    // Focus the close button for accessibility
-    const closeBtn = document.getElementById('close-help-modal-btn');
-    if (closeBtn) {
-        setTimeout(() => closeBtn.focus(), 100);
+    // Lock body scroll when modal is open
+    document.body.classList.add('overflow-hidden');
+    
+    // Reset scroll position to top - use requestAnimationFrame to ensure it happens after rendering
+    const contentArea = document.getElementById('help-modal-content');
+    if (contentArea) {
+        requestAnimationFrame(() => {
+            contentArea.scrollTop = 0;
+        });
+    }
+    
+    // Add focus trap event listener
+    modal.addEventListener('keydown', handleHelpModalKeyDown);
+    
+    // Focus the header close button for accessibility (not the bottom button to avoid scrolling)
+    const headerCloseBtn = document.getElementById('close-help-modal');
+    if (headerCloseBtn) {
+        setTimeout(() => headerCloseBtn.focus(), 100);
     }
 }
 
@@ -1329,6 +1378,12 @@ function closeHelpModal() {
 
     modal.classList.add('hidden');
     modal.setAttribute('aria-hidden', 'true');
+    
+    // Remove focus trap event listener
+    modal.removeEventListener('keydown', handleHelpModalKeyDown);
+    
+    // Unlock body scroll when modal is closed
+    document.body.classList.remove('overflow-hidden');
 }
 
 // Show feedback message
