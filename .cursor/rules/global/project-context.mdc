@@ -10,16 +10,18 @@ alwaysApply: true
 - Hosted on GitHub Pages at https://sum-tile.uk
 
 ### Technology Stack
-- **Frontend:** Vanilla HTML, CSS, JavaScript (ES6+)
+- **Frontend:** Vanilla HTML, CSS, JavaScript (ES6+ modules)
 - **Styling:** Tailwind CSS 3.4.13 (compiled with PostCSS)
 - **Build Tool:** PostCSS with Autoprefixer
 - **Deployment:** GitHub Pages (static site)
 - **Custom Domain:** sum-tile.uk
 
 ### Project Structure
-- Root files: `index.html`, `puzzle.html`, `script.js`, `puzzle-data.js`
+- Root files: `index.html`, `puzzle.html`, `archive.html`, `script.js`, `puzzle-data.js`
+- JavaScript modules: `js/` directory containing modular files (archive.js, completion.js, drag-drop.js, feedback.js, hints.js, keyboard.js, modals.js, puzzle-core.js, puzzle-state.js, scoring.js, seo.js, ui.js, utils.js)
 - CSS: Source in `src/styles.css`, compiled to `styles.css` in root
 - Build config: `tailwind.config.js`, `postcss.config.js`
+- Scripts: `scripts/update-cursor-rules.js` for generating Cursor rules
 - Static assets: `favicon.svg`, `og-image.svg`, `CNAME`, `robots.txt`, `sitemap.xml`
 
 ### Deployment Requirements
