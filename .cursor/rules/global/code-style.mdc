@@ -1,0 +1,35 @@
+---
+description: "JavaScript coding conventions and naming patterns"
+alwaysApply: true
+globs:
+  - "**/*.js"
+---
+
+### JavaScript Style Guide
+- Use modern ES6+ syntax (arrow functions, const/let, template literals, destructuring)
+- Prefer `const` over `let`; only use `let` when reassignment is needed
+- Use arrow functions for callbacks and short functions
+- Use template literals for string interpolation
+- Use descriptive variable and function names (camelCase)
+
+### Function Naming
+- Use camelCase: `initCalendar()`, `updateCountdown()`, `handleTileClick()`
+- Prefix event handlers with `handle`: `handleSubmit()`, `handleTileDrag()`
+- Prefix initialization functions with `init`: `initCalendar()`, `initPuzzle()`
+- Prefix update functions with `update`: `updateCountdown()`, `updateScore()`
+
+### Code Organization
+- Group related functions together
+- Add comments for complex logic or non-obvious behavior
+- Keep functions focused and single-purpose
+- Extract reusable logic into separate functions
+
+### Error Handling
+- Always check for element existence before DOM manipulation: `if (!element) return;`
+- Use early returns to reduce nesting
+- Validate user input before processing
+
+### Comments
+- Use `//` for single-line comments
+- Add comments explaining "why" not "what" for complex logic
+- Document test mode behavior: `// Check for test mode via URL parameter`

@@ -206,6 +206,13 @@ tile-sum/
 ├── styles.css          # Compiled Tailwind CSS (generated from src/styles.css)
 ├── src/
 │   └── styles.css      # Source CSS with Tailwind directives
+├── scripts/
+│   └── update-cursor-rules.js  # Script to generate Cursor rules
+├── .cursor/
+│   └── rules/          # Cursor AI rules (generated from CURSOR_RULES_SOURCE.md)
+│       ├── global/     # Global project rules
+│       └── frontend/   # Frontend-specific rules
+├── CURSOR_RULES_SOURCE.md  # Source file for Cursor rules (edit this to update rules)
 ├── package.json        # npm dependencies and build scripts
 ├── tailwind.config.js  # Tailwind CSS configuration
 ├── postcss.config.js   # PostCSS configuration
@@ -276,6 +283,64 @@ The site uses Tailwind CSS built with PostCSS. You can customize colors and styl
 - Modifying Tailwind classes in the HTML files (`index.html`, `puzzle.html`, `script.js`)
 - Updating `tailwind.config.js` to customize the theme, colors, or add plugins
 - After making changes, rebuild the CSS with `npm run build:css` (or use `npm run watch:css` for automatic rebuilding during development)
+
+## Cursor Rules
+
+This project uses Cursor's folder-based rules system to guide AI assistance. The rules help maintain consistency and ensure the AI understands project conventions.
+
+### How It Works
+
+- **Source File**: `CURSOR_RULES_SOURCE.md` - Edit this file to update rules
+- **Generated Files**: `.cursor/rules/` - Automatically generated `.mdc` files (do not edit directly)
+- **Automation**: Run `npm run update-rules` to regenerate `.mdc` files from the source
+
+### Updating Rules
+
+1. **Edit the source file**: Open `CURSOR_RULES_SOURCE.md` and modify the rule sections
+2. **Regenerate rules**: Run `npm run update-rules` to generate the `.mdc` files
+3. **Verify**: The script will validate and generate all rule files
+
+### Rule Categories
+
+- **Global Rules** (`.cursor/rules/global/`):
+  - `project-context.mdc` - Project overview, tech stack, deployment info
+  - `code-style.mdc` - JavaScript coding conventions and naming patterns
+
+- **Frontend Rules** (`.cursor/rules/frontend/`):
+  - `tailwind-css.mdc` - Tailwind CSS guidelines and build process
+  - `accessibility.mdc` - ARIA labels, keyboard navigation requirements
+  - `html-structure.mdc` - HTML organization and best practices
+
+### Quick Reference
+
+```bash
+# Update rules after editing CURSOR_RULES_SOURCE.md
+npm run update-rules
+
+# Validate rules (same command, validates before generating)
+npm run validate-rules
+```
+
+### Rule Format
+
+Each rule section in `CURSOR_RULES_SOURCE.md` follows this format:
+
+```markdown
+---
+
+## [GLOBAL|FRONTEND] Rule Title
+
+**File:** `.cursor/rules/category/rule-name.mdc`
+**Description:** Brief description of what this rule covers
+**Always Apply:** true|false
+**Globs:** ["**/*.js"] (optional - file patterns where rule applies)
+
+### Rule Content
+- Rule details and guidelines
+- More information...
+```
+
+The automation script parses this format and generates the corresponding `.mdc` files with proper frontmatter that Cursor reads automatically.
 
 ## Browser Support
 

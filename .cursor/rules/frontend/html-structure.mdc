@@ -1,0 +1,41 @@
+---
+description: "HTML organization and best practices"
+alwaysApply: false
+globs:
+  - "**/*.html"
+---
+
+### HTML Structure
+- Use semantic HTML5 elements: `<header>`, `<main>`, `<nav>`, `<section>`, `<article>`, `<footer>`
+- Keep HTML clean and readable with proper indentation
+- Use meaningful class names (Tailwind utilities)
+
+### Meta Tags
+- Include proper charset: `<meta charset="UTF-8">`
+- Include viewport: `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+- Add SEO meta tags: `description`, `keywords`, `robots`
+- Include Open Graph tags for social sharing
+- Include structured data (JSON-LD) when appropriate
+
+### Links and Assets
+- Use relative paths for all internal links and assets
+- Include favicon links: `<link rel="icon" type="image/svg+xml" href="/favicon.svg">`
+- Use canonical URLs for SEO
+- Include `lang` attribute on `<html>` tag
+
+### Scripts and Styles
+- Link compiled CSS: `<link rel="stylesheet" href="styles.css">`
+- Place scripts at end of `<body>` or use `defer`
+- Use CDN for external libraries (e.g., canvas-confetti)
+- Include scripts conditionally when needed (e.g., only in puzzle.html)
+
+### Forms and Inputs
+- Use proper form elements with labels
+- Include `type` attributes on inputs
+- Use `disabled` attribute appropriately
+- Provide clear error messages
+
+### Performance
+- Minimize inline styles (use Tailwind classes instead)
+- Optimize images (use SVG when possible)
+- Keep HTML structure flat when possible (avoid deep nesting)

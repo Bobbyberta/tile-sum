@@ -1,0 +1,34 @@
+---
+description: "Project overview, tech stack, and deployment information"
+alwaysApply: true
+---
+
+### Project Overview
+- This is an Advent Puzzle Calendar web application - a daily word puzzle game
+- Players arrange letter tiles to form two words with Scrabble scoring
+- 25 puzzles unlock daily from December 1-25
+- Hosted on GitHub Pages at https://sum-tile.uk
+
+### Technology Stack
+- **Frontend:** Vanilla HTML, CSS, JavaScript (ES6+)
+- **Styling:** Tailwind CSS 3.4.13 (compiled with PostCSS)
+- **Build Tool:** PostCSS with Autoprefixer
+- **Deployment:** GitHub Pages (static site)
+- **Custom Domain:** sum-tile.uk
+
+### Project Structure
+- Root files: `index.html`, `puzzle.html`, `script.js`, `puzzle-data.js`
+- CSS: Source in `src/styles.css`, compiled to `styles.css` in root
+- Build config: `tailwind.config.js`, `postcss.config.js`
+- Static assets: `favicon.svg`, `og-image.svg`, `CNAME`, `robots.txt`, `sitemap.xml`
+
+### Deployment Requirements
+- Always use relative paths (not absolute) for GitHub Pages compatibility
+- Compiled `styles.css` must be committed to repository
+- Run `npm run build:css` after any Tailwind CSS changes
+- Ensure `.nojekyll` file exists to prevent Jekyll processing
+- Test mode available via `?test=true` URL parameter for development
+
+### Browser Support
+- Target modern browsers: Chrome, Firefox, Safari, Edge (latest versions)
+- Use standard ES6+ features (no polyfills needed for target browsers)
