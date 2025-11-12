@@ -130,6 +130,39 @@ function initCalendar() {
     }
 }
 
+// Update social sharing meta tags for puzzle pages
+function updateSocialMetaTags(day) {
+    if (!PUZZLE_DATA[day]) return;
+    
+    const puzzle = PUZZLE_DATA[day];
+    const baseUrl = 'https://sum-tile.uk';
+    const puzzleUrl = `${baseUrl}/puzzle.html?day=${day}`;
+    const title = `Puzzle Day ${day} - Advent Puzzle Calendar`;
+    const description = `Daily word puzzle challenge - Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}.`;
+    
+    // Update Open Graph tags
+    const ogTitle = document.getElementById('og-title');
+    const ogDescription = document.getElementById('og-description');
+    const ogUrl = document.getElementById('og-url');
+    
+    if (ogTitle) ogTitle.setAttribute('content', title);
+    if (ogDescription) ogDescription.setAttribute('content', description);
+    if (ogUrl) ogUrl.setAttribute('content', puzzleUrl);
+    
+    // Update Twitter Card tags
+    const twitterTitle = document.getElementById('twitter-title');
+    const twitterDescription = document.getElementById('twitter-description');
+    
+    if (twitterTitle) twitterTitle.setAttribute('content', title);
+    if (twitterDescription) twitterDescription.setAttribute('content', description);
+    
+    // Update page title
+    const pageTitle = document.querySelector('title');
+    if (pageTitle) {
+        pageTitle.textContent = title;
+    }
+}
+
 // Puzzle initialization
 function initPuzzle(day) {
     // Update puzzle title with formatted date
@@ -152,6 +185,9 @@ function initPuzzle(day) {
         showFeedback('Puzzle not found', 'error');
         return;
     }
+
+    // Update social sharing meta tags
+    updateSocialMetaTags(day);
 
     const puzzle = PUZZLE_DATA[day];
     const letters = getPuzzleLetters(day);
