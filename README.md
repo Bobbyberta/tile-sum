@@ -60,9 +60,18 @@ A daily puzzle site hosted on GitHub Pages featuring an advent calendar with 25 
    cd tile-sum
    ```
 
-2. The site uses vanilla HTML, CSS, and JavaScript with CDN dependencies, so no build process or npm installation is required.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-3. **To test locally, use a simple HTTP server:**
+3. **Build the CSS:**
+   ```bash
+   npm run build:css
+   ```
+   This compiles Tailwind CSS from `src/styles.css` to `styles.css` in the root directory.
+
+4. **To test locally, use a simple HTTP server:**
    ```bash
    # Using Python 3
    python3 -m http.server 8000
@@ -74,18 +83,23 @@ A daily puzzle site hosted on GitHub Pages featuring an advent calendar with 25 
    php -S localhost:8000
    ```
 
-4. Open `http://localhost:8000` in your browser.
+5. Open `http://localhost:8000` in your browser.
+
+**Note:** If you make changes to HTML files that add or modify Tailwind classes, rebuild the CSS with `npm run build:css`. For development, you can use `npm run watch:css` to automatically rebuild on changes.
 
 ## Deployment to GitHub Pages
 
 ### Step-by-Step GitHub Pages Setup
 
-1. **Ensure your code is pushed to GitHub:**
+1. **Build the CSS and ensure your code is pushed to GitHub:**
    ```bash
+   npm install
+   npm run build:css
    git add .
    git commit -m "Prepare for GitHub Pages deployment"
    git push origin main
    ```
+   **Important:** Make sure `styles.css` is committed and pushed, as it's required for the site to display correctly.
 
 2. **Configure GitHub Pages:**
    - Go to your repository on GitHub (e.g., `https://github.com/YOUR_USERNAME/tile-sum`)
@@ -179,7 +193,7 @@ A `CNAME` file has been created in the repository root containing `sum-tile.uk`.
 
 - **Site not loading?** Check that `index.html` is in the root directory
 - **404 errors?** Ensure all file paths are relative (not absolute)
-- **Styling broken?** Verify CDN links are working and `.nojekyll` file exists
+- **Styling broken?** Ensure `styles.css` exists (run `npm run build:css` if missing) and `.nojekyll` file exists
 
 ## Project Structure
 
@@ -189,6 +203,12 @@ tile-sum/
 ├── puzzle.html         # Puzzle page
 ├── puzzle-data.js      # Puzzle definitions and Scrabble scores
 ├── script.js           # Main JavaScript logic
+├── styles.css          # Compiled Tailwind CSS (generated from src/styles.css)
+├── src/
+│   └── styles.css      # Source CSS with Tailwind directives
+├── package.json        # npm dependencies and build scripts
+├── tailwind.config.js  # Tailwind CSS configuration
+├── postcss.config.js   # PostCSS configuration
 ├── CNAME               # Custom domain configuration for GitHub Pages
 ├── .nojekyll           # Prevents Jekyll processing on GitHub Pages
 ├── .gitignore          # Git ignore file
@@ -197,18 +217,27 @@ tile-sum/
 
 ## Dependencies
 
-This project uses CDN dependencies (no npm installation required):
+This project uses npm for development dependencies and CDN for runtime dependencies:
 
-- **Tailwind CSS**: Latest version via `cdn.tailwindcss.com`
+### Development Dependencies (npm)
+- **Tailwind CSS**: Version 3.4.13
   - Used for styling and responsive design
-  - Loaded via CDN in both `index.html` and `puzzle.html`
+  - Built with PostCSS and compiled to `styles.css`
+  - Source file: `src/styles.css`
 
+- **PostCSS**: Version 8.4.47
+  - Used to process Tailwind CSS
+
+- **Autoprefixer**: Version 10.4.20
+  - Automatically adds vendor prefixes to CSS
+
+### Runtime Dependencies (CDN)
 - **canvas-confetti**: Version 1.9.2
   - Used for celebration animations when puzzles are solved
   - Loaded via jsDelivr CDN: `cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js`
   - Only loaded in `puzzle.html`
 
-All dependencies are loaded via CDN, so no build process or package manager is needed.
+**Note:** Before deploying or testing locally, run `npm install` and `npm run build:css` to generate the compiled CSS file.
 
 ## How It Works
 
@@ -243,7 +272,10 @@ Edit `puzzle-data.js` to modify puzzle words or add new puzzles. Each puzzle req
 
 ### Styling
 
-The site uses Tailwind CSS via CDN. You can customize colors and styles by modifying the Tailwind classes in the HTML files. To use a specific Tailwind version or customize the configuration, you would need to set up a build process, but the CDN version works well for this project.
+The site uses Tailwind CSS built with PostCSS. You can customize colors and styles by:
+- Modifying Tailwind classes in the HTML files (`index.html`, `puzzle.html`, `script.js`)
+- Updating `tailwind.config.js` to customize the theme, colors, or add plugins
+- After making changes, rebuild the CSS with `npm run build:css` (or use `npm run watch:css` for automatic rebuilding during development)
 
 ## Browser Support
 
