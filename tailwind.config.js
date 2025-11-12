@@ -3,6 +3,7 @@ module.exports = {
   content: [
     "./index.html",
     "./puzzle.html",
+    "./archive.html",
     "./script.js"
   ],
   theme: {

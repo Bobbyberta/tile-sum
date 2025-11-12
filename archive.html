@@ -109,22 +109,29 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Skip to main content link -->
+    <a href="#main-content" class="sr-only focus:w-auto focus:h-auto focus:p-4 focus:m-0 focus:overflow-visible focus:clip-auto focus:whitespace-normal focus:border-0 focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-indigo-600 focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        Skip to main content
+    </a>
+    <main class="container mx-auto px-4 py-8 max-w-4xl" id="main-content">
         <header class="mb-8">
-            <div class="flex items-center justify-between mb-4">
+            <nav class="flex items-center justify-between mb-4" aria-label="Page navigation">
                 <a href="index.html" class="text-indigo-600 hover:text-indigo-800 font-semibold">
                     ← Back to Home
                 </a>
                 <a href="index.html" class="text-indigo-600 hover:text-indigo-800 font-semibold">
                     Today's Puzzle →
                 </a>
-            </div>
+            </nav>
             <h1 class="text-3xl md:text-4xl font-bold text-indigo-900 mb-2">Puzzle Archive</h1>
-            <p id="test-mode-indicator" class="hidden mt-2 text-sm text-orange-600 font-semibold">🧪 Test Mode: All puzzles unlocked</p>
+            <p id="test-mode-indicator" class="hidden mt-2 text-sm text-orange-600 font-semibold"></p>
         </header>
 
         <!-- Date Picker -->
         <div class="mb-8 bg-white rounded-lg shadow-md p-6">
+            <label for="date-picker" class="block text-center text-sm font-semibold text-indigo-900 mb-3">
+                Select puzzle date
+            </label>
             <div class="flex items-center justify-center gap-4">
                 <button 
                     id="date-prev-btn"
@@ -139,7 +146,7 @@
                     type="date" 
                     id="date-picker"
                     class="px-4 py-2 border-2 border-indigo-300 rounded-lg text-lg font-semibold text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    aria-label="Select date"
+                    aria-label="Select puzzle date"
                 />
                 <button 
                     id="date-next-btn"
@@ -162,39 +169,43 @@
         <div id="archive-feedback" class="hidden p-4 rounded-lg mb-8" role="alert" aria-live="polite">
             <!-- Feedback will be shown here -->
         </div>
-    </div>
+    </main>
 
     <!-- Success Modal -->
-    <div id="archive-success-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="archive-modal-title">
+    <div id="archive-success-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="archive-modal-title">
+
         <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4 relative">
-            <button 
-                id="archive-close-success-modal"
-                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1"
-                aria-label="Close modal"
-            >
+
+            <button id="archive-close-success-modal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1" aria-label="Close modal">
+
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+
                 </svg>
+
             </button>
+
             <h2 id="archive-modal-title" class="text-3xl font-bold text-indigo-900 mb-4 text-center">You solved the puzzle!</h2>
+
             <div id="archive-share-message-container" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+
                 <p id="archive-share-message" class="text-sm text-gray-700 whitespace-pre-wrap break-words"></p>
+
             </div>
+
             <div class="flex justify-center gap-4">
-                <button 
-                    id="archive-share-btn"
-                    class="px-8 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors"
-                >
+
+                <button id="archive-share-btn" class="px-8 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+
                     Copy
+
                 </button>
-                <button 
-                    id="archive-close-success-modal-btn"
-                    class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
-                >
-                    Close
-                </button>
+
             </div>
+
         </div>
+
     </div>
 
     <!-- Error Modal -->
@@ -222,17 +233,26 @@
         </div>
     </div>
 
-    <script src="puzzle-data.js"></script>
-    <script src="script.js"></script>
-    <script>
+    <script type="module">
         // Initialize archive page on load
+        import { initArchivePage } from './script.js';
+        
         document.addEventListener('DOMContentLoaded', () => {
             // Check for test mode and show indicator
             const urlParams = new URLSearchParams(window.location.search);
-            const testMode = urlParams.get('test') === 'true';
-            if (testMode) {
-                const indicator = document.getElementById('test-mode-indicator');
-                if (indicator) indicator.classList.remove('hidden');
+            const testValue = urlParams.get('test');
+            const indicator = document.getElementById('test-mode-indicator');
+            
+            if (testValue === 'archive') {
+                if (indicator) {
+                    indicator.textContent = '🧪 Test Mode: Archive Mode';
+                    indicator.classList.remove('hidden');
+                }
+            } else if (testValue === 'advent') {
+                if (indicator) {
+                    indicator.textContent = '🧪 Test Mode: Advent Calendar Mode';
+                    indicator.classList.remove('hidden');
+                }
             }
             
             // Initialize archive page

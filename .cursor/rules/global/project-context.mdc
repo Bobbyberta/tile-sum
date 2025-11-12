@@ -27,7 +27,7 @@ alwaysApply: true
 - Compiled `styles.css` must be committed to repository
 - Run `npm run build:css` after any Tailwind CSS changes
 - Ensure `.nojekyll` file exists to prevent Jekyll processing
-- Test mode available via `?test=true` URL parameter for development
+- Test modes available via `?test=archive` (archive testing) and `?test=advent` (advent calendar testing) URL parameters for development
 
 ### Browser Support
 - Target modern browsers: Chrome, Firefox, Safari, Edge (latest versions)

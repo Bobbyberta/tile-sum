@@ -152,7 +152,7 @@ A `CNAME` file has been created in the repository root containing `sum-tile.uk`.
 4. **Add CNAME Record for www subdomain (optional):**
    - **Type**: CNAME
    - **Name**: www
-   - **Value**: `bobbyberta.github.io` (replace with your GitHub username)
+   - **Value**: `YOUR_USERNAME.github.io` (replace YOUR_USERNAME with your GitHub username)
    - **TTL**: 600 (or default)
 
 5. **Save Changes:**
@@ -201,6 +201,7 @@ A `CNAME` file has been created in the repository root containing `sum-tile.uk`.
 tile-sum/
 ├── index.html          # Home page with advent calendar
 ├── puzzle.html         # Puzzle page
+├── archive.html        # Archive page for accessing past puzzles
 ├── puzzle-data.js      # Puzzle definitions and Scrabble scores
 ├── script.js           # Main JavaScript logic
 ├── styles.css          # Compiled Tailwind CSS (generated from src/styles.css)
@@ -253,21 +254,45 @@ This project uses npm for development dependencies and CDN for runtime dependenc
 - **Scoring**: Each letter has a Scrabble point value displayed on the tile. The total score for each word and both words combined is calculated and displayed.
 - **Validation**: When all slots are filled, the submit button becomes enabled. Clicking it validates the solution against the correct answer.
 
-## Test Mode
+## Test Modes
 
-To test puzzles before their unlock date, add `?test=true` to the URL. This is useful for testing and development.
+Two specialized test modes are available for testing different aspects of the game:
 
-### Local Testing
-- **Home page**: `http://localhost:8000/index.html?test=true` - Unlocks all 25 days
-- **Puzzle page**: `http://localhost:8000/puzzle.html?day=1&test=true` - Access any puzzle directly
+### Archive Test Mode (`?test=archive`)
 
-### GitHub Pages Testing
-- **Home page**: `https://sum-tile.uk/?test=true` - Unlocks all 25 days
-- **Puzzle page**: `https://sum-tile.uk/puzzle.html?day=1&test=true` - Access any puzzle directly
+Tests the archive functionality and daily puzzle view:
+- Shows daily puzzle view (not calendar) on homepage
+- Allows archive access with future dates enabled
+- Shows archive links in navigation
+
+**Local Testing:**
+- **Home page**: `http://localhost:8000/index.html?test=archive` - Shows daily puzzle view
+- **Archive page**: `http://localhost:8000/archive.html?test=archive` - Allows future dates
+- **Puzzle page**: `http://localhost:8000/puzzle.html?day=1&test=archive` - Access any puzzle
+
+**GitHub Pages Testing:**
+- **Home page**: `https://sum-tile.uk/?test=archive` - Shows daily puzzle view
+- **Archive page**: `https://sum-tile.uk/archive.html?test=archive` - Allows future dates
+- **Puzzle page**: `https://sum-tile.uk/puzzle.html?day=1&test=archive` - Access any puzzle
+
+### Advent Test Mode (`?test=advent`)
+
+Tests the advent calendar functionality:
+- Shows calendar view with all 25 days unlocked
+- Hides archive links/functionality
+- Shows countdown overlay if before Dec 1
+
+**Local Testing:**
+- **Home page**: `http://localhost:8000/index.html?test=advent` - Unlocks all 25 days
+- **Puzzle page**: `http://localhost:8000/puzzle.html?day=1&test=advent` - Access any puzzle
+
+**GitHub Pages Testing:**
+- **Home page**: `https://sum-tile.uk/?test=advent` - Unlocks all 25 days
+- **Puzzle page**: `https://sum-tile.uk/puzzle.html?day=1&test=advent` - Access any puzzle
 
 **Note**: Replace `day=1` with any number from 1-25 to test different puzzles.
 
-When test mode is active, a test mode indicator will appear at the top of the calendar page.
+When test mode is active, a test mode indicator will appear at the top of the page showing which mode is active.
 
 ## Customization
 

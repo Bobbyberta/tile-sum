@@ -1,5 +1,5 @@
 // Scrabble letter values
-const SCRABBLE_SCORES = {
+export const SCRABBLE_SCORES = {
     'A': 1, 'B': 3, 'C': 3, 'D': 2, 'E': 1, 'F': 4, 'G': 2, 'H': 4,
     'I': 1, 'J': 8, 'K': 5, 'L': 1, 'M': 3, 'N': 1, 'O': 1, 'P': 3,
     'Q': 10, 'R': 1, 'S': 1, 'T': 1, 'U': 1, 'V': 4, 'W': 4, 'X': 8,
@@ -7,7 +7,11 @@ const SCRABBLE_SCORES = {
 };
 
 // Puzzle data - each puzzle has two words that form an anagram
-const PUZZLE_DATA = {
+export const PUZZLE_DATA = {
+    0: {
+        words: ['TEST', 'DUMMY'],
+        solution: ['TEST', 'DUMMY']
+    },
     1: {
         words: ['SNOW', 'FLAKE'],
         solution: ['SNOW', 'FLAKE']
@@ -111,7 +115,7 @@ const PUZZLE_DATA = {
 };
 
 // Get all letters from a puzzle (combined anagram)
-function getPuzzleLetters(day) {
+export function getPuzzleLetters(day) {
     const puzzle = PUZZLE_DATA[day];
     if (!puzzle) return [];
     
@@ -131,14 +135,14 @@ function shuffleArray(array) {
 }
 
 // Calculate word score
-function calculateWordScore(word) {
+export function calculateWordScore(word) {
     return word.split('').reduce((score, letter) => {
         return score + (SCRABBLE_SCORES[letter.toUpperCase()] || 0);
     }, 0);
 }
 
 // Validate solution
-function validateSolution(day, word1, word2) {
+export function validateSolution(day, word1, word2) {
     const puzzle = PUZZLE_DATA[day];
     if (!puzzle) return false;
     
@@ -151,10 +155,10 @@ function validateSolution(day, word1, word2) {
 
 // Date and Puzzle Mapping System
 // Start date: December 1, 2025 (puzzle #1)
-const PUZZLE_START_DATE = new Date(2025, 11, 1); // Month is 0-indexed, so 11 = December
+export const PUZZLE_START_DATE = new Date(2025, 11, 1); // Month is 0-indexed, so 11 = December
 
 // Get puzzle number for a given date
-function getPuzzleNumberForDate(date) {
+export function getPuzzleNumberForDate(date) {
     if (!(date instanceof Date)) {
         date = new Date(date);
     }
@@ -174,10 +178,15 @@ function getPuzzleNumberForDate(date) {
 }
 
 // Get date for a given puzzle number
-function getDateForPuzzleNumber(puzzleNum) {
+export function getDateForPuzzleNumber(puzzleNum) {
     const puzzleNumber = parseInt(puzzleNum);
-    if (isNaN(puzzleNumber) || puzzleNumber < 1) {
+    if (isNaN(puzzleNumber) || puzzleNumber < 0) {
         return null;
+    }
+    
+    // Puzzle #0 is a dummy/test puzzle, return a placeholder date (Dec 1, 2025)
+    if (puzzleNumber === 0) {
+        return new Date(PUZZLE_START_DATE);
     }
     
     const date = new Date(PUZZLE_START_DATE);
@@ -186,13 +195,18 @@ function getDateForPuzzleNumber(puzzleNum) {
 }
 
 // Check if we're in advent mode (before Dec 26) or daily mode (Dec 26+)
-function isAdventMode() {
+export function isAdventMode() {
     // Check for test mode via URL parameter
     const urlParams = new URLSearchParams(window.location.search);
-    const testMode = urlParams.get('test') === 'true';
+    const testValue = urlParams.get('test');
     
-    // Test mode forces daily mode
-    if (testMode) {
+    // Advent test mode forces advent mode
+    if (testValue === 'advent') {
+        return true;
+    }
+    
+    // Archive test mode forces daily mode
+    if (testValue === 'archive') {
         return false;
     }
     
@@ -209,7 +223,7 @@ function isAdventMode() {
 }
 
 // Format date as YYYY-MM-DD string
-function formatDateString(date) {
+export function formatDateString(date) {
     if (!(date instanceof Date)) {
         date = new Date(date);
     }
@@ -220,7 +234,7 @@ function formatDateString(date) {
 }
 
 // Parse date string (YYYY-MM-DD) to Date object
-function parseDateString(dateString) {
+export function parseDateString(dateString) {
     const parts = dateString.split('-');
     if (parts.length !== 3) return null;
     const year = parseInt(parts[0]);
