@@ -922,7 +922,17 @@ function checkSolution(day) {
     const isValid = validateSolution(day, word1, word2);
 
     if (isValid) {
-        showSuccessModal();
+        // Calculate scores
+        const word1Score = calculateWordScore(word1);
+        const word2Score = calculateWordScore(word2);
+        
+        // Get max scores from word containers
+        const word1Container = document.querySelector('[data-word-index="0"]');
+        const word2Container = document.querySelector('[data-word-index="1"]');
+        const word1MaxScore = word1Container ? parseInt(word1Container.getAttribute('data-max-score')) : 0;
+        const word2MaxScore = word2Container ? parseInt(word2Container.getAttribute('data-max-score')) : 0;
+        
+        showSuccessModal(day, word1Score, word2Score, word1MaxScore, word2MaxScore);
         triggerSnowflakeConfetti();
     } else {
         showErrorModal();
@@ -1109,9 +1119,45 @@ function provideHint(day) {
 }
 
 // Show success modal
-function showSuccessModal() {
+function showSuccessModal(day, word1Score, word2Score, word1MaxScore, word2MaxScore) {
     const modal = document.getElementById('success-modal');
     if (!modal) return;
+
+    // Generate share message
+    const baseUrl = 'https://sum-tile.uk';
+    const urlParams = new URLSearchParams(window.location.search);
+    const testMode = urlParams.get('test') === 'true';
+    const testParam = testMode ? '&test=true' : '';
+    const puzzleUrl = `${baseUrl}/puzzle.html?day=${day}${testParam}`;
+    
+    // Calculate days until Christmas (December 25th)
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    let christmas = new Date(currentYear, 11, 25); // Month is 0-indexed, so 11 = December
+    
+    // Set time to start of day for accurate comparison
+    today.setHours(0, 0, 0, 0);
+    christmas.setHours(0, 0, 0, 0);
+    
+    // If Christmas has passed this year, use next year's Christmas
+    if (today > christmas) {
+        christmas = new Date(currentYear + 1, 11, 25);
+        christmas.setHours(0, 0, 0, 0);
+    }
+    
+    // Calculate days remaining until Christmas
+    const timeDiff = christmas.getTime() - today.getTime();
+    const daysUntilChristmas = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+    
+    // Format the share message
+    const daysText = daysUntilChristmas === 1 ? '1 day' : `${daysUntilChristmas} days`;
+    const shareText = `I completed puzzle #${day} on Sum Tile! Only ${daysText} left to christmas\n${puzzleUrl}`;
+    
+    // Display share message in modal
+    const shareMessage = document.getElementById('share-message');
+    if (shareMessage) {
+        shareMessage.textContent = shareText;
+    }
 
     modal.classList.remove('hidden');
     modal.setAttribute('aria-hidden', 'false');
@@ -1121,6 +1167,64 @@ function showSuccessModal() {
     if (modalTitle) {
         modalTitle.focus();
     }
+    
+    // Setup share button event listener
+    const shareBtn = document.getElementById('share-btn');
+    if (shareBtn) {
+        // Remove any existing event listeners by cloning the button
+        const newShareBtn = shareBtn.cloneNode(true);
+        shareBtn.parentNode.replaceChild(newShareBtn, shareBtn);
+        
+        // Store original state - store the full className to preserve all classes
+        const originalText = newShareBtn.textContent;
+        const originalClassName = newShareBtn.className;
+        
+        // Add event listener to the new button
+        newShareBtn.addEventListener('click', () => {
+            copyShareMessage(shareText, newShareBtn, originalText, originalClassName);
+        });
+    }
+}
+
+// Copy share message to clipboard
+function copyShareMessage(shareText, buttonElement, originalText, originalClassName) {
+    const shareBtn = buttonElement || document.getElementById('share-btn');
+    if (!shareBtn) return;
+    
+    // Show immediate feedback and ensure it renders
+    shareBtn.textContent = 'Copying...';
+    shareBtn.disabled = true;
+    
+    // Use requestAnimationFrame to ensure the "Copying..." text is rendered before clipboard operation
+    requestAnimationFrame(() => {
+        // Small delay to ensure the text is visible
+        setTimeout(() => {
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareText)
+                .then(() => {
+                    // Update button text and color - only change the background color classes
+                    shareBtn.textContent = 'Copied!';
+                    shareBtn.disabled = false;
+                    shareBtn.classList.remove('bg-amber-500', 'hover:bg-amber-600', 'focus:ring-amber-500');
+                    shareBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'focus:ring-green-500');
+                    
+                    // Restore after 2 seconds - restore all original classes to ensure nothing is missing
+                    setTimeout(() => {
+                        shareBtn.textContent = originalText;
+                        shareBtn.className = originalClassName; // Restore full className to ensure all classes are preserved
+                    }, 2000);
+                })
+                .catch((error) => {
+                    console.error('Error copying to clipboard:', error);
+                    shareBtn.textContent = 'Error';
+                    shareBtn.disabled = false;
+                    setTimeout(() => {
+                        shareBtn.textContent = originalText;
+                        shareBtn.className = originalClassName; // Restore full className
+                    }, 2000);
+                });
+        }, 50); // Small delay to ensure "Copying..." is visible
+    });
 }
 
 // Show error modal
