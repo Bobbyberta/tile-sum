@@ -321,7 +321,7 @@ function updatePlaceholderTile() {
         // Show placeholder if no tiles
         if (!placeholder) {
             const placeholderTile = document.createElement('div');
-            placeholderTile.className = 'tile bg-transparent text-transparent rounded-lg p-3 min-w-[50px] text-center pointer-events-none';
+            placeholderTile.className = 'tile bg-transparent text-transparent rounded-lg p-3 w-14 h-14 flex flex-col items-center justify-center pointer-events-none';
             placeholderTile.setAttribute('data-placeholder', 'true');
             placeholderTile.setAttribute('aria-hidden', 'true');
             
@@ -348,7 +348,7 @@ function updatePlaceholderTile() {
 // Create a tile element
 function createTile(letter, index, isLocked = false) {
     const tile = document.createElement('div');
-    tile.className = `tile bg-indigo-600 text-white rounded-lg p-3 min-w-[50px] text-center shadow-md transition-shadow ${isLocked ? 'locked' : 'hover:shadow-lg'}`;
+    tile.className = `tile bg-indigo-600 text-white rounded-lg p-3 w-14 h-14 flex flex-col items-center justify-center shadow-md transition-shadow ${isLocked ? 'locked' : 'hover:shadow-lg'}`;
     tile.setAttribute('draggable', isLocked ? 'false' : 'true');
     tile.setAttribute('data-letter', letter);
     tile.setAttribute('data-tile-index', index);
