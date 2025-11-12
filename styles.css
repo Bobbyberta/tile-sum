@@ -1218,3 +1218,10 @@ video {
   }
 }
 
+/* Mobile spacing for banner visibility */
+@media (max-width: 640px) {
+  #main-content.banner-visible {
+    padding-top: 100px !important;
+  }
+}
+

@@ -14,6 +14,7 @@ function updateCountdown() {
         countdownOverlay.classList.add('hidden');
         if (mainContent) {
             mainContent.style.paddingTop = '';
+            mainContent.classList.remove('banner-visible');
         }
         return;
     }
@@ -44,12 +45,14 @@ function updateCountdown() {
         // Add padding to main content to account for overlay
         if (mainContent) {
             mainContent.style.paddingTop = '80px';
+            mainContent.classList.add('banner-visible');
         }
     } else {
         // Hide countdown if it's December 1st or later
         countdownOverlay.classList.add('hidden');
         if (mainContent) {
             mainContent.style.paddingTop = '';
+            mainContent.classList.remove('banner-visible');
         }
     }
 }
@@ -137,8 +140,8 @@ function updateSocialMetaTags(day) {
     const puzzle = PUZZLE_DATA[day];
     const baseUrl = 'https://sum-tile.uk';
     const puzzleUrl = `${baseUrl}/puzzle.html?day=${day}`;
-    const title = `Puzzle Day ${day} - Advent Calendar Puzzle | Word Puzzle Game`;
-    const description = `Play today's advent calendar puzzle! Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}. Daily word puzzle game challenge with Scrabble scoring.`;
+    const title = `Puzzle Day ${day} - Christmas Word Game | Advent Puzzle`;
+    const description = `Daily word challenge advent puzzle - Scrabble anagram game! Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}. Festive brain teaser with Scrabble scoring.`;
     
     // Update meta description
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -180,8 +183,8 @@ function updateSocialMetaTags(day) {
         const structuredData = {
             "@context": "https://schema.org",
             "@type": "WebPage",
-            "name": `Puzzle Day ${day} - Advent Calendar Puzzle`,
-            "description": `Daily word puzzle challenge - Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}.`,
+            "name": `Puzzle Day ${day} - Christmas Word Game | Advent Puzzle`,
+            "description": `Daily word challenge advent puzzle - Scrabble anagram game! Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}. Festive brain teaser with Scrabble scoring.`,
             "url": puzzleUrl,
             "breadcrumb": {
                 "@type": "BreadcrumbList",
@@ -1172,28 +1175,8 @@ function showSuccessModal(day, word1Score, word2Score, word1MaxScore, word2MaxSc
     const testParam = testMode ? '&test=true' : '';
     const puzzleUrl = `${baseUrl}/puzzle.html?day=${day}${testParam}`;
     
-    // Calculate days until Christmas (December 25th)
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    let christmas = new Date(currentYear, 11, 25); // Month is 0-indexed, so 11 = December
-    
-    // Set time to start of day for accurate comparison
-    today.setHours(0, 0, 0, 0);
-    christmas.setHours(0, 0, 0, 0);
-    
-    // If Christmas has passed this year, use next year's Christmas
-    if (today > christmas) {
-        christmas = new Date(currentYear + 1, 11, 25);
-        christmas.setHours(0, 0, 0, 0);
-    }
-    
-    // Calculate days remaining until Christmas
-    const timeDiff = christmas.getTime() - today.getTime();
-    const daysUntilChristmas = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-    
-    // Format the share message
-    const daysText = daysUntilChristmas === 1 ? '1 day' : `${daysUntilChristmas} days`;
-    const shareText = `I completed puzzle #${day} on Sum Tile! Only ${daysText} left to christmas\n${puzzleUrl}`;
+    // Format the share message - brief call to action with scrabble anagrams focus
+    const shareText = `Play scrabble anagrams!\n${puzzleUrl}`;
     
     // Display share message in modal
     const shareMessage = document.getElementById('share-message');
