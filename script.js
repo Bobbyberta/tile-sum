@@ -255,8 +255,13 @@ function initPuzzle(day) {
         checkSolution(day);
     });
 
+    // Initialize hint counter
+    hintsRemaining = 3;
+    
     // Setup hint button
     const hintBtn = document.getElementById('hint-btn');
+    hintBtn.disabled = false;
+    updateHintButtonText();
     hintBtn.addEventListener('click', () => {
         provideHint(day);
     });
@@ -418,6 +423,9 @@ let draggedTile = null;
 
 // Keyboard accessibility - track selected tile
 let selectedTile = null;
+
+// Hint counter - track remaining hints
+let hintsRemaining = 3;
 
 function handleDragStart(e) {
     // Don't allow dragging locked tiles
@@ -958,8 +966,26 @@ function triggerSnowflakeConfetti() {
     }, 250);
 }
 
-// Provide hint - places 3 tiles in correct positions and locks them
+// Update hint button text based on remaining hints
+function updateHintButtonText() {
+    const hintBtn = document.getElementById('hint-btn');
+    if (!hintBtn) return;
+    
+    if (hintsRemaining <= 0) {
+        hintBtn.disabled = true;
+        hintBtn.textContent = 'No Hints Left';
+    } else {
+        hintBtn.textContent = `Get Hint (${hintsRemaining} left)`;
+    }
+}
+
+// Provide hint - places 1 tile in correct position and locks it
 function provideHint(day) {
+    // Check if hints are available
+    if (hintsRemaining <= 0) {
+        return;
+    }
+    
     const puzzle = PUZZLE_DATA[day];
     if (!puzzle) return;
 
@@ -1002,89 +1028,80 @@ function provideHint(day) {
         }
     });
     
-    // Randomly select up to 3 hints from across both words
-    const hintsToUse = [];
-    const availableHints = [...hintsToPlace];
-    
-    for (let i = 0; i < Math.min(3, availableHints.length); i++) {
-        const randomIndex = Math.floor(Math.random() * availableHints.length);
-        hintsToUse.push(availableHints[randomIndex]);
-        availableHints.splice(randomIndex, 1);
-    }
-    
-    if (hintsToUse.length === 0) {
+    if (hintsToPlace.length === 0) {
         showFeedback('All tiles are already correct!', 'success');
         return;
     }
     
-    hintsToUse.forEach(hint => {
-        const slots = hint.wordIndex === 0 ? word1Slots : word2Slots;
-        const targetSlot = slots[hint.slotIndex];
-        
-        // Remove existing tile if present
-        const existingTile = targetSlot.querySelector('.tile');
-        if (existingTile && existingTile.getAttribute('data-locked') !== 'true') {
-            const letter = existingTile.getAttribute('data-letter');
-            const index = existingTile.getAttribute('data-tile-index');
-            existingTile.remove();
-            targetSlot.classList.remove('filled');
-            returnTileToContainer(letter, index);
+    // Randomly select 1 hint from available slots
+    const randomIndex = Math.floor(Math.random() * hintsToPlace.length);
+    const hint = hintsToPlace[randomIndex];
+    
+    const slots = hint.wordIndex === 0 ? word1Slots : word2Slots;
+    const targetSlot = slots[hint.slotIndex];
+    
+    // Remove existing tile if present
+    const existingTile = targetSlot.querySelector('.tile');
+    if (existingTile && existingTile.getAttribute('data-locked') !== 'true') {
+        const letter = existingTile.getAttribute('data-letter');
+        const index = existingTile.getAttribute('data-tile-index');
+        existingTile.remove();
+        targetSlot.classList.remove('filled');
+        returnTileToContainer(letter, index);
+    }
+    
+    // Find the correct tile in the container or slots
+    const tilesContainer = document.getElementById('tiles-container');
+    let sourceTile = null;
+    
+    // First check container
+    const containerTiles = tilesContainer.querySelectorAll('.tile:not([data-locked="true"])');
+    for (let tile of containerTiles) {
+        if (tile.getAttribute('data-letter') === hint.letter) {
+            sourceTile = tile;
+            break;
         }
-        
-        // Find the correct tile in the container or slots
-        const tilesContainer = document.getElementById('tiles-container');
-        let sourceTile = null;
-        
-        // First check container
-        const containerTiles = tilesContainer.querySelectorAll('.tile:not([data-locked="true"])');
-        for (let tile of containerTiles) {
-            if (tile.getAttribute('data-letter') === hint.letter) {
+    }
+    
+    // If not in container, check other slots
+    if (!sourceTile) {
+        const allSlots = document.querySelectorAll('.slot:not([data-locked="true"])');
+        for (let slot of allSlots) {
+            const tile = slot.querySelector('.tile:not([data-locked="true"])');
+            if (tile && tile.getAttribute('data-letter') === hint.letter) {
                 sourceTile = tile;
                 break;
             }
         }
-        
-        // If not in container, check other slots
-        if (!sourceTile) {
-            const allSlots = document.querySelectorAll('.slot:not([data-locked="true"])');
-            for (let slot of allSlots) {
-                const tile = slot.querySelector('.tile:not([data-locked="true"])');
-                if (tile && tile.getAttribute('data-letter') === hint.letter) {
-                    sourceTile = tile;
-                    break;
-                }
-            }
-        }
-        
-        if (sourceTile) {
-            // Remove source tile
-            const letter = sourceTile.getAttribute('data-letter');
-            const originalIndex = sourceTile.getAttribute('data-tile-index');
-            const sourceSlot = sourceTile.closest('.slot');
-            const isFromContainer = sourceTile.closest('#tiles-container');
-            
-            sourceTile.remove();
-            if (sourceSlot) {
-                sourceSlot.classList.remove('filled');
-            }
-            
-            // If tile was from container, update placeholder
-            if (isFromContainer) {
-                updatePlaceholderTile();
-            }
-            
-            // Create locked tile in target slot
-            const lockedTile = createTile(letter, originalIndex, true);
-            targetSlot.appendChild(lockedTile);
-            targetSlot.classList.add('filled');
-            targetSlot.setAttribute('data-locked', 'true');
-        }
-    });
+    }
     
-    // Disable hint button
-    const hintBtn = document.getElementById('hint-btn');
-    hintBtn.disabled = true;
-    hintBtn.textContent = 'Hint Used';
+    if (sourceTile) {
+        // Remove source tile
+        const letter = sourceTile.getAttribute('data-letter');
+        const originalIndex = sourceTile.getAttribute('data-tile-index');
+        const sourceSlot = sourceTile.closest('.slot');
+        const isFromContainer = sourceTile.closest('#tiles-container');
+        
+        sourceTile.remove();
+        if (sourceSlot) {
+            sourceSlot.classList.remove('filled');
+        }
+        
+        // If tile was from container, update placeholder
+        if (isFromContainer) {
+            updatePlaceholderTile();
+        }
+        
+        // Create locked tile in target slot
+        const lockedTile = createTile(letter, originalIndex, true);
+        targetSlot.appendChild(lockedTile);
+        targetSlot.classList.add('filled');
+        targetSlot.setAttribute('data-locked', 'true');
+    }
+    
+    // Decrement hint counter and update button
+    hintsRemaining--;
+    updateHintButtonText();
     
     // Update score display
     updateScoreDisplay();
