@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse archived puzzles - Play past daily word challenges from the Sum Tile puzzle collection. Scrabble anagram game archive.">
+    <meta name="keywords" content="puzzle archive, archived puzzles, past puzzles, word game archive, daily puzzle archive">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://sum-tile.uk/archive.html">
+    <title>Puzzle Archive - Sum Tile</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/favicon.svg">
+    
+    <!-- Social Sharing Meta Tags -->
+    <meta property="og:title" content="Puzzle Archive - Sum Tile">
+    <meta property="og:description" content="Browse archived puzzles - Play past daily word challenges from the Sum Tile puzzle collection.">
+    <meta property="og:image" content="https://sum-tile.uk/og-image.svg">
+    <meta property="og:url" content="https://sum-tile.uk/archive.html">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Puzzle Archive - Sum Tile">
+    <meta name="twitter:description" content="Browse archived puzzles - Play past daily word challenges from the Sum Tile puzzle collection.">
+    <meta name="twitter:image" content="https://sum-tile.uk/og-image.svg">
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E4YJ359T9L"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-E4YJ359T9L');
+    </script>
+    
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        .tile {
+            cursor: grab;
+            user-select: none;
+        }
+        .tile:active {
+            cursor: grabbing;
+        }
+        .tile.dragging {
+            opacity: 0.5;
+        }
+        .slot {
+            min-height: 60px;
+            border: 2px dashed #cbd5e1;
+            transition: all 0.2s;
+        }
+        .slot.drag-over {
+            border-color: #6366f1;
+            background-color: #eef2ff;
+        }
+        .slot.filled {
+            border: none;
+            background-color: transparent;
+        }
+        .tile.locked {
+            cursor: not-allowed;
+            border: 4px solid #f59e0b;
+            box-shadow: 0 0 0 2px #fef3c7;
+        }
+        .tile:focus {
+            outline: 2px solid #6366f1;
+            outline-offset: 2px;
+        }
+        .slot:focus {
+            outline: 2px solid #6366f1;
+            outline-offset: 2px;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        .slot.locked {
+            border-color: #f59e0b;
+            background-color: #fef3c7;
+        }
+        #archive-success-modal, #archive-error-modal {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <header class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <a href="index.html" class="text-indigo-600 hover:text-indigo-800 font-semibold">
+                    ← Back to Home
+                </a>
+                <a href="index.html" class="text-indigo-600 hover:text-indigo-800 font-semibold">
+                    Today's Puzzle →
+                </a>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-bold text-indigo-900 mb-2">Puzzle Archive</h1>
+            <p id="test-mode-indicator" class="hidden mt-2 text-sm text-orange-600 font-semibold">🧪 Test Mode: All puzzles unlocked</p>
+        </header>
+
+        <!-- Date Picker -->
+        <div class="mb-8 bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center justify-center gap-4">
+                <button 
+                    id="date-prev-btn"
+                    class="p-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                    aria-label="Previous day"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <input 
+                    type="date" 
+                    id="date-picker"
+                    class="px-4 py-2 border-2 border-indigo-300 rounded-lg text-lg font-semibold text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    aria-label="Select date"
+                />
+                <button 
+                    id="date-next-btn"
+                    class="p-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                    aria-label="Next day"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Puzzle Display Area -->
+        <div id="archive-puzzle-content">
+            <!-- Puzzle will be loaded here by JavaScript -->
+        </div>
+
+        <!-- Feedback Message -->
+        <div id="archive-feedback" class="hidden p-4 rounded-lg mb-8" role="alert" aria-live="polite">
+            <!-- Feedback will be shown here -->
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="archive-success-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="archive-modal-title">
+        <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4 relative">
+            <button 
+                id="archive-close-success-modal"
+                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1"
+                aria-label="Close modal"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <h2 id="archive-modal-title" class="text-3xl font-bold text-indigo-900 mb-4 text-center">You solved the puzzle!</h2>
+            <div id="archive-share-message-container" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <p id="archive-share-message" class="text-sm text-gray-700 whitespace-pre-wrap break-words"></p>
+            </div>
+            <div class="flex justify-center gap-4">
+                <button 
+                    id="archive-share-btn"
+                    class="px-8 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors"
+                >
+                    Copy
+                </button>
+                <button 
+                    id="archive-close-success-modal-btn"
+                    class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="archive-error-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="archive-error-modal-title">
+        <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4 relative">
+            <button 
+                id="archive-close-error-modal"
+                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1"
+                aria-label="Close modal"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <h2 id="archive-error-modal-title" class="text-3xl font-bold text-red-900 mb-4 text-center">Not quite right</h2>
+            <p class="text-lg text-red-800 mb-6 text-center">Try again!</p>
+            <div class="flex justify-center">
+                <button 
+                    id="archive-close-error-modal-btn"
+                    class="px-8 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="puzzle-data.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Initialize archive page on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for test mode and show indicator
+            const urlParams = new URLSearchParams(window.location.search);
+            const testMode = urlParams.get('test') === 'true';
+            if (testMode) {
+                const indicator = document.getElementById('test-mode-indicator');
+                if (indicator) indicator.classList.remove('hidden');
+            }
+            
+            // Initialize archive page
+            initArchivePage();
+        });
+    </script>
+</body>
+</html>
+
