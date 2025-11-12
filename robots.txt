@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Disallow test mode URLs
+Disallow: /*?test=true
+Disallow: /*?*test=true*
+
+# Sitemap location
+Sitemap: https://sum-tile.uk/sitemap.xml
+

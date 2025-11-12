@@ -137,8 +137,20 @@ function updateSocialMetaTags(day) {
     const puzzle = PUZZLE_DATA[day];
     const baseUrl = 'https://sum-tile.uk';
     const puzzleUrl = `${baseUrl}/puzzle.html?day=${day}`;
-    const title = `Puzzle Day ${day} - Advent Puzzle Calendar`;
-    const description = `Daily word puzzle challenge - Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}.`;
+    const title = `Puzzle Day ${day} - Advent Calendar Puzzle | Word Puzzle Game`;
+    const description = `Play today's advent calendar puzzle! Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}. Daily word puzzle game challenge with Scrabble scoring.`;
+    
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+        metaDescription.setAttribute('content', description);
+    }
+    
+    // Update canonical URL
+    const canonicalUrl = document.getElementById('canonical-url');
+    if (canonicalUrl) {
+        canonicalUrl.setAttribute('href', puzzleUrl);
+    }
     
     // Update Open Graph tags
     const ogTitle = document.getElementById('og-title');
@@ -160,6 +172,36 @@ function updateSocialMetaTags(day) {
     const pageTitle = document.querySelector('title');
     if (pageTitle) {
         pageTitle.textContent = title;
+    }
+    
+    // Update structured data (WebPage)
+    const structuredDataWebpage = document.getElementById('structured-data-webpage');
+    if (structuredDataWebpage) {
+        const structuredData = {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": `Puzzle Day ${day} - Advent Calendar Puzzle`,
+            "description": `Daily word puzzle challenge - Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}.`,
+            "url": puzzleUrl,
+            "breadcrumb": {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "Home",
+                        "item": `${baseUrl}/`
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": `Puzzle Day ${day}`,
+                        "item": puzzleUrl
+                    }
+                ]
+            }
+        };
+        structuredDataWebpage.textContent = JSON.stringify(structuredData);
     }
 }
 
