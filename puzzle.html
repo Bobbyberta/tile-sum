@@ -89,6 +89,9 @@
         .tile {
             cursor: grab;
             user-select: none;
+            touch-action: none; /* Prevent default touch behaviors - we handle dragging and scrolling ourselves */
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
         }
         .tile:active {
             cursor: grabbing;
@@ -115,12 +118,25 @@
             box-shadow: 0 0 0 2px #fef3c7;
         }
         .tile:focus {
-            outline: 2px solid #6366f1;
-            outline-offset: 2px;
+            outline: 3px solid #6366f1;
+            outline-offset: 3px;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+        }
+        .tile:focus:not(.ring-4) {
+            /* Ensure focus is visible even when not selected */
+            outline: 3px solid #6366f1;
+            outline-offset: 3px;
+        }
+        .tile.ring-4:focus {
+            /* When selected and focused, show both selection ring and focus outline */
+            outline: 3px solid #6366f1;
+            outline-offset: 3px;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3), 0 0 0 4px rgba(250, 204, 21, 0.4);
         }
         .slot:focus {
-            outline: 2px solid #6366f1;
-            outline-offset: 2px;
+            outline: 3px solid #6366f1;
+            outline-offset: 3px;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
         }
         .sr-only {
             position: absolute;
@@ -151,17 +167,21 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Skip to main content link -->
+    <a href="#main-content" class="sr-only focus:w-auto focus:h-auto focus:p-4 focus:m-0 focus:overflow-visible focus:clip-auto focus:whitespace-normal focus:border-0 focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-indigo-600 focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+        Skip to main content
+    </a>
+    <main class="container mx-auto px-4 py-8 max-w-4xl" id="main-content">
         <header class="mb-8">
-            <div class="flex items-center justify-between mb-4">
+            <nav class="flex items-center justify-between mb-4" aria-label="Page navigation">
                 <a href="index.html" id="back-link" class="text-indigo-600 hover:text-indigo-800 font-semibold inline-block">
                     ← Back to Calendar
                 </a>
                 <a href="archive.html" id="archive-link" class="text-indigo-600 hover:text-indigo-800 font-semibold inline-block hidden">
                     View Archive →
                 </a>
-            </div>
-            <p id="test-mode-indicator" class="hidden mt-2 text-sm text-orange-600 font-semibold">🧪 Test Mode: All puzzles unlocked</p>
+            </nav>
+            <p id="test-mode-indicator" class="hidden mt-2 text-sm text-orange-600 font-semibold"></p>
             <div class="flex items-center justify-between mb-2">
                 <h1 class="text-3xl md:text-4xl font-bold text-indigo-900" id="puzzle-title">
                     <!-- Title will be set by JavaScript -->
@@ -214,11 +234,20 @@
         <div id="feedback" class="hidden p-4 rounded-lg mb-8" role="alert" aria-live="polite">
             <!-- Feedback will be shown here -->
         </div>
-    </div>
+    </main>
 
     <!-- Success Modal -->
     <div id="success-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4">
+        <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4 relative">
+            <button 
+                id="close-success-modal"
+                class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1"
+                aria-label="Close modal"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
             <h2 id="modal-title" class="text-3xl font-bold text-indigo-900 mb-4 text-center">You solved the puzzle!</h2>
             <div id="share-message-container" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <p id="share-message" class="text-sm text-gray-700 whitespace-pre-wrap break-words"></p>
@@ -226,24 +255,10 @@
             <div class="flex justify-center gap-4">
                 <button 
                     id="share-btn"
-                    class="px-8 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors"
+                    class="px-8 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     Copy
                 </button>
-                <a 
-                    href="index.html" 
-                    id="success-back-link"
-                    class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
-                >
-                    Back to Calendar
-                </a>
-                <a 
-                    href="archive.html" 
-                    id="success-archive-link"
-                    class="px-8 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors hidden"
-                >
-                    View Archive
-                </a>
             </div>
         </div>
     </div>
@@ -400,17 +415,52 @@
         </div>
     </div>
 
-    <script src="puzzle-data.js"></script>
-    <script src="script.js"></script>
-    <script>
+    <script type="module">
         // Initialize puzzle on page load
+        import { initPuzzle, isAdventMode, parseDateString, getPuzzleNumberForDate } from './script.js';
+        import { showHelpModal, closeHelpModal } from './js/modals.js';
+        
         document.addEventListener('DOMContentLoaded', () => {
+            // Setup help modal button handlers
+            const helpBtn = document.getElementById('help-btn');
+            const closeHelpModalBtn = document.getElementById('close-help-modal-btn');
+            const closeHelpModalX = document.getElementById('close-help-modal');
+            
+            if (helpBtn) {
+                helpBtn.addEventListener('click', showHelpModal);
+            }
+            if (closeHelpModalBtn) {
+                closeHelpModalBtn.addEventListener('click', closeHelpModal);
+            }
+            if (closeHelpModalX) {
+                closeHelpModalX.addEventListener('click', closeHelpModal);
+            }
+            
+            // Close help modal when clicking outside
+            const helpModal = document.getElementById('help-modal');
+            if (helpModal) {
+                helpModal.addEventListener('click', (e) => {
+                    if (e.target === helpModal) {
+                        closeHelpModal();
+                    }
+                });
+            }
+            
             // Check for test mode and show indicator
             const urlParams = new URLSearchParams(window.location.search);
-            const testMode = urlParams.get('test') === 'true';
-            if (testMode) {
-                const indicator = document.getElementById('test-mode-indicator');
-                if (indicator) indicator.classList.remove('hidden');
+            const testValue = urlParams.get('test');
+            const indicator = document.getElementById('test-mode-indicator');
+            
+            if (testValue === 'archive') {
+                if (indicator) {
+                    indicator.textContent = '🧪 Test Mode: Archive Mode';
+                    indicator.classList.remove('hidden');
+                }
+            } else if (testValue === 'advent') {
+                if (indicator) {
+                    indicator.textContent = '🧪 Test Mode: Advent Calendar Mode';
+                    indicator.classList.remove('hidden');
+                }
             }
             
             // Parse puzzle from URL parameters
@@ -443,26 +493,19 @@
             const isAdvent = isAdventMode();
             const backLink = document.getElementById('back-link');
             const archiveLink = document.getElementById('archive-link');
-            const successBackLink = document.getElementById('success-back-link');
-            const successArchiveLink = document.getElementById('success-archive-link');
             
             // Preserve test mode in URLs
             const urlParams = new URLSearchParams(window.location.search);
-            const testMode = urlParams.get('test') === 'true';
-            const testParam = testMode ? '?test=true' : '';
+            const testValue = urlParams.get('test');
+            const testParam = (testValue === 'archive' || testValue === 'advent') ? `?test=${testValue}` : '';
             
-            if (isAdvent) {
+            if (isAdvent || testValue === 'advent') {
                 // Advent mode: show "Back to Calendar"
                 if (backLink) {
                     backLink.textContent = '← Back to Calendar';
                     backLink.href = `index.html${testParam}`;
                 }
                 if (archiveLink) archiveLink.classList.add('hidden');
-                if (successBackLink) {
-                    successBackLink.textContent = 'Back to Calendar';
-                    successBackLink.href = `index.html${testParam}`;
-                }
-                if (successArchiveLink) successArchiveLink.classList.add('hidden');
             } else {
                 // Daily mode: show "Back to Home" and "View Archive"
                 if (backLink) {
@@ -472,14 +515,6 @@
                 if (archiveLink) {
                     archiveLink.classList.remove('hidden');
                     archiveLink.href = `archive.html${testParam}`;
-                }
-                if (successBackLink) {
-                    successBackLink.textContent = 'Back to Home';
-                    successBackLink.href = `index.html${testParam}`;
-                }
-                if (successArchiveLink) {
-                    successArchiveLink.classList.remove('hidden');
-                    successArchiveLink.href = `archive.html${testParam}`;
                 }
             }
         }

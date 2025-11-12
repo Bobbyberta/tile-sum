@@ -2,3 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Banner visibility padding - ensures title is visible when banner is shown */
+#main-content.banner-visible {
+  padding-top: 6rem; /* 96px - extra padding for mobile where text may wrap */
+}
+
+@media (min-width: 768px) {
+  #main-content.banner-visible {
+    padding-top: 5rem; /* 80px - less padding needed on larger screens */
+  }
+}
+
