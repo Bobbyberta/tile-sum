@@ -19,10 +19,13 @@ globs:
 - Prefix update functions with `update`: `updateCountdown()`, `updateScore()`
 
 ### Code Organization
-- Group related functions together
+- Use ES6 modules: Import/export functions and classes between modules
+- Group related functions together within modules
+- Each module in `js/` directory should have a single, focused responsibility
+- Main entry point is `script.js` which imports and wires together all modules
 - Add comments for complex logic or non-obvious behavior
 - Keep functions focused and single-purpose
-- Extract reusable logic into separate functions
+- Extract reusable logic into separate functions or utility modules
 
 ### Error Handling
 - Always check for element existence before DOM manipulation: `if (!element) return;`

@@ -17,16 +17,18 @@ This file is the single source of truth for all Cursor rules. Edit this file, th
 - Hosted on GitHub Pages at https://sum-tile.uk
 
 ### Technology Stack
-- **Frontend:** Vanilla HTML, CSS, JavaScript (ES6+)
+- **Frontend:** Vanilla HTML, CSS, JavaScript (ES6+ modules)
 - **Styling:** Tailwind CSS 3.4.13 (compiled with PostCSS)
 - **Build Tool:** PostCSS with Autoprefixer
 - **Deployment:** GitHub Pages (static site)
 - **Custom Domain:** sum-tile.uk
 
 ### Project Structure
-- Root files: `index.html`, `puzzle.html`, `script.js`, `puzzle-data.js`
+- Root files: `index.html`, `puzzle.html`, `archive.html`, `script.js`, `puzzle-data.js`
+- JavaScript modules: `js/` directory containing modular files (archive.js, completion.js, drag-drop.js, feedback.js, hints.js, keyboard.js, modals.js, puzzle-core.js, puzzle-state.js, scoring.js, seo.js, ui.js, utils.js)
 - CSS: Source in `src/styles.css`, compiled to `styles.css` in root
 - Build config: `tailwind.config.js`, `postcss.config.js`
+- Scripts: `scripts/update-cursor-rules.js` for generating Cursor rules
 - Static assets: `favicon.svg`, `og-image.svg`, `CNAME`, `robots.txt`, `sitemap.xml`
 
 ### Deployment Requirements
@@ -63,10 +65,13 @@ This file is the single source of truth for all Cursor rules. Edit this file, th
 - Prefix update functions with `update`: `updateCountdown()`, `updateScore()`
 
 ### Code Organization
-- Group related functions together
+- Use ES6 modules: Import/export functions and classes between modules
+- Group related functions together within modules
+- Each module in `js/` directory should have a single, focused responsibility
+- Main entry point is `script.js` which imports and wires together all modules
 - Add comments for complex logic or non-obvious behavior
 - Keep functions focused and single-purpose
-- Extract reusable logic into separate functions
+- Extract reusable logic into separate functions or utility modules
 
 ### Error Handling
 - Always check for element existence before DOM manipulation: `if (!element) return;`
@@ -101,7 +106,7 @@ This file is the single source of truth for all Cursor rules. Edit this file, th
 
 ### Tailwind Configuration
 - Config file: `tailwind.config.js`
-- Content paths: `./index.html`, `./puzzle.html`, `./script.js`
+- Content paths: `./index.html`, `./puzzle.html`, `./archive.html`, `./script.js`
 - Customize theme in `tailwind.config.js` if needed
 - Do not edit compiled `styles.css` directly - it will be overwritten
 
