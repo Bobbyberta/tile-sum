@@ -149,3 +149,83 @@ function validateSolution(day, word1, word2) {
     );
 }
 
+// Date and Puzzle Mapping System
+// Start date: December 1, 2025 (puzzle #1)
+const PUZZLE_START_DATE = new Date(2025, 11, 1); // Month is 0-indexed, so 11 = December
+
+// Get puzzle number for a given date
+function getPuzzleNumberForDate(date) {
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+    
+    // Set time to start of day for accurate comparison
+    const puzzleDate = new Date(date);
+    puzzleDate.setHours(0, 0, 0, 0);
+    const startDate = new Date(PUZZLE_START_DATE);
+    startDate.setHours(0, 0, 0, 0);
+    
+    // Calculate days difference
+    const timeDiff = puzzleDate.getTime() - startDate.getTime();
+    const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    
+    // Puzzle number is 1-indexed, so add 1
+    return daysDiff + 1;
+}
+
+// Get date for a given puzzle number
+function getDateForPuzzleNumber(puzzleNum) {
+    const puzzleNumber = parseInt(puzzleNum);
+    if (isNaN(puzzleNumber) || puzzleNumber < 1) {
+        return null;
+    }
+    
+    const date = new Date(PUZZLE_START_DATE);
+    date.setDate(date.getDate() + (puzzleNumber - 1));
+    return date;
+}
+
+// Check if we're in advent mode (before Dec 26) or daily mode (Dec 26+)
+function isAdventMode() {
+    // Check for test mode via URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const testMode = urlParams.get('test') === 'true';
+    
+    // Test mode forces daily mode
+    if (testMode) {
+        return false;
+    }
+    
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const december26 = new Date(currentYear, 11, 26); // Month is 0-indexed, so 11 = December
+    
+    // Set time to start of day for accurate comparison
+    today.setHours(0, 0, 0, 0);
+    december26.setHours(0, 0, 0, 0);
+    
+    // Advent mode is before December 26
+    return today < december26;
+}
+
+// Format date as YYYY-MM-DD string
+function formatDateString(date) {
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Parse date string (YYYY-MM-DD) to Date object
+function parseDateString(dateString) {
+    const parts = dateString.split('-');
+    if (parts.length !== 3) return null;
+    const year = parseInt(parts[0]);
+    const month = parseInt(parts[1]) - 1; // Month is 0-indexed
+    const day = parseInt(parts[2]);
+    return new Date(year, month, day);
+}
+

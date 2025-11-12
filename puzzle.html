@@ -153,9 +153,15 @@
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <header class="mb-8">
-            <a href="index.html" class="text-indigo-600 hover:text-indigo-800 font-semibold mb-4 inline-block">
-                ← Back to Calendar
-            </a>
+            <div class="flex items-center justify-between mb-4">
+                <a href="index.html" id="back-link" class="text-indigo-600 hover:text-indigo-800 font-semibold inline-block">
+                    ← Back to Calendar
+                </a>
+                <a href="archive.html" id="archive-link" class="text-indigo-600 hover:text-indigo-800 font-semibold inline-block hidden">
+                    View Archive →
+                </a>
+            </div>
+            <p id="test-mode-indicator" class="hidden mt-2 text-sm text-orange-600 font-semibold">🧪 Test Mode: All puzzles unlocked</p>
             <div class="flex items-center justify-between mb-2">
                 <h1 class="text-3xl md:text-4xl font-bold text-indigo-900" id="puzzle-title">
                     <!-- Title will be set by JavaScript -->
@@ -226,9 +232,17 @@
                 </button>
                 <a 
                     href="index.html" 
+                    id="success-back-link"
                     class="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors"
                 >
                     Back to Calendar
+                </a>
+                <a 
+                    href="archive.html" 
+                    id="success-archive-link"
+                    class="px-8 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 transition-colors hidden"
+                >
+                    View Archive
                 </a>
             </div>
         </div>
@@ -391,10 +405,84 @@
     <script>
         // Initialize puzzle on page load
         document.addEventListener('DOMContentLoaded', () => {
+            // Check for test mode and show indicator
             const urlParams = new URLSearchParams(window.location.search);
-            const day = parseInt(urlParams.get('day')) || 1;
-            initPuzzle(day);
+            const testMode = urlParams.get('test') === 'true';
+            if (testMode) {
+                const indicator = document.getElementById('test-mode-indicator');
+                if (indicator) indicator.classList.remove('hidden');
+            }
+            
+            // Parse puzzle from URL parameters
+            let puzzleNumber = null;
+            
+            // Check for date parameter first (new format)
+            const dateParam = urlParams.get('date');
+            if (dateParam) {
+                const date = parseDateString(dateParam);
+                if (date) {
+                    puzzleNumber = getPuzzleNumberForDate(date);
+                }
+            }
+            
+            // Fall back to day parameter (old format for backwards compatibility)
+            if (!puzzleNumber) {
+                const day = parseInt(urlParams.get('day')) || 1;
+                puzzleNumber = day;
+            }
+            
+            // Update navigation links based on mode
+            updatePuzzlePageNavigation();
+            
+            // Initialize puzzle
+            initPuzzle(puzzleNumber);
         });
+        
+        // Update navigation links based on mode
+        function updatePuzzlePageNavigation() {
+            const isAdvent = isAdventMode();
+            const backLink = document.getElementById('back-link');
+            const archiveLink = document.getElementById('archive-link');
+            const successBackLink = document.getElementById('success-back-link');
+            const successArchiveLink = document.getElementById('success-archive-link');
+            
+            // Preserve test mode in URLs
+            const urlParams = new URLSearchParams(window.location.search);
+            const testMode = urlParams.get('test') === 'true';
+            const testParam = testMode ? '?test=true' : '';
+            
+            if (isAdvent) {
+                // Advent mode: show "Back to Calendar"
+                if (backLink) {
+                    backLink.textContent = '← Back to Calendar';
+                    backLink.href = `index.html${testParam}`;
+                }
+                if (archiveLink) archiveLink.classList.add('hidden');
+                if (successBackLink) {
+                    successBackLink.textContent = 'Back to Calendar';
+                    successBackLink.href = `index.html${testParam}`;
+                }
+                if (successArchiveLink) successArchiveLink.classList.add('hidden');
+            } else {
+                // Daily mode: show "Back to Home" and "View Archive"
+                if (backLink) {
+                    backLink.textContent = '← Back to Home';
+                    backLink.href = `index.html${testParam}`;
+                }
+                if (archiveLink) {
+                    archiveLink.classList.remove('hidden');
+                    archiveLink.href = `archive.html${testParam}`;
+                }
+                if (successBackLink) {
+                    successBackLink.textContent = 'Back to Home';
+                    successBackLink.href = `index.html${testParam}`;
+                }
+                if (successArchiveLink) {
+                    successArchiveLink.classList.remove('hidden');
+                    successArchiveLink.href = `archive.html${testParam}`;
+                }
+            }
+        }
     </script>
 </body>
 </html>

@@ -19,6 +19,16 @@ function updateCountdown() {
         return;
     }
     
+    // Only show countdown in advent mode (before Dec 26)
+    if (!isAdventMode()) {
+        countdownOverlay.classList.add('hidden');
+        if (mainContent) {
+            mainContent.style.paddingTop = '';
+            mainContent.classList.remove('banner-visible');
+        }
+        return;
+    }
+    
     const today = new Date();
     const currentYear = today.getFullYear();
     const decemberFirst = new Date(currentYear, 11, 1); // Month is 0-indexed, so 11 = December
@@ -57,6 +67,875 @@ function updateCountdown() {
     }
 }
 
+// Initialize daily puzzle on homepage
+function initDailyPuzzle() {
+    const dailyPuzzleContainer = document.getElementById('daily-puzzle-container');
+    const dailyPuzzleContent = document.getElementById('daily-puzzle-content');
+    const calendarContainer = document.getElementById('calendar-container');
+    const headerSubtitle = document.getElementById('header-subtitle');
+    
+    if (!dailyPuzzleContainer || !dailyPuzzleContent) return;
+    
+    // Hide calendar, show daily puzzle
+    if (calendarContainer) {
+        calendarContainer.classList.add('hidden');
+    }
+    dailyPuzzleContainer.classList.remove('hidden');
+    
+    // Update header subtitle
+    if (headerSubtitle) {
+        headerSubtitle.textContent = 'Daily Word Puzzle';
+    }
+    
+    // Update archive link to preserve test mode
+    const archiveLinkDiv = dailyPuzzleContainer.querySelector('div.mb-6.text-center');
+    if (archiveLinkDiv) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const testMode = urlParams.get('test') === 'true';
+        const archiveUrl = testMode ? 'archive.html?test=true' : 'archive.html';
+        archiveLinkDiv.innerHTML = `<a href="${archiveUrl}" class="text-indigo-600 hover:text-indigo-800 font-semibold inline-block mb-4">View Archive →</a>`;
+    }
+    
+    // Get today's puzzle number
+    const today = new Date();
+    const puzzleNumber = getPuzzleNumberForDate(today);
+    
+    // Check if puzzle exists
+    if (!PUZZLE_DATA[puzzleNumber]) {
+        dailyPuzzleContent.innerHTML = `
+            <div class="text-center p-8 bg-white rounded-lg shadow-md">
+                <p class="text-lg text-indigo-900">No puzzle available for today.</p>
+                <a href="archive.html" class="mt-4 inline-block text-indigo-600 hover:text-indigo-800 font-semibold">
+                    Browse Archive →
+                </a>
+            </div>
+        `;
+        return;
+    }
+    
+    // Create puzzle display similar to puzzle.html but embedded
+    const puzzle = PUZZLE_DATA[puzzleNumber];
+    const dateStr = formatDateString(today);
+    const urlParams = new URLSearchParams(window.location.search);
+    const testMode = urlParams.get('test') === 'true';
+    const testParam = testMode ? '&test=true' : '';
+    const puzzleUrl = `puzzle.html?date=${dateStr}${testParam}`;
+    
+    // Create puzzle title
+    const puzzleTitle = document.createElement('h2');
+    puzzleTitle.className = 'text-2xl md:text-3xl font-bold text-indigo-900 mb-6 text-center';
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayName = dayNames[today.getDay()];
+    const daySuffix = getDaySuffix(today.getDate());
+    puzzleTitle.textContent = `Today's Puzzle - ${dayName} ${today.getDate()}${daySuffix} ${today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+    dailyPuzzleContent.appendChild(puzzleTitle);
+    
+    // Create "Play Puzzle" button
+    const playButton = document.createElement('a');
+    playButton.href = puzzleUrl;
+    playButton.className = 'block w-full md:w-auto mx-auto px-8 py-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors text-center text-lg';
+    playButton.textContent = 'Play Today\'s Puzzle';
+    dailyPuzzleContent.appendChild(playButton);
+    
+    // Add puzzle preview (optional - show the words)
+    const previewDiv = document.createElement('div');
+    previewDiv.className = 'mt-6 p-4 bg-white rounded-lg shadow-md text-center';
+    previewDiv.innerHTML = `
+        <p class="text-sm text-indigo-700 mb-2">Today's words:</p>
+        <p class="text-lg font-semibold text-indigo-900">${puzzle.words.join(' and ')}</p>
+    `;
+    dailyPuzzleContent.appendChild(previewDiv);
+}
+
+// Initialize archive page
+function initArchivePage() {
+    const datePicker = document.getElementById('date-picker');
+    const datePrevBtn = document.getElementById('date-prev-btn');
+    const dateNextBtn = document.getElementById('date-next-btn');
+    const archiveContent = document.getElementById('archive-puzzle-content');
+    
+    if (!datePicker || !archiveContent) return;
+    
+    // Update navigation links to preserve test mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const testMode = urlParams.get('test') === 'true';
+    const testParam = testMode ? '?test=true' : '';
+    
+    const backLink = document.querySelector('header a[href="index.html"]');
+    if (backLink) {
+        backLink.href = `index.html${testParam}`;
+    }
+    
+    const todayLink = document.querySelector('header a:last-of-type');
+    if (todayLink && todayLink.href.includes('index.html')) {
+        todayLink.href = `index.html${testParam}`;
+    }
+    
+    // Set initial date to today
+    const today = new Date();
+    const todayStr = formatDateString(today);
+    datePicker.value = todayStr;
+    datePicker.min = formatDateString(PUZZLE_START_DATE);
+    
+    // In test mode, allow future dates (no max), otherwise limit to today
+    if (!testMode) {
+        datePicker.max = todayStr;
+    }
+    
+    // Setup success modal close buttons (set up once on page load)
+    const closeSuccessModalBtn = document.getElementById('archive-close-success-modal-btn');
+    const closeSuccessModalX = document.getElementById('archive-close-success-modal');
+    if (closeSuccessModalBtn) {
+        closeSuccessModalBtn.addEventListener('click', closeArchiveSuccessModal);
+    }
+    if (closeSuccessModalX) {
+        closeSuccessModalX.addEventListener('click', closeArchiveSuccessModal);
+    }
+
+    // Close success modal when clicking outside (set up once on page load)
+    const successModal = document.getElementById('archive-success-modal');
+    if (successModal) {
+        successModal.addEventListener('click', (e) => {
+            if (e.target === successModal) {
+                closeArchiveSuccessModal();
+            }
+        });
+    }
+    
+    // Load puzzle for initial date
+    loadArchivePuzzle(todayStr);
+    
+    // Handle date change
+    datePicker.addEventListener('change', (e) => {
+        const selectedDate = e.target.value;
+        loadArchivePuzzle(selectedDate);
+    });
+    
+    // Handle previous day button
+    if (datePrevBtn) {
+        datePrevBtn.addEventListener('click', () => {
+            const currentDate = parseDateString(datePicker.value);
+            if (currentDate) {
+                currentDate.setDate(currentDate.getDate() - 1);
+                const newDateStr = formatDateString(currentDate);
+                const minDate = parseDateString(datePicker.min);
+                if (minDate && currentDate >= minDate) {
+                    datePicker.value = newDateStr;
+                    loadArchivePuzzle(newDateStr);
+                }
+            }
+        });
+    }
+    
+    // Handle next day button
+    if (dateNextBtn) {
+        dateNextBtn.addEventListener('click', () => {
+            const currentDate = parseDateString(datePicker.value);
+            if (currentDate) {
+                currentDate.setDate(currentDate.getDate() + 1);
+                const newDateStr = formatDateString(currentDate);
+                const todayDate = new Date();
+                todayDate.setHours(0, 0, 0, 0);
+                // Allow future dates in test mode
+                const urlParams = new URLSearchParams(window.location.search);
+                const testMode = urlParams.get('test') === 'true';
+                if (testMode || currentDate <= todayDate) {
+                    datePicker.value = newDateStr;
+                    loadArchivePuzzle(newDateStr);
+                }
+            }
+        });
+    }
+}
+
+// Load puzzle for archive page
+function loadArchivePuzzle(dateString) {
+    const archiveContent = document.getElementById('archive-puzzle-content');
+    if (!archiveContent) return;
+    
+    const date = parseDateString(dateString);
+    if (!date) {
+        archiveContent.innerHTML = `
+            <div class="text-center p-8 bg-white rounded-lg shadow-md">
+                <p class="text-lg text-red-600">Invalid date selected.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Check if date is before start date
+    const startDate = new Date(PUZZLE_START_DATE);
+    startDate.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
+    
+    if (date < startDate) {
+        archiveContent.innerHTML = `
+            <div class="text-center p-8 bg-white rounded-lg shadow-md">
+                <p class="text-lg text-indigo-900">No puzzles available before ${formatDateString(startDate)}.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Get puzzle number for date
+    const puzzleNumber = getPuzzleNumberForDate(date);
+    
+    // Check if puzzle exists
+    if (!PUZZLE_DATA[puzzleNumber]) {
+        archiveContent.innerHTML = `
+            <div class="text-center p-8 bg-white rounded-lg shadow-md">
+                <p class="text-lg text-indigo-900">No puzzle available for ${formatDateString(date)}.</p>
+                <p class="text-sm text-indigo-700 mt-2">Puzzle #${puzzleNumber} has not been created yet.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Format date for display
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayName = dayNames[date.getDay()];
+    const daySuffix = getDaySuffix(date.getDate());
+    const dateDisplay = `${dayName} ${date.getDate()}${daySuffix} ${date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+    
+    // Clear previous puzzle content
+    archiveContent.innerHTML = '';
+    
+    // Create header matching puzzle.html structure
+    const header = document.createElement('header');
+    header.className = 'mb-8';
+    
+    const titleContainer = document.createElement('div');
+    titleContainer.className = 'flex items-center justify-between mb-2';
+    
+    const puzzleTitle = document.createElement('h1');
+    puzzleTitle.className = 'text-3xl md:text-4xl font-bold text-indigo-900';
+    puzzleTitle.id = 'archive-puzzle-title';
+    puzzleTitle.textContent = dateDisplay;
+    titleContainer.appendChild(puzzleTitle);
+    
+    header.appendChild(titleContainer);
+    archiveContent.appendChild(header);
+    
+    // Create tiles container wrapper matching puzzle.html structure
+    const tilesWrapper = document.createElement('div');
+    tilesWrapper.className = 'mb-8';
+    
+    const tilesHeading = document.createElement('h2');
+    tilesHeading.className = 'sr-only';
+    tilesHeading.textContent = 'Available Tiles';
+    tilesWrapper.appendChild(tilesHeading);
+    
+    const tilesContainer = document.createElement('div');
+    tilesContainer.id = 'archive-tiles-container';
+    tilesContainer.className = 'flex flex-wrap gap-3 p-4 bg-white rounded-lg shadow-md min-h-[100px]';
+    tilesWrapper.appendChild(tilesContainer);
+    
+    archiveContent.appendChild(tilesWrapper);
+    
+    // Create word slots wrapper matching puzzle.html structure
+    const slotsWrapper = document.createElement('div');
+    slotsWrapper.className = 'mb-8';
+    
+    const slotsHeading = document.createElement('h2');
+    slotsHeading.className = 'sr-only';
+    slotsHeading.textContent = 'Word Slots';
+    slotsWrapper.appendChild(slotsHeading);
+    
+    const wordSlotsContainer = document.createElement('div');
+    wordSlotsContainer.id = 'archive-word-slots';
+    wordSlotsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-6';
+    slotsWrapper.appendChild(wordSlotsContainer);
+    
+    archiveContent.appendChild(slotsWrapper);
+    
+    // Create buttons container matching puzzle.html structure
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'mb-8 flex flex-col sm:flex-row gap-4';
+    
+    const hintBtn = document.createElement('button');
+    hintBtn.id = 'archive-hint-btn';
+    hintBtn.className = 'w-full md:w-auto px-8 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors';
+    hintBtn.textContent = 'Get Hint';
+    buttonsContainer.appendChild(hintBtn);
+    
+    const submitBtn = document.createElement('button');
+    submitBtn.id = 'archive-submit-btn';
+    submitBtn.className = 'w-full md:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors';
+    submitBtn.textContent = 'Submit Solution';
+    buttonsContainer.appendChild(submitBtn);
+    
+    archiveContent.appendChild(buttonsContainer);
+    
+    // Initialize the puzzle interface
+    initArchivePuzzle(puzzleNumber, dateString);
+}
+
+// Initialize puzzle interface for archive page
+function initArchivePuzzle(puzzleNumber, dateString) {
+    // Check if puzzle exists
+    if (!PUZZLE_DATA[puzzleNumber]) {
+        return;
+    }
+
+    const puzzle = PUZZLE_DATA[puzzleNumber];
+    const letters = getPuzzleLetters(puzzleNumber);
+    
+    // Calculate maximum scores for each word
+    const maxScores = puzzle.solution.map(word => calculateWordScore(word));
+    
+    // Create tiles
+    const tilesContainer = document.getElementById('archive-tiles-container');
+    if (!tilesContainer) return;
+    
+    tilesContainer.innerHTML = '';
+    
+    // Make tiles container a drop zone
+    tilesContainer.addEventListener('dragover', handleTilesContainerDragOver);
+    tilesContainer.addEventListener('drop', handleTilesContainerDrop);
+    tilesContainer.addEventListener('dragleave', handleTilesContainerDragLeave);
+    
+    letters.forEach((letter, index) => {
+        const tile = createTile(letter, index);
+        tilesContainer.appendChild(tile);
+    });
+    
+    // Update placeholder visibility
+    updateArchivePlaceholderTile();
+    
+    // Create word slots
+    const wordSlots = document.getElementById('archive-word-slots');
+    if (!wordSlots) return;
+    
+    wordSlots.innerHTML = '';
+    
+    puzzle.words.forEach((word, wordIndex) => {
+        const wordContainer = document.createElement('div');
+        wordContainer.className = 'bg-white rounded-lg shadow-md p-4';
+        wordContainer.setAttribute('data-word-index', wordIndex);
+        wordContainer.setAttribute('data-max-score', maxScores[wordIndex]);
+        
+        // Hidden label for screen readers
+        const wordLabel = document.createElement('h3');
+        wordLabel.className = 'sr-only';
+        wordLabel.textContent = `Word ${wordIndex + 1} (${word.length} letters)`;
+        wordContainer.appendChild(wordLabel);
+
+        const slotsContainer = document.createElement('div');
+        slotsContainer.className = 'flex flex-wrap gap-2 mb-3';
+        slotsContainer.setAttribute('data-word-slots', wordIndex);
+        
+        for (let i = 0; i < word.length; i++) {
+            const slot = createSlot(wordIndex, i);
+            slotsContainer.appendChild(slot);
+        }
+        
+        wordContainer.appendChild(slotsContainer);
+        
+        // Score display below the slots
+        const scoreDisplay = document.createElement('div');
+        scoreDisplay.className = 'text-lg font-semibold text-indigo-800 text-right';
+        scoreDisplay.setAttribute('id', `archive-word${wordIndex + 1}-score-display`);
+        scoreDisplay.textContent = `0 / ${maxScores[wordIndex]} points`;
+        wordContainer.appendChild(scoreDisplay);
+        
+        wordSlots.appendChild(wordContainer);
+    });
+
+    // Setup submit button
+    const submitBtn = document.getElementById('archive-submit-btn');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', () => {
+            checkArchiveSolution(puzzleNumber);
+        });
+    }
+
+    // Initialize hint counter
+    archiveHintsRemaining = 3;
+    
+    // Setup hint button
+    const hintBtn = document.getElementById('archive-hint-btn');
+    if (hintBtn) {
+        hintBtn.disabled = false;
+        updateArchiveHintButtonText();
+        hintBtn.addEventListener('click', () => {
+            provideArchiveHint(puzzleNumber);
+        });
+    }
+
+    // Setup error modal close buttons
+    const closeErrorModalBtn = document.getElementById('archive-close-error-modal-btn');
+    const closeErrorModalX = document.getElementById('archive-close-error-modal');
+    if (closeErrorModalBtn) {
+        closeErrorModalBtn.addEventListener('click', closeArchiveErrorModal);
+    }
+    if (closeErrorModalX) {
+        closeErrorModalX.addEventListener('click', closeArchiveErrorModal);
+    }
+
+    // Close error modal when clicking outside
+    const errorModal = document.getElementById('archive-error-modal');
+    if (errorModal) {
+        errorModal.addEventListener('click', (e) => {
+            if (e.target === errorModal) {
+                closeArchiveErrorModal();
+            }
+        });
+    }
+
+    // Update score display
+    updateArchiveScoreDisplay();
+}
+
+// Update placeholder tile visibility for archive
+function updateArchivePlaceholderTile() {
+    const tilesContainer = document.getElementById('archive-tiles-container');
+    if (!tilesContainer) return;
+    
+    const actualTiles = tilesContainer.querySelectorAll('.tile:not([data-placeholder])');
+    const placeholder = tilesContainer.querySelector('[data-placeholder]');
+    
+    if (actualTiles.length === 0) {
+        // Show placeholder if no tiles
+        if (!placeholder) {
+            const placeholderTile = document.createElement('div');
+            placeholderTile.className = 'tile bg-transparent text-transparent rounded-lg p-3 w-14 h-14 flex flex-col items-center justify-center pointer-events-none';
+            placeholderTile.setAttribute('data-placeholder', 'true');
+            placeholderTile.setAttribute('aria-hidden', 'true');
+            
+            const letterDisplay = document.createElement('div');
+            letterDisplay.className = 'text-2xl font-bold';
+            letterDisplay.textContent = 'A';
+            
+            const scoreDisplay = document.createElement('div');
+            scoreDisplay.className = 'text-xs mt-1 opacity-90';
+            scoreDisplay.textContent = '1';
+            
+            placeholderTile.appendChild(letterDisplay);
+            placeholderTile.appendChild(scoreDisplay);
+            tilesContainer.appendChild(placeholderTile);
+        }
+    } else {
+        // Hide placeholder if tiles exist
+        if (placeholder) {
+            placeholder.remove();
+        }
+    }
+}
+
+// Update score display for archive
+function updateArchiveScoreDisplay() {
+    const word1Slots = document.querySelectorAll('#archive-word-slots [data-word-slots="0"] .slot');
+    const word2Slots = document.querySelectorAll('#archive-word-slots [data-word-slots="1"] .slot');
+
+    const word1 = Array.from(word1Slots)
+        .map(slot => {
+            const tile = slot.querySelector('.tile');
+            return tile ? tile.getAttribute('data-letter') : '';
+        })
+        .join('');
+
+    const word2 = Array.from(word2Slots)
+        .map(slot => {
+            const tile = slot.querySelector('.tile');
+            return tile ? tile.getAttribute('data-letter') : '';
+        })
+        .join('');
+
+    const word1Score = calculateWordScore(word1);
+    const word2Score = calculateWordScore(word2);
+
+    // Get max scores from word containers
+    const word1Container = document.querySelector('#archive-word-slots [data-word-index="0"]');
+    const word2Container = document.querySelector('#archive-word-slots [data-word-index="1"]');
+    const word1MaxScore = word1Container ? parseInt(word1Container.getAttribute('data-max-score')) : 0;
+    const word2MaxScore = word2Container ? parseInt(word2Container.getAttribute('data-max-score')) : 0;
+
+    const word1ScoreDisplay = document.getElementById('archive-word1-score-display');
+    const word2ScoreDisplay = document.getElementById('archive-word2-score-display');
+    
+    if (word1ScoreDisplay) {
+        word1ScoreDisplay.textContent = `${word1Score} / ${word1MaxScore} points`;
+    }
+    if (word2ScoreDisplay) {
+        word2ScoreDisplay.textContent = `${word2Score} / ${word2MaxScore} points`;
+    }
+}
+
+// Update hint button text for archive
+function updateArchiveHintButtonText() {
+    const hintBtn = document.getElementById('archive-hint-btn');
+    if (!hintBtn) return;
+    
+    if (archiveHintsRemaining <= 0) {
+        hintBtn.disabled = true;
+        hintBtn.textContent = 'No Hints Left';
+    } else {
+        hintBtn.textContent = `Get Hint (${archiveHintsRemaining} left)`;
+    }
+}
+
+// Provide hint for archive puzzle
+function provideArchiveHint(puzzleNumber) {
+    // Check if hints are available
+    if (archiveHintsRemaining <= 0) {
+        return;
+    }
+    
+    const puzzle = PUZZLE_DATA[puzzleNumber];
+    if (!puzzle) return;
+
+    const solution = puzzle.solution;
+    const word1Slots = document.querySelectorAll('#archive-word-slots [data-word-slots="0"] .slot');
+    const word2Slots = document.querySelectorAll('#archive-word-slots [data-word-slots="1"] .slot');
+    
+    // Find tiles that need to be placed correctly
+    const hintsToPlace = [];
+    
+    // Check word 1
+    solution[0].split('').forEach((correctLetter, index) => {
+        const slot = word1Slots[index];
+        const currentTile = slot.querySelector('.tile');
+        const currentLetter = currentTile ? currentTile.getAttribute('data-letter') : null;
+        
+        // If slot is empty or has wrong letter, and not already locked
+        if ((!currentTile || currentLetter !== correctLetter) && slot.getAttribute('data-locked') !== 'true') {
+            hintsToPlace.push({
+                wordIndex: 0,
+                slotIndex: index,
+                letter: correctLetter
+            });
+        }
+    });
+    
+    // Check word 2
+    solution[1].split('').forEach((correctLetter, index) => {
+        const slot = word2Slots[index];
+        const currentTile = slot.querySelector('.tile');
+        const currentLetter = currentTile ? currentTile.getAttribute('data-letter') : null;
+        
+        // If slot is empty or has wrong letter, and not already locked
+        if ((!currentTile || currentLetter !== correctLetter) && slot.getAttribute('data-locked') !== 'true') {
+            hintsToPlace.push({
+                wordIndex: 1,
+                slotIndex: index,
+                letter: correctLetter
+            });
+        }
+    });
+    
+    if (hintsToPlace.length === 0) {
+        showArchiveFeedback('All tiles are already correct!', 'success');
+        return;
+    }
+    
+    // Randomly select 1 hint from available slots
+    const randomIndex = Math.floor(Math.random() * hintsToPlace.length);
+    const hint = hintsToPlace[randomIndex];
+    
+    const slots = hint.wordIndex === 0 ? word1Slots : word2Slots;
+    const targetSlot = slots[hint.slotIndex];
+    
+    // Remove existing tile if present
+    const existingTile = targetSlot.querySelector('.tile');
+    if (existingTile && existingTile.getAttribute('data-locked') !== 'true') {
+        const letter = existingTile.getAttribute('data-letter');
+        const index = existingTile.getAttribute('data-tile-index');
+        existingTile.remove();
+        targetSlot.classList.remove('filled');
+        returnArchiveTileToContainer(letter, index);
+    }
+    
+    // Find the correct tile in the container or slots
+    const tilesContainer = document.getElementById('archive-tiles-container');
+    let sourceTile = null;
+    
+    // First check container
+    const containerTiles = tilesContainer.querySelectorAll('.tile:not([data-locked="true"])');
+    for (let tile of containerTiles) {
+        if (tile.getAttribute('data-letter') === hint.letter) {
+            sourceTile = tile;
+            break;
+        }
+    }
+    
+    // If not in container, check other slots
+    if (!sourceTile) {
+        const allSlots = document.querySelectorAll('#archive-word-slots .slot:not([data-locked="true"])');
+        for (let slot of allSlots) {
+            const tile = slot.querySelector('.tile:not([data-locked="true"])');
+            if (tile && tile.getAttribute('data-letter') === hint.letter) {
+                sourceTile = tile;
+                break;
+            }
+        }
+    }
+    
+    if (sourceTile) {
+        // Remove source tile
+        const letter = sourceTile.getAttribute('data-letter');
+        const originalIndex = sourceTile.getAttribute('data-tile-index');
+        const sourceSlot = sourceTile.closest('.slot');
+        const isFromContainer = sourceTile.closest('#archive-tiles-container');
+        
+        sourceTile.remove();
+        if (sourceSlot) {
+            sourceSlot.classList.remove('filled');
+        }
+        
+        // If tile was from container, update placeholder
+        if (isFromContainer) {
+            updateArchivePlaceholderTile();
+        }
+        
+        // Create locked tile in target slot
+        const lockedTile = createTile(letter, originalIndex, true);
+        targetSlot.appendChild(lockedTile);
+        targetSlot.classList.add('filled');
+        targetSlot.setAttribute('data-locked', 'true');
+    }
+    
+    // Decrement hint counter and update button
+    archiveHintsRemaining--;
+    updateArchiveHintButtonText();
+    
+    // Update score display
+    updateArchiveScoreDisplay();
+    updateArchiveSubmitButton();
+}
+
+// Return tile to archive container
+function returnArchiveTileToContainer(letter, originalIndex) {
+    const tilesContainer = document.getElementById('archive-tiles-container');
+    if (!tilesContainer) return;
+    
+    const newTile = createTile(letter, originalIndex);
+    tilesContainer.appendChild(newTile);
+
+    // Update placeholder visibility
+    updateArchivePlaceholderTile();
+
+    // Update score display
+    updateArchiveScoreDisplay();
+    
+    // Focus the new tile for keyboard navigation
+    setTimeout(() => {
+        newTile.focus();
+    }, 50);
+}
+
+// Check solution for archive puzzle
+function checkArchiveSolution(puzzleNumber) {
+    const word1Slots = document.querySelectorAll('#archive-word-slots [data-word-slots="0"] .slot');
+    const word2Slots = document.querySelectorAll('#archive-word-slots [data-word-slots="1"] .slot');
+
+    const word1 = Array.from(word1Slots)
+        .map(slot => {
+            const tile = slot.querySelector('.tile');
+            return tile ? tile.getAttribute('data-letter') : '';
+        })
+        .join('')
+        .toUpperCase();
+
+    const word2 = Array.from(word2Slots)
+        .map(slot => {
+            const tile = slot.querySelector('.tile');
+            return tile ? tile.getAttribute('data-letter') : '';
+        })
+        .join('')
+        .toUpperCase();
+
+    // Check if puzzle is complete (all slots filled)
+    const word1Complete = Array.from(word1Slots).every(slot => slot.querySelector('.tile'));
+    const word2Complete = Array.from(word2Slots).every(slot => slot.querySelector('.tile'));
+
+    // If puzzle is not complete, show error modal
+    if (!word1Complete || !word2Complete) {
+        showArchiveErrorModal();
+        return;
+    }
+
+    // Validate solution
+    const isValid = validateSolution(puzzleNumber, word1, word2);
+
+    if (isValid) {
+        // Calculate scores
+        const word1Score = calculateWordScore(word1);
+        const word2Score = calculateWordScore(word2);
+        
+        // Get max scores from word containers
+        const word1Container = document.querySelector('#archive-word-slots [data-word-index="0"]');
+        const word2Container = document.querySelector('#archive-word-slots [data-word-index="1"]');
+        const word1MaxScore = word1Container ? parseInt(word1Container.getAttribute('data-max-score')) : 0;
+        const word2MaxScore = word2Container ? parseInt(word2Container.getAttribute('data-max-score')) : 0;
+        
+        showArchiveSuccessModal(puzzleNumber, word1Score, word2Score, word1MaxScore, word2MaxScore);
+        triggerSnowflakeConfetti();
+    } else {
+        showArchiveErrorModal();
+    }
+}
+
+// Update submit button state for archive (no longer disables button, kept for potential future use)
+function updateArchiveSubmitButton() {
+    // Button is always enabled now
+    // This function is kept for consistency but doesn't disable the button
+}
+
+// Show feedback message for archive
+function showArchiveFeedback(message, type) {
+    const feedback = document.getElementById('archive-feedback');
+    if (!feedback) return;
+
+    feedback.className = `p-4 rounded-lg mb-8 ${
+        type === 'success' 
+            ? 'bg-green-100 text-green-800 border-2 border-green-300' 
+            : 'bg-red-100 text-red-800 border-2 border-red-300'
+    }`;
+    feedback.textContent = message;
+    feedback.classList.remove('hidden');
+    feedback.setAttribute('role', 'alert');
+    feedback.setAttribute('aria-live', 'polite');
+
+    // Scroll to feedback
+    feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Show success modal for archive
+function showArchiveSuccessModal(puzzleNumber, word1Score, word2Score, word1MaxScore, word2MaxScore) {
+    const modal = document.getElementById('archive-success-modal');
+    if (!modal) return;
+
+    // Generate share message
+    const baseUrl = 'https://sum-tile.uk';
+    const urlParams = new URLSearchParams(window.location.search);
+    const testMode = urlParams.get('test') === 'true';
+    const testParam = testMode ? '&test=true' : '';
+    
+    // Get date from date picker
+    const datePicker = document.getElementById('date-picker');
+    const dateString = datePicker ? datePicker.value : '';
+    const puzzleDate = dateString ? parseDateString(dateString) : getDateForPuzzleNumber(puzzleNumber);
+    
+    let puzzleUrl;
+    if (dateString && puzzleDate) {
+        puzzleUrl = `${baseUrl}/puzzle.html?date=${dateString}${testParam}`;
+    } else if (puzzleDate) {
+        puzzleUrl = `${baseUrl}/puzzle.html?date=${formatDateString(puzzleDate)}${testParam}`;
+    } else {
+        puzzleUrl = `${baseUrl}/puzzle.html?day=${puzzleNumber}${testParam}`;
+    }
+    
+    // Format the share message - brief call to action with scrabble anagrams focus
+    const shareText = `Play scrabble anagrams!\n${puzzleUrl}`;
+    
+    // Display share message in modal
+    const shareMessage = document.getElementById('archive-share-message');
+    if (shareMessage) {
+        shareMessage.textContent = shareText;
+    }
+
+    modal.classList.remove('hidden');
+    modal.setAttribute('aria-hidden', 'false');
+    
+    // Focus the modal for accessibility
+    const modalTitle = document.getElementById('archive-modal-title');
+    if (modalTitle) {
+        modalTitle.focus();
+    }
+    
+    // Setup share button event listener
+    const shareBtn = document.getElementById('archive-share-btn');
+    if (shareBtn) {
+        // Remove any existing event listeners by cloning the button
+        const newShareBtn = shareBtn.cloneNode(true);
+        shareBtn.parentNode.replaceChild(newShareBtn, shareBtn);
+        
+        // Store original state
+        const originalText = newShareBtn.textContent;
+        const originalClassName = newShareBtn.className;
+        
+        // Add event listener to the new button
+        newShareBtn.addEventListener('click', () => {
+            copyArchiveShareMessage(shareText, newShareBtn, originalText, originalClassName);
+        });
+    }
+    
+}
+
+// Copy share message to clipboard for archive
+function copyArchiveShareMessage(shareText, buttonElement, originalText, originalClassName) {
+    const shareBtn = buttonElement || document.getElementById('archive-share-btn');
+    if (!shareBtn) return;
+    
+    // Show immediate feedback and ensure it renders
+    shareBtn.textContent = 'Copying...';
+    shareBtn.disabled = true;
+    
+    // Use requestAnimationFrame to ensure the "Copying..." text is rendered before clipboard operation
+    requestAnimationFrame(() => {
+        // Small delay to ensure the text is visible
+        setTimeout(() => {
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareText)
+                .then(() => {
+                    // Update button text and color
+                    shareBtn.textContent = 'Copied!';
+                    shareBtn.disabled = false;
+                    shareBtn.classList.remove('bg-amber-500', 'hover:bg-amber-600', 'focus:ring-amber-500');
+                    shareBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'focus:ring-green-500');
+                    
+                    // Restore after 2 seconds
+                    setTimeout(() => {
+                        shareBtn.textContent = originalText;
+                        shareBtn.className = originalClassName;
+                    }, 2000);
+                })
+                .catch((error) => {
+                    console.error('Error copying to clipboard:', error);
+                    shareBtn.textContent = 'Error';
+                    shareBtn.disabled = false;
+                    setTimeout(() => {
+                        shareBtn.textContent = originalText;
+                        shareBtn.className = originalClassName;
+                    }, 2000);
+                });
+        }, 50);
+    });
+}
+
+// Show error modal for archive
+function showArchiveErrorModal() {
+    const modal = document.getElementById('archive-error-modal');
+    if (!modal) return;
+
+    modal.classList.remove('hidden');
+    modal.setAttribute('aria-hidden', 'false');
+    
+    // Focus the modal for accessibility
+    const modalTitle = document.getElementById('archive-error-modal-title');
+    if (modalTitle) {
+        modalTitle.focus();
+    }
+}
+
+// Close error modal for archive
+function closeArchiveErrorModal() {
+    const modal = document.getElementById('archive-error-modal');
+    if (!modal) return;
+
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
+}
+
+// Close success modal for archive
+function closeArchiveSuccessModal() {
+    const modal = document.getElementById('archive-success-modal');
+    if (!modal) return;
+
+    modal.classList.add('hidden');
+    modal.setAttribute('aria-hidden', 'true');
+}
+
 // Calendar initialization
 function initCalendar() {
     const calendar = document.getElementById('calendar');
@@ -68,8 +947,6 @@ function initCalendar() {
 
     const today = new Date();
     const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth();
-    const currentDay = today.getDate();
 
     // December 1-25
     const adventStart = new Date(currentYear, 11, 1); // Month is 0-indexed, so 11 = December
@@ -139,9 +1016,36 @@ function updateSocialMetaTags(day) {
     
     const puzzle = PUZZLE_DATA[day];
     const baseUrl = 'https://sum-tile.uk';
-    const puzzleUrl = `${baseUrl}/puzzle.html?day=${day}`;
-    const title = `Puzzle Day ${day} - Christmas Word Game | Advent Puzzle`;
-    const description = `Daily word challenge advent puzzle - Scrabble anagram game! Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}. Festive brain teaser with Scrabble scoring.`;
+    
+    // Get date for this puzzle and determine URL format
+    const puzzleDate = getDateForPuzzleNumber(day);
+    const urlParams = new URLSearchParams(window.location.search);
+    const dateParam = urlParams.get('date');
+    
+    // Use date parameter if available, otherwise use day parameter
+    let puzzleUrl;
+    if (dateParam && puzzleDate) {
+        puzzleUrl = `${baseUrl}/puzzle.html?date=${dateParam}`;
+    } else if (puzzleDate) {
+        puzzleUrl = `${baseUrl}/puzzle.html?date=${formatDateString(puzzleDate)}`;
+    } else {
+        puzzleUrl = `${baseUrl}/puzzle.html?day=${day}`;
+    }
+    
+    // Generate title based on date or day number
+    let title;
+    if (puzzleDate) {
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayName = dayNames[puzzleDate.getDay()];
+        const daySuffix = getDaySuffix(puzzleDate.getDate());
+        const monthName = puzzleDate.toLocaleDateString('en-US', { month: 'long' });
+        const year = puzzleDate.getFullYear();
+        title = `Puzzle - ${dayName} ${puzzleDate.getDate()}${daySuffix} ${monthName} ${year} | Sum Tile`;
+    } else {
+        title = `Puzzle Day ${day} - Christmas Word Game | Advent Puzzle`;
+    }
+    
+    const description = `Daily word challenge puzzle - Scrabble anagram game! Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}. Festive brain teaser with Scrabble scoring.`;
     
     // Update meta description
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -183,8 +1087,8 @@ function updateSocialMetaTags(day) {
         const structuredData = {
             "@context": "https://schema.org",
             "@type": "WebPage",
-            "name": `Puzzle Day ${day} - Christmas Word Game | Advent Puzzle`,
-            "description": `Daily word challenge advent puzzle - Scrabble anagram game! Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}. Festive brain teaser with Scrabble scoring.`,
+            "name": title,
+            "description": description,
             "url": puzzleUrl,
             "breadcrumb": {
                 "@type": "BreadcrumbList",
@@ -198,7 +1102,7 @@ function updateSocialMetaTags(day) {
                     {
                         "@type": "ListItem",
                         "position": 2,
-                        "name": `Puzzle Day ${day}`,
+                        "name": puzzleDate ? `${formatDateString(puzzleDate)} Puzzle` : `Puzzle Day ${day}`,
                         "item": puzzleUrl
                     }
                 ]
@@ -210,15 +1114,21 @@ function updateSocialMetaTags(day) {
 
 // Puzzle initialization
 function initPuzzle(day) {
+    // Get date for this puzzle number
+    const puzzleDate = getDateForPuzzleNumber(day);
+    
     // Update puzzle title with formatted date
     const puzzleTitle = document.getElementById('puzzle-title');
-    if (puzzleTitle) {
-        const currentYear = new Date().getFullYear();
-        const date = new Date(currentYear, 11, day); // December is month 11 (0-indexed)
+    if (puzzleTitle && puzzleDate) {
         const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const dayName = dayNames[date.getDay()];
-        const daySuffix = getDaySuffix(day);
-        puzzleTitle.textContent = `${dayName} ${day}${daySuffix} December`;
+        const dayName = dayNames[puzzleDate.getDay()];
+        const daySuffix = getDaySuffix(puzzleDate.getDate());
+        const monthName = puzzleDate.toLocaleDateString('en-US', { month: 'long' });
+        const year = puzzleDate.getFullYear();
+        puzzleTitle.textContent = `${dayName} ${puzzleDate.getDate()}${daySuffix} ${monthName} ${year}`;
+    } else if (puzzleTitle) {
+        // Fallback for puzzles without dates (shouldn't happen, but just in case)
+        puzzleTitle.textContent = `Puzzle #${day}`;
     }
     
     // Update day number display (for title tag)
@@ -472,6 +1382,9 @@ let selectedTile = null;
 // Hint counter - track remaining hints
 let hintsRemaining = 3;
 
+// Archive hint counter - track remaining hints for archive puzzles
+let archiveHintsRemaining = 3;
+
 function handleDragStart(e) {
     // Don't allow dragging locked tiles
     if (this.getAttribute('data-locked') === 'true') {
@@ -706,6 +1619,8 @@ function placeTileInSlot(tile, slot) {
     // Check if tile is already in a slot (being moved from one slot to another or back to container)
     const isFromSlot = tile.closest('.slot');
     const isFromContainer = tile.closest('#tiles-container');
+    const isFromArchiveContainer = tile.closest('#archive-tiles-container');
+    const isArchivePuzzle = slot.closest('#archive-word-slots') !== null;
     
     // Remove tile from its current location
     tile.remove();
@@ -713,6 +1628,8 @@ function placeTileInSlot(tile, slot) {
     // If tile was from container, update placeholder
     if (isFromContainer) {
         updatePlaceholderTile();
+    } else if (isFromArchiveContainer) {
+        updateArchivePlaceholderTile();
     }
     
     // If tile was in a slot, remove filled class
@@ -743,8 +1660,13 @@ function placeTileInSlot(tile, slot) {
     slot.classList.remove('drag-over');
 
     // Update score and submit button state
-    updateScoreDisplay();
-    updateSubmitButton();
+    if (isArchivePuzzle) {
+        updateArchiveScoreDisplay();
+        updateArchiveSubmitButton();
+    } else {
+        updateScoreDisplay();
+        updateSubmitButton();
+    }
 }
 
 // Swap two tiles between slots or container
@@ -761,6 +1683,8 @@ function swapTiles(draggedTile, existingTile, targetSlot) {
     }
     
     const isDraggedFromContainer = draggedTile.closest('#tiles-container');
+    const isDraggedFromArchiveContainer = draggedTile.closest('#archive-tiles-container');
+    const isArchivePuzzle = targetSlot.closest('#archive-word-slots') !== null;
     
     // Remove both tiles
     draggedTile.remove();
@@ -769,6 +1693,8 @@ function swapTiles(draggedTile, existingTile, targetSlot) {
     // If dragged tile was from container, update placeholder
     if (isDraggedFromContainer) {
         updatePlaceholderTile();
+    } else if (isDraggedFromArchiveContainer) {
+        updateArchivePlaceholderTile();
     }
     
     // If dragged tile was from a slot, place existing tile there
@@ -786,7 +1712,11 @@ function swapTiles(draggedTile, existingTile, targetSlot) {
         draggedSlot.classList.add('filled');
     } else {
         // If dragged tile was from container, return existing tile to container
-        returnTileToContainer(existingLetter, existingIndex);
+        if (isArchivePuzzle) {
+            returnArchiveTileToContainer(existingLetter, existingIndex);
+        } else {
+            returnTileToContainer(existingLetter, existingIndex);
+        }
     }
     
     // Place dragged tile in target slot
@@ -804,8 +1734,13 @@ function swapTiles(draggedTile, existingTile, targetSlot) {
     targetSlot.classList.remove('drag-over');
     
     // Update score and submit button state
-    updateScoreDisplay();
-    updateSubmitButton();
+    if (isArchivePuzzle) {
+        updateArchiveScoreDisplay();
+        updateArchiveSubmitButton();
+    } else {
+        updateScoreDisplay();
+        updateSubmitButton();
+    }
 }
 
 // Remove tile from slot
@@ -820,13 +1755,18 @@ function removeTileFromSlot(slot) {
 
     const letter = tile.getAttribute('data-letter');
     const originalIndex = tile.getAttribute('data-tile-index');
+    const isArchivePuzzle = slot.closest('#archive-word-slots') !== null;
     
     // Remove from slot
     tile.remove();
     slot.classList.remove('filled');
 
     // Add back to tiles container
-    returnTileToContainer(letter, originalIndex);
+    if (isArchivePuzzle) {
+        returnArchiveTileToContainer(letter, originalIndex);
+    } else {
+        returnTileToContainer(letter, originalIndex);
+    }
 }
 
 // Return tile to the starting container
@@ -869,13 +1809,19 @@ function handleTilesContainerDrop(e) {
         if (slot) {
             const letter = draggedTile.getAttribute('data-letter');
             const originalIndex = draggedTile.getAttribute('data-tile-index');
+            const isArchivePuzzle = slot.closest('#archive-word-slots') !== null;
+            const isArchiveContainer = e.currentTarget.id === 'archive-tiles-container';
             
             // Remove from slot
             draggedTile.remove();
             slot.classList.remove('filled');
             
             // Add back to container
-            returnTileToContainer(letter, originalIndex);
+            if (isArchivePuzzle || isArchiveContainer) {
+                returnArchiveTileToContainer(letter, originalIndex);
+            } else {
+                returnTileToContainer(letter, originalIndex);
+            }
         }
     }
     
@@ -1173,7 +2119,18 @@ function showSuccessModal(day, word1Score, word2Score, word1MaxScore, word2MaxSc
     const urlParams = new URLSearchParams(window.location.search);
     const testMode = urlParams.get('test') === 'true';
     const testParam = testMode ? '&test=true' : '';
-    const puzzleUrl = `${baseUrl}/puzzle.html?day=${day}${testParam}`;
+    
+    // Use date parameter if available, otherwise use day parameter
+    const dateParam = urlParams.get('date');
+    const puzzleDate = getDateForPuzzleNumber(day);
+    let puzzleUrl;
+    if (dateParam && puzzleDate) {
+        puzzleUrl = `${baseUrl}/puzzle.html?date=${dateParam}${testParam}`;
+    } else if (puzzleDate) {
+        puzzleUrl = `${baseUrl}/puzzle.html?date=${formatDateString(puzzleDate)}${testParam}`;
+    } else {
+        puzzleUrl = `${baseUrl}/puzzle.html?day=${day}${testParam}`;
+    }
     
     // Format the share message - brief call to action with scrabble anagrams focus
     const shareText = `Play scrabble anagrams!\n${puzzleUrl}`;
