@@ -1,0 +1,38 @@
+---
+description: "Tailwind CSS guidelines and build process"
+alwaysApply: false
+globs:
+  - "**/*.html"
+  - "**/*.js"
+  - "src/styles.css"
+---
+
+### Tailwind CSS Usage
+- Use Tailwind utility classes directly in HTML and JavaScript
+- Prefer utility classes over custom CSS
+- Use responsive prefixes: `sm:`, `md:`, `lg:`, `xl:`, `2xl:`
+- Use state variants: `hover:`, `focus:`, `active:`, `disabled:`
+
+### Build Process
+- **CRITICAL:** Always run `npm run build:css` after adding or modifying Tailwind classes
+- Source file: `src/styles.css` (contains Tailwind directives)
+- Output file: `styles.css` (compiled, must be committed)
+- For development: Use `npm run watch:css` to auto-rebuild on changes
+
+### Tailwind Configuration
+- Config file: `tailwind.config.js`
+- Content paths: `./index.html`, `./puzzle.html`, `./script.js`
+- Customize theme in `tailwind.config.js` if needed
+- Do not edit compiled `styles.css` directly - it will be overwritten
+
+### Common Patterns
+- Use flexbox utilities: `flex`, `flex-col`, `items-center`, `justify-between`
+- Use grid utilities: `grid`, `grid-cols-*`, `gap-*`
+- Use spacing: `p-*`, `m-*`, `px-*`, `py-*`, `space-*`
+- Use colors: `bg-*`, `text-*`, `border-*`
+- Use typography: `text-*`, `font-*`, `leading-*`
+
+### Before Committing
+- Ensure `styles.css` is up to date (run build if needed)
+- Verify Tailwind classes are working in browser
+- Check that no custom CSS was added unnecessarily

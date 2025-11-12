@@ -1,0 +1,39 @@
+---
+description: "ARIA labels, keyboard navigation, and accessibility requirements"
+alwaysApply: false
+globs:
+  - "**/*.html"
+  - "**/*.js"
+---
+
+### Accessibility Requirements
+- All interactive elements must be keyboard accessible
+- Use semantic HTML elements where possible (`<button>`, `<nav>`, `<main>`)
+- Add ARIA labels for screen readers: `aria-label="Puzzle for December 1"`
+- Use `role` attributes when semantic HTML isn't sufficient: `role="button"`
+
+### Keyboard Navigation
+- All clickable elements must support keyboard interaction
+- Use `tabindex="0"` for focusable custom elements
+- Handle `Enter` and `Space` keys for button-like elements
+- Ensure focus indicators are visible (Tailwind `focus:` utilities)
+
+### ARIA Labels
+- Add descriptive `aria-label` to interactive elements without visible text
+- Use `aria-hidden="true"` for decorative elements
+- Ensure form inputs have associated labels or `aria-label`
+
+### Focus Management
+- Maintain logical tab order
+- Don't remove focus outlines without providing alternative indicators
+- Use `focus:` Tailwind utilities for custom focus styles
+
+### Screen Reader Support
+- Provide text alternatives for visual information
+- Use `sr-only` class for screen-reader-only text when needed
+- Ensure all content is accessible without visual context
+
+### Testing
+- Test keyboard navigation (Tab, Enter, Space, Arrow keys)
+- Test with screen reader if possible
+- Verify focus indicators are visible

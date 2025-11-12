@@ -4,7 +4,9 @@
   "description": "Advent Puzzle Calendar - Daily word puzzle game",
   "scripts": {
     "build:css": "postcss src/styles.css -o styles.css",
-    "watch:css": "postcss src/styles.css -o styles.css --watch"
+    "watch:css": "postcss src/styles.css -o styles.css --watch",
+    "update-rules": "node scripts/update-cursor-rules.js",
+    "validate-rules": "node scripts/update-cursor-rules.js"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
