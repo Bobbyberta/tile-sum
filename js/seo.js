@@ -56,17 +56,37 @@ export function updateSocialMetaTags(day) {
     const ogTitle = document.getElementById('og-title');
     const ogDescription = document.getElementById('og-description');
     const ogUrl = document.getElementById('og-url');
+    const ogType = document.getElementById('og-type');
     
     if (ogTitle) ogTitle.setAttribute('content', title);
     if (ogDescription) ogDescription.setAttribute('content', description);
     if (ogUrl) ogUrl.setAttribute('content', puzzleUrl);
+    if (ogType) ogType.setAttribute('content', 'article');
+    
+    // Update Article metadata for Rich Pins
+    if (puzzleDate) {
+        // Format date as ISO 8601 for article:published_time
+        const isoDate = puzzleDate.toISOString();
+        let articlePublishedTime = document.querySelector('meta[property="article:published_time"]');
+        if (!articlePublishedTime) {
+            articlePublishedTime = document.createElement('meta');
+            articlePublishedTime.setAttribute('property', 'article:published_time');
+            document.head.appendChild(articlePublishedTime);
+        }
+        articlePublishedTime.setAttribute('content', isoDate);
+    }
     
     // Update Twitter Card tags
     const twitterTitle = document.getElementById('twitter-title');
     const twitterDescription = document.getElementById('twitter-description');
+    const twitterImageSrc = document.getElementById('twitter-image-src');
     
     if (twitterTitle) twitterTitle.setAttribute('content', title);
     if (twitterDescription) twitterDescription.setAttribute('content', description);
+    // Ensure twitter:image:src is updated if element exists
+    if (twitterImageSrc) {
+        twitterImageSrc.setAttribute('content', `${baseUrl}/og-image.png`);
+    }
     
     // Update page title
     const pageTitle = document.querySelector('title');
