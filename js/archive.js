@@ -227,7 +227,7 @@ export function loadArchivePuzzle(dateString) {
     
     const tilesContainer = document.createElement('div');
     tilesContainer.id = 'archive-tiles-container';
-    tilesContainer.className = 'flex flex-wrap gap-3 p-4 bg-white rounded-lg shadow-md min-h-[100px]';
+    tilesContainer.className = 'flex flex-wrap gap-2 p-4 bg-white rounded-lg shadow-md min-h-[100px]';
     tilesWrapper.appendChild(tilesContainer);
     
     archiveContent.appendChild(tilesWrapper);

@@ -6,7 +6,7 @@ import { handleTileKeyDown } from './keyboard.js';
 // Create a tile element
 export function createTile(letter, index, isLocked = false, handlers = {}) {
     const tile = document.createElement('div');
-    tile.className = `tile bg-indigo-600 text-white rounded-lg p-3 w-14 h-14 flex flex-col items-center justify-center shadow-md transition-shadow ${isLocked ? 'locked' : 'hover:shadow-lg'}`;
+    tile.className = `tile bg-indigo-600 text-white rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center shadow-md transition-shadow ${isLocked ? 'locked' : 'hover:shadow-lg'}`;
     tile.setAttribute('draggable', isLocked ? 'false' : 'true');
     tile.setAttribute('data-letter', letter);
     tile.setAttribute('data-tile-index', index);
@@ -61,7 +61,7 @@ export function createTile(letter, index, isLocked = false, handlers = {}) {
 // Create a slot element
 export function createSlot(wordIndex, slotIndex, isLocked = false, handlers = {}) {
     const slot = document.createElement('div');
-    slot.className = `slot w-14 h-14 rounded-lg flex items-center justify-center ${isLocked ? 'locked' : ''}`;
+    slot.className = `slot w-12 h-14 rounded-lg flex items-center justify-center ${isLocked ? 'locked' : ''}`;
     slot.setAttribute('data-word-index', wordIndex);
     slot.setAttribute('data-slot-index', slotIndex);
     slot.setAttribute('droppable', 'true');
@@ -116,7 +116,7 @@ export function updatePlaceholderTile(containerId = 'tiles-container') {
         // Show placeholder if no tiles
         if (!placeholder) {
             const placeholderTile = document.createElement('div');
-            placeholderTile.className = 'tile bg-transparent text-transparent opacity-0 rounded-lg p-3 w-14 h-14 flex flex-col items-center justify-center pointer-events-none';
+            placeholderTile.className = 'tile bg-transparent text-transparent opacity-0 rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center pointer-events-none';
             placeholderTile.style.visibility = 'hidden';
             placeholderTile.setAttribute('data-placeholder', 'true');
             placeholderTile.setAttribute('aria-hidden', 'true');
