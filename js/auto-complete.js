@@ -9,6 +9,7 @@ import {
     getSolutionShown, 
     getArchiveSolutionShown 
 } from './puzzle-state.js';
+import { debugLog } from './utils.js';
 
 // Track if auto-complete has already triggered to prevent duplicate modals
 let autoCompleteTriggered = false;
@@ -16,8 +17,6 @@ let autoCompleteTriggered = false;
 // Store current puzzle day and prefix
 let currentDay = null;
 let currentPrefix = '';
-
-import { debugLog } from './utils.js';
 
 // Initialize auto-complete for a puzzle (call when initializing a new puzzle)
 export function initAutoComplete(day, prefix = '') {
