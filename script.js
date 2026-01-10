@@ -9,7 +9,7 @@ import {
     parseDateString,
     getPuzzleNumberForDate,
     isAdventMode
-} from './puzzle-data.js';
+} from './puzzle-data-encoded.js';
 
 // Import all modules
 import { updateCountdown, initCalendar, initDailyPuzzle } from './js/ui.js';

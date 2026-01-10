@@ -1,7 +1,7 @@
 // Keyboard accessibility handlers
 
 import { getSelectedTile, setSelectedTile, clearSelectedTile } from './puzzle-state.js';
-import { SCRABBLE_SCORES } from '../puzzle-data.js';
+import { SCRABBLE_SCORES } from '../puzzle-data-encoded.js';
 
 // Keyboard handler for tiles
 export function handleTileKeyDown(e) {

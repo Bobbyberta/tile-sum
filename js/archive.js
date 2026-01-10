@@ -10,7 +10,7 @@ import {
     getPuzzleLetters,
     calculateWordScore,
     validateSolution
-} from '../puzzle-data.js';
+} from '../puzzle-data-encoded.js';
 import { isArchiveTestMode, getTestModeParam, getTestModeParamWithAmpersand } from './utils.js';
 import { getDaySuffix } from './utils.js';
 import { 

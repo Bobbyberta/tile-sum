@@ -1,6 +1,6 @@
 // Score & validation functions
 
-import { calculateWordScore, validateSolution } from '../puzzle-data.js';
+import { calculateWordScore, validateSolution } from '../puzzle-data-encoded.js';
 
 // Update score display
 export function updateScoreDisplay(prefix = '') {
