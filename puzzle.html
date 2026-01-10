@@ -206,6 +206,13 @@
             </div>
         </header>
 
+        <!-- Streak Counter -->
+        <div id="streak-container" class="mb-4 flex justify-end hidden">
+            <div class="flex items-center gap-2 text-indigo-900 font-semibold text-lg">
+                <span id="streak-display" aria-label="Current streak"></span>
+            </div>
+        </div>
+
         <!-- Tiles Container -->
         <div class="mb-8">
             <h2 class="sr-only">Available Tiles</h2>
@@ -428,6 +435,7 @@
         // Initialize puzzle on page load
         import { initPuzzle, isAdventMode, parseDateString, getPuzzleNumberForDate } from './script.js';
         import { showHelpModal, closeHelpModal } from './js/modals.js';
+        import { displayStreak, resetStreak } from './js/streak.js';
         
         document.addEventListener('DOMContentLoaded', () => {
             // Setup help modal button handlers
@@ -492,6 +500,25 @@
             
             // Update navigation links based on mode
             updatePuzzlePageNavigation();
+            
+            // Initialize streak counter
+            // Check for streak reset (for testing)
+            if (urlParams.get('reset-streak') === 'true') {
+                resetStreak();
+                console.log('Streak reset for testing');
+            }
+            
+            // Check for streak test mode (allows testing with specific dates)
+            const streakTestDate = urlParams.get('streak-test-date');
+            let testDate = null;
+            if (streakTestDate) {
+                testDate = parseDateString(streakTestDate);
+                if (testDate && indicator) {
+                    indicator.textContent = `🧪 Test Mode: Streak Testing (Date: ${streakTestDate})`;
+                    indicator.classList.remove('hidden');
+                }
+            }
+            displayStreak(testDate);
             
             // Initialize puzzle
             initPuzzle(puzzleNumber);
