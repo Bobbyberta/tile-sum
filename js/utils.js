@@ -52,3 +52,19 @@ export function getTestModeParamWithAmpersand() {
     return '';
 }
 
+// Check if we're in development/debug mode
+// Returns true if running on localhost or if test mode is enabled
+function isDebugMode() {
+    // Enable debug in development (localhost) or when test mode is active
+    return window.location.hostname === 'localhost' || 
+           window.location.hostname === '127.0.0.1' ||
+           isTestMode();
+}
+
+// Debug logging function - only logs in development/debug mode
+export function debugLog(...args) {
+    if (isDebugMode()) {
+        console.log(...args);
+    }
+}
+

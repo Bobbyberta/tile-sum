@@ -17,12 +17,14 @@ let autoCompleteTriggered = false;
 let currentDay = null;
 let currentPrefix = '';
 
+import { debugLog } from './utils.js';
+
 // Initialize auto-complete for a puzzle (call when initializing a new puzzle)
 export function initAutoComplete(day, prefix = '') {
     autoCompleteTriggered = false;
     currentDay = day;
     currentPrefix = prefix;
-    console.log('[AutoComplete] Initialized', { day, prefix });
+    debugLog('[AutoComplete] Initialized', { day, prefix });
 }
 
 // Reset auto-complete tracking (call when initializing a new puzzle)
@@ -37,11 +39,11 @@ export function areAllSlotsFilled() {
     const word1Slots = document.querySelectorAll(`[data-word-slots="0"] .slot`);
     const word2Slots = document.querySelectorAll(`[data-word-slots="1"] .slot`);
     
-    console.log('[AutoComplete] areAllSlotsFilled check', { word1Count: word1Slots.length, word2Count: word2Slots.length });
+    debugLog('[AutoComplete] areAllSlotsFilled check', { word1Count: word1Slots.length, word2Count: word2Slots.length });
     
     // Ensure slots exist
     if (word1Slots.length === 0 || word2Slots.length === 0) {
-        console.log('[AutoComplete] Slots not found, returning false');
+        debugLog('[AutoComplete] Slots not found, returning false');
         return false;
     }
     
@@ -52,7 +54,7 @@ export function areAllSlotsFilled() {
     const word1Filled = Array.from(word1Slots).filter(slot => slot.querySelector('.tile')).length;
     const word2Filled = Array.from(word2Slots).filter(slot => slot.querySelector('.tile')).length;
     
-    console.log('[AutoComplete] Completion status', { word1Complete, word2Complete, word1Filled, word2Filled, word1Total: word1Slots.length, word2Total: word2Slots.length });
+    debugLog('[AutoComplete] Completion status', { word1Complete, word2Complete, word1Filled, word2Filled, word1Total: word1Slots.length, word2Total: word2Slots.length });
     
     return word1Complete && word2Complete;
 }
@@ -61,7 +63,7 @@ export function areAllSlotsFilled() {
 // Can be called without parameters if initAutoComplete was called first
 // Note: This function assumes all slots are filled (use areAllSlotsFilled() before calling)
 export function checkAutoComplete(day = null, prefix = null) {
-    console.log('[AutoComplete] checkAutoComplete called', { day, prefix, currentDay, currentPrefix, autoCompleteTriggered });
+    debugLog('[AutoComplete] checkAutoComplete called', { day, prefix, currentDay, currentPrefix, autoCompleteTriggered });
     
     // Use stored values if parameters not provided
     const puzzleDay = day !== null ? day : currentDay;
@@ -69,7 +71,7 @@ export function checkAutoComplete(day = null, prefix = null) {
     
     // Can't check if no puzzle day is set
     if (puzzleDay === null) {
-        console.log('[AutoComplete] No puzzle day set, skipping');
+        debugLog('[AutoComplete] No puzzle day set, skipping');
         return;
     }
     // Prevent duplicate triggers

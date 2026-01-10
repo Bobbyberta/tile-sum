@@ -4,9 +4,9 @@ alwaysApply: true
 ---
 
 ### Project Overview
-- This is a Daily Word Puzzle web application - a daily word puzzle game
+- This is an Advent Puzzle Calendar web application - a daily word puzzle game
 - Players arrange letter tiles to form two words with Scrabble scoring
-- New puzzle available every day (puzzles numbered based on days since December 1, 2025)
+- 25 puzzles unlock daily from December 1-25
 - Hosted on GitHub Pages at https://sum-tile.uk
 
 ### Technology Stack
@@ -31,7 +31,7 @@ alwaysApply: true
 - Run `npm run build:css` after any Tailwind CSS changes
 - Run `npm run build:data` after editing `puzzle-data.js` (source file)
 - Ensure `.nojekyll` file exists to prevent Jekyll processing
-- Test modes available via `?test=archive` (archive testing) and `?test=advent` (calendar view testing) URL parameters for development
+- Test modes available via `?test=archive` (archive testing) and `?test=advent` (advent calendar testing) URL parameters for development
 
 ### Puzzle Data Protection
 - Puzzle data is encoded/obfuscated using multi-layer encoding (base64 + XOR cipher + chunking)
