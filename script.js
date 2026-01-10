@@ -50,6 +50,7 @@ import { initArchivePage } from './js/archive.js';
 import { isPuzzleCompletedToday, isPuzzleCompletedForDate } from './js/completion.js';
 import { initAutoComplete } from './js/auto-complete.js';
 import { displayStreak } from './js/streak.js';
+import { updatePlayCountDisplay } from './js/play-count.js';
 
 // Shared puzzle initialization function that works with different prefixes
 function initPuzzleWithPrefix(day, prefix = '') {
@@ -92,6 +93,12 @@ function initPuzzleWithPrefix(day, prefix = '') {
     // Update social sharing meta tags (only for regular puzzle page)
     if (prefix === '') {
         updateSocialMetaTags(day);
+    }
+    
+    // Update play count display
+    const playCountElement = document.getElementById(`${prefix}play-count-display`);
+    if (playCountElement) {
+        updatePlayCountDisplay(playCountElement, day, puzzleDate);
     }
 
     const puzzle = PUZZLE_DATA[day];

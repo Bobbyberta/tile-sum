@@ -51,6 +51,7 @@ import { provideHint, updateHintButtonText, showSolution } from './hints.js';
 import { showFeedback, triggerSnowflakeConfetti } from './feedback.js';
 import { showSuccessModal, showErrorModal, closeErrorModal, closeSuccessModal, copyShareMessage } from './modals.js';
 import { initAutoComplete, checkAutoComplete, areAllSlotsFilled } from './auto-complete.js';
+import { updatePlayCountDisplay } from './play-count.js';
 
 // Module-level variable to store the returnArchiveTileToContainer callback
 let currentReturnArchiveTileToContainer = null;
@@ -214,7 +215,42 @@ export function loadArchivePuzzle(dateString) {
     titleContainer.appendChild(puzzleTitle);
     
     header.appendChild(titleContainer);
+    
+    // Add play count display
+    const playCountContainer = document.createElement('div');
+    playCountContainer.id = 'archive-play-count-container';
+    playCountContainer.className = 'mb-4 flex justify-start';
+    
+    const playCountWrapper = document.createElement('div');
+    playCountWrapper.className = 'flex items-center gap-2 text-indigo-700 text-sm md:text-base';
+    
+    const playCountIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    playCountIcon.setAttribute('class', 'w-4 h-4 md:w-5 md:h-5');
+    playCountIcon.setAttribute('fill', 'none');
+    playCountIcon.setAttribute('stroke', 'currentColor');
+    playCountIcon.setAttribute('viewBox', '0 0 24 24');
+    playCountIcon.setAttribute('aria-hidden', 'true');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    path.setAttribute('stroke-width', '2');
+    path.setAttribute('d', 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z');
+    playCountIcon.appendChild(path);
+    
+    const playCountDisplay = document.createElement('span');
+    playCountDisplay.id = 'archive-play-count-display';
+    playCountDisplay.setAttribute('aria-label', 'Number of players');
+    playCountDisplay.textContent = 'Loading...';
+    
+    playCountWrapper.appendChild(playCountIcon);
+    playCountWrapper.appendChild(playCountDisplay);
+    playCountContainer.appendChild(playCountWrapper);
+    header.appendChild(playCountContainer);
+    
     archiveContent.appendChild(header);
+    
+    // Update play count display
+    updatePlayCountDisplay(playCountDisplay, puzzleNumber, date);
     
     // Create tiles container wrapper matching puzzle.html structure
     const tilesWrapper = document.createElement('div');

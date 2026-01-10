@@ -8,6 +8,7 @@ import { getDaySuffix } from './utils.js';
 import { initPuzzleWithPrefix } from '../script.js';
 import { isPuzzleCompletedToday, isPuzzleCompletedForDate } from './completion.js';
 import { createTile, createSlot } from './puzzle-core.js';
+import { updatePlayCountDisplay } from './play-count.js';
 
 // Update countdown overlay (hidden in standard format - only shown in advent test mode)
 export function updateCountdown() {
@@ -145,6 +146,12 @@ export function initDailyPuzzle() {
     const isCompleted = isArchiveTestMode() 
         ? isPuzzleCompletedForDate(puzzleNumber, displayDate)
         : isPuzzleCompletedToday(puzzleNumber);
+    
+    // Update play count display for daily puzzle
+    const dailyPlayCountElement = document.getElementById('daily-play-count-display');
+    if (dailyPlayCountElement) {
+        updatePlayCountDisplay(dailyPlayCountElement, puzzleNumber, displayDate);
+    }
     
     if (isCompleted) {
         // Show completed puzzle display

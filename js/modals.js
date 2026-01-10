@@ -4,6 +4,7 @@ import { formatDateString, getDateForPuzzleNumber, isAdventMode } from '../puzzl
 import { getTestModeParamWithAmpersand } from './utils.js';
 import { handleModalKeyDown } from './keyboard.js';
 import { savePuzzleCompletion, markHelpAsSeen } from './completion.js';
+import { recordPlay } from './play-count.js';
 
 // Track modal count for scroll lock management
 let modalCount = 0;
@@ -145,6 +146,12 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
 
     // Save completion status
     savePuzzleCompletion(day, puzzleDate);
+    
+    // Record play count (async, don't wait for it)
+    recordPlay(day, puzzleDate).catch(err => {
+        // Silently handle errors - tracking shouldn't interrupt user experience
+        console.warn('Failed to record play count:', err);
+    });
 
     modal.classList.remove('hidden');
     modal.setAttribute('aria-hidden', 'false');

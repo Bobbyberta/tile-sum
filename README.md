@@ -21,6 +21,7 @@ A daily puzzle site hosted on GitHub Pages featuring a new word puzzle challenge
 - **Hints System**: Get hints to help solve puzzles
 - **Solution Validation**: Submit button checks if the solution is correct
 - **Completion Tracking**: Local storage tracks completed puzzles
+- **Play Count Tracking**: Display how many people have played each puzzle (requires backend API setup - see `PLAY_COUNT_SETUP.md`)
 - **Accessible Design**: Clean, modern UI with proper ARIA labels and keyboard navigation
 - **Responsive Layout**: Works on desktop, tablet, and mobile devices
 
@@ -150,6 +151,7 @@ The project uses ES6 modules with a modular architecture:
 - **`js/ui.js`**: UI initialization and calendar/daily puzzle views
 - **`js/archive.js`**: Archive page functionality
 - **`js/completion.js`**: Local storage for tracking completed puzzles
+- **`js/play-count.js`**: Play count tracking API integration (see `PLAY_COUNT_SETUP.md`)
 - **`js/modals.js`**: Modal dialogs (help, success, error)
 - **`js/feedback.js`**: User feedback and celebration animations
 - **`js/hints.js`**: Hint system
