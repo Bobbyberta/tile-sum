@@ -44,7 +44,7 @@ import { provideHint, updateHintButtonText, showSolution } from './js/hints.js';
 import { showFeedback, triggerSnowflakeConfetti } from './js/feedback.js';
 import { showSuccessModal, showErrorModal, closeErrorModal, closeSuccessModal, showHelpModal, closeHelpModal } from './js/modals.js';
 import { updateSocialMetaTags } from './js/seo.js';
-import { getDaySuffix } from './js/utils.js';
+import { getDaySuffix, debugLog } from './js/utils.js';
 import { setHintsRemaining, getHintsRemaining, getSolutionShown, setSolutionShown } from './js/puzzle-state.js';
 import { initArchivePage } from './js/archive.js';
 import { isPuzzleCompletedToday, isPuzzleCompletedForDate } from './js/completion.js';
@@ -325,10 +325,10 @@ function initPuzzleWithPrefix(day, prefix = '') {
     updateScoreDisplay(prefix);
     
     // Initialize auto-complete detection
-    console.log('[AutoComplete] About to call initAutoComplete', { day, prefix, dayType: typeof day });
+    debugLog('[AutoComplete] About to call initAutoComplete', { day, prefix, dayType: typeof day });
     if (day != null) {
         initAutoComplete(day, prefix);
-        console.log('[AutoComplete] Initialization called in initPuzzleWithPrefix', { day, prefix });
+        debugLog('[AutoComplete] Initialization called in initPuzzleWithPrefix', { day, prefix });
     } else {
         console.error('[AutoComplete] ERROR: day is null or undefined, cannot initialize auto-complete', { day, prefix });
     }

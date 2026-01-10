@@ -12,14 +12,11 @@ import { deselectTile } from './keyboard.js';
 import { handleTileKeyDown } from './keyboard.js';
 import { updateScoreDisplay, updateSubmitButton } from './scoring.js';
 import { checkAutoComplete, areAllSlotsFilled } from './auto-complete.js';
+import { debugLog as debugLogUtil } from './utils.js';
 
-// Debug flag - set to true to enable detailed logging
-const DEBUG_INPUT = true; // Temporarily enabled for debugging
-
+// Debug logging function that only logs in development mode
 function debugLog(...args) {
-    if (DEBUG_INPUT) {
-        console.log('[Input]', ...args);
-    }
+    debugLogUtil('[Input]', ...args);
 }
 
 // Interaction state management to prevent duplicate actions and race conditions
