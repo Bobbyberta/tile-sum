@@ -4,6 +4,12 @@ A daily puzzle site hosted on GitHub Pages featuring a new word puzzle challenge
 
 **Live Site**: [https://sum-tile.uk](https://sum-tile.uk)
 
+## Quick Start
+
+- **Edit puzzle data**: Edit `puzzle-data.js`, then run `npm run build:data`
+- **Build for production**: Run `npm run build:all` (builds CSS + encoded puzzle data)
+- **Local development**: Run `npm run build:all`, then start a local server
+
 ## Features
 
 - **Daily Puzzle Homepage**: Shows today's puzzle automatically
@@ -46,11 +52,17 @@ A daily puzzle site hosted on GitHub Pages featuring a new word puzzle challenge
    npm install
    ```
 
-3. **Build the CSS:**
+3. **Build assets:**
    ```bash
-   npm run build:css
+   npm run build:all
    ```
-   This compiles Tailwind CSS from `src/styles.css` to `styles.css` in the root directory.
+   This compiles Tailwind CSS from `src/styles.css` to `styles.css` and generates the encoded puzzle data file.
+   
+   For development, you can build them separately:
+   ```bash
+   npm run build:css  # Build CSS only
+   npm run build:data # Build encoded puzzle data only
+   ```
 
 4. **Start a local server:**
    ```bash
@@ -96,6 +108,7 @@ tile-sum/
 ├── src/
 │   └── styles.css          # Source CSS with Tailwind directives
 ├── scripts/
+│   ├── encode-puzzle-data.js   # Script to encode/obfuscate puzzle data
 │   └── update-cursor-rules.js  # Script to generate Cursor rules
 ├── .cursor/
 │   └── rules/              # Cursor AI rules (generated from CURSOR_RULES_SOURCE.md)
@@ -119,6 +132,8 @@ tile-sum/
 ### Build Scripts
 
 - `npm run build:css` - Compile Tailwind CSS from source to `styles.css`
+- `npm run build:data` - Encode/obfuscate puzzle data from `puzzle-data.js` to `puzzle-data-encoded.js`
+- `npm run build:all` - Build both CSS and puzzle data (use before deployment)
 - `npm run watch:css` - Watch for CSS changes and auto-rebuild
 - `npm run update-rules` - Regenerate Cursor rules from `CURSOR_RULES_SOURCE.md`
 - `npm run validate-rules` - Validate Cursor rules (same as update-rules)
@@ -151,7 +166,35 @@ The site uses Tailwind CSS built with PostCSS. To customize:
 - After making changes, rebuild CSS with `npm run build:css`
 - Use `npm run watch:css` for automatic rebuilding during development
 
-**Important:** Always run `npm run build:css` before committing changes to ensure `styles.css` is up to date.
+**Important:** 
+- Always run `npm run build:css` after Tailwind CSS changes to ensure `styles.css` is up to date
+- Always run `npm run build:all` before deployment to ensure both CSS and encoded puzzle data are up to date
+
+## Puzzle Data Protection
+
+To prevent users from easily viewing puzzle solutions in browser dev tools, the puzzle data is encoded using multiple obfuscation layers:
+
+- **Base64 Encoding**: Makes data non-human-readable
+- **XOR Cipher**: Additional encryption layer with puzzle-number-based keys
+- **Chunked Loading**: Data split into chunks that decode only when needed (lazy evaluation)
+- **Code Obfuscation**: Short, meaningless variable names in the encoded file
+
+### Development vs Production
+
+- **During Development**: Edit `puzzle-data.js` directly (the source file)
+- **For Production**: The build process automatically generates `puzzle-data-encoded.js` which is used by the application
+
+### Editing Puzzle Data
+
+1. Edit `puzzle-data.js` (the source file) directly
+2. Run `npm run build:data` to regenerate the encoded version
+3. The encoded file is automatically used by the application
+
+**Note:** The encoded file (`puzzle-data-encoded.js`) is generated automatically and should not be edited directly. Always edit `puzzle-data.js` and rebuild.
+
+### Security Note
+
+While this encoding makes it significantly harder for casual users to access puzzle solutions, determined users with technical knowledge can still reverse-engineer the data. This is a practical limitation of client-side web applications - any data sent to the browser can theoretically be accessed. The encoding serves as a deterrent for casual cheating rather than absolute protection.
 
 ## Deployment
 
@@ -159,12 +202,12 @@ The site uses Tailwind CSS built with PostCSS. To customize:
 
 1. **Build and commit:**
    ```bash
-   npm run build:css
+   npm run build:all
    git add .
    git commit -m "Prepare for deployment"
    git push origin main
    ```
-   **Important:** Make sure `styles.css` is committed and pushed, as it's required for the site to display correctly.
+   **Important:** Make sure both `styles.css` and `puzzle-data-encoded.js` are committed and pushed, as they're required for the site to function correctly.
 
 2. **Configure GitHub Pages:**
    - Go to repository Settings → Pages
@@ -175,7 +218,7 @@ The site uses Tailwind CSS built with PostCSS. To customize:
 
 3. **Wait for deployment:**
    - GitHub will deploy your site (usually takes 1-2 minutes)
-   - Site will be available at: `https://YOUR_USERNAME.github.io/tile-sum/`
+   - Site will be available at: `https://bobbyberta.github.io/tile-sum/`
 
 ### Custom Domain
 
@@ -254,9 +297,22 @@ When test mode is active, a test mode indicator appears at the top of the page.
 
 ### Adding New Puzzles
 
-Edit `puzzle-data.js` to modify puzzle words or add new puzzles. Each puzzle requires:
-- `words`: Array of two words
-- `solution`: Array of the correct solution (same as words, but can be in different order)
+1. **Edit the source file**: Open `puzzle-data.js` and add or modify puzzles
+2. **Each puzzle requires**:
+   - `words`: Array of two words
+   - `solution`: Array of the correct solution (same as words, but can be in different order)
+3. **Rebuild encoded data**: Run `npm run build:data` to regenerate the encoded version
+4. **Test locally**: Refresh your browser to see the changes
+
+**Example:**
+```javascript
+551: {
+    words: ['NEW', 'WORD'],
+    solution: ['NEW', 'WORD']
+}
+```
+
+**Important:** After editing `puzzle-data.js`, always run `npm run build:data` before testing or deploying to ensure the encoded version is up to date.
 
 ### Cursor Rules
 
@@ -275,6 +331,8 @@ See `CURSOR_RULES_SOURCE.md` for detailed information about the rule format.
 - **404 errors?** Ensure all file paths are relative (not absolute)
 - **Styling broken?** Ensure `styles.css` exists (run `npm run build:css` if missing) and `.nojekyll` file exists
 - **Modules not loading?** Ensure you're using a local server (not `file://` protocol) due to ES6 module requirements
+- **Puzzle data not working?** Ensure `puzzle-data-encoded.js` exists (run `npm run build:data` if missing)
+- **Changes to puzzle data not showing?** Make sure you ran `npm run build:data` after editing `puzzle-data.js`
 
 ## Browser Support
 

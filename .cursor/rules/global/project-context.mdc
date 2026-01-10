@@ -17,19 +17,27 @@ alwaysApply: true
 - **Custom Domain:** sum-tile.uk
 
 ### Project Structure
-- Root files: `index.html`, `puzzle.html`, `archive.html`, `script.js`, `puzzle-data.js`
+- Root files: `index.html`, `puzzle.html`, `archive.html`, `script.js`, `puzzle-data.js` (source), `puzzle-data-encoded.js` (generated)
 - JavaScript modules: `js/` directory containing modular files (archive.js, completion.js, drag-drop.js, feedback.js, hints.js, keyboard.js, modals.js, puzzle-core.js, puzzle-state.js, scoring.js, seo.js, ui.js, utils.js)
 - CSS: Source in `src/styles.css`, compiled to `styles.css` in root
 - Build config: `tailwind.config.js`, `postcss.config.js`
-- Scripts: `scripts/update-cursor-rules.js` for generating Cursor rules
+- Scripts: `scripts/encode-puzzle-data.js` for encoding puzzle data, `scripts/update-cursor-rules.js` for generating Cursor rules
 - Static assets: `favicon.svg`, `og-image.svg`, `CNAME`, `robots.txt`, `sitemap.xml`
 
 ### Deployment Requirements
 - Always use relative paths (not absolute) for GitHub Pages compatibility
-- Compiled `styles.css` must be committed to repository
+- Compiled `styles.css` and `puzzle-data-encoded.js` must be committed to repository
+- Run `npm run build:all` before deployment (builds both CSS and encoded puzzle data)
 - Run `npm run build:css` after any Tailwind CSS changes
+- Run `npm run build:data` after editing `puzzle-data.js` (source file)
 - Ensure `.nojekyll` file exists to prevent Jekyll processing
 - Test modes available via `?test=archive` (archive testing) and `?test=advent` (calendar view testing) URL parameters for development
+
+### Puzzle Data Protection
+- Puzzle data is encoded/obfuscated using multi-layer encoding (base64 + XOR cipher + chunking)
+- Source file is `puzzle-data.js` (edit this during development)
+- Encoded file is `puzzle-data-encoded.js` (auto-generated, used in production)
+- All imports use `puzzle-data-encoded.js` - never import `puzzle-data.js` directly in production code
 
 ### Browser Support
 - Target modern browsers: Chrome, Firefox, Safari, Edge (latest versions)

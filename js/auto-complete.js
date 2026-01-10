@@ -1,6 +1,6 @@
 // Auto-completion detection - automatically shows success modal when solution is correct
 
-import { validateSolution, calculateWordScore } from '../puzzle-data.js';
+import { validateSolution, calculateWordScore } from '../puzzle-data-encoded.js';
 import { showSuccessModal } from './modals.js';
 import { triggerSnowflakeConfetti } from './feedback.js';
 import { 

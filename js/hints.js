@@ -1,6 +1,6 @@
 // Hints system
 
-import { PUZZLE_DATA } from '../puzzle-data.js';
+import { PUZZLE_DATA } from '../puzzle-data-encoded.js';
 import { 
     getHintsRemaining, 
     decrementHintsRemaining,

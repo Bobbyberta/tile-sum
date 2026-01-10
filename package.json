@@ -5,6 +5,8 @@
   "scripts": {
     "build:css": "postcss src/styles.css -o styles.css",
     "watch:css": "postcss src/styles.css -o styles.css --watch",
+    "build:data": "node scripts/encode-puzzle-data.js",
+    "build:all": "npm run build:css && npm run build:data",
     "update-rules": "node scripts/update-cursor-rules.js",
     "validate-rules": "node scripts/update-cursor-rules.js"
   },

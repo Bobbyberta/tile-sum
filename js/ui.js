@@ -1,8 +1,8 @@
 // UI initialization functions
 
-import { isAdventMode } from '../puzzle-data.js';
-import { formatDateString, getPuzzleNumberForDate, calculateWordScore } from '../puzzle-data.js';
-import { PUZZLE_DATA, SCRABBLE_SCORES } from '../puzzle-data.js';
+import { isAdventMode } from '../puzzle-data-encoded.js';
+import { formatDateString, getPuzzleNumberForDate, calculateWordScore } from '../puzzle-data-encoded.js';
+import { PUZZLE_DATA, SCRABBLE_SCORES } from '../puzzle-data-encoded.js';
 import { isTestMode, isAdventTestMode, isArchiveTestMode, getTestModeParam, getTestModeParamWithAmpersand } from './utils.js';
 import { getDaySuffix } from './utils.js';
 import { initPuzzleWithPrefix } from '../script.js';

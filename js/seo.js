@@ -1,6 +1,6 @@
 // SEO and social meta tags management
 
-import { PUZZLE_DATA, formatDateString, getDateForPuzzleNumber } from '../puzzle-data.js';
+import { PUZZLE_DATA, formatDateString, getDateForPuzzleNumber } from '../puzzle-data-encoded.js';
 import { getDaySuffix } from './utils.js';
 
 // Update social sharing meta tags for puzzle pages
