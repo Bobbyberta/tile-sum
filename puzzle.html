@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Play today's Christmas word game - Daily word challenge advent puzzle! Scrabble anagram game where you arrange letter tiles to form words. Festive brain teaser with Scrabble scoring.">
-    <meta name="keywords" content="Christmas word game, Advent puzzle, Daily word challenge, Scrabble anagram game, festive brain teaser, Dec 1st game, advent calendar puzzle, word puzzle game, daily puzzle, anagram puzzle, word game, tile puzzle, Scrabble puzzle">
+    <meta name="description" content="Daily word puzzle game - Arrange letter tiles to form words in this Scrabble anagram challenge. Play today's puzzle!">
+    <meta name="keywords" content="Daily word puzzle, Daily word challenge, Scrabble anagram game, word puzzle game, anagram puzzle, daily puzzle, word game, tile puzzle, Scrabble puzzle">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://sum-tile.uk/puzzle.html" id="canonical-url">
-    <title>Puzzle Day 1 - Christmas Word Game | Advent Puzzle</title>
+    <title>Puzzle - Sum Tile | Daily Word Puzzle</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -15,16 +15,16 @@
     <link rel="apple-touch-icon" href="/favicon.png">
     
     <!-- Social Sharing Meta Tags (will be updated dynamically by JavaScript) -->
-    <meta property="og:title" content="Puzzle Day 1 - Christmas Word Game | Advent Puzzle" id="og-title">
-    <meta property="og:description" content="Daily word challenge advent puzzle - Scrabble anagram game! Arrange letter tiles to form words in this festive brain teaser." id="og-description">
+    <meta property="og:title" content="Puzzle - Sum Tile | Daily Word Puzzle" id="og-title">
+    <meta property="og:description" content="Daily word puzzle game - Arrange letter tiles to form words in this Scrabble anagram challenge." id="og-description">
     <meta property="og:image" content="https://sum-tile.uk/og-image.png" id="og-image">
     <meta property="og:url" content="https://sum-tile.uk/puzzle.html" id="og-url">
     <meta property="og:type" content="article" id="og-type">
     <meta property="og:site_name" content="Sum Tile">
     <meta property="article:author" content="Sum Tile">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Puzzle Day 1 - Christmas Word Game | Advent Puzzle" id="twitter-title">
-    <meta name="twitter:description" content="Daily word challenge advent puzzle - Scrabble anagram game! Arrange letter tiles to form words in this festive brain teaser." id="twitter-description">
+    <meta name="twitter:title" content="Puzzle - Sum Tile | Daily Word Puzzle" id="twitter-title">
+    <meta name="twitter:description" content="Daily word puzzle game - Arrange letter tiles to form words in this Scrabble anagram challenge." id="twitter-description">
     <meta name="twitter:image" content="https://sum-tile.uk/og-image.png" id="twitter-image">
     <meta name="twitter:image:src" content="https://sum-tile.uk/og-image.png" id="twitter-image-src">
     
@@ -60,11 +60,11 @@
         "@context": "https://schema.org",
         "@type": "Game",
         "name": "Sum Tile Puzzle",
-        "description": "Christmas word game - Daily word challenge advent puzzle! Scrabble anagram game where players arrange letter tiles to form words. Each puzzle features an anagram challenge with Scrabble scoring.",
+        "description": "Daily word puzzle game - Arrange letter tiles to form words in this Scrabble anagram challenge. Each puzzle features an anagram challenge with Scrabble scoring.",
         "gameItem": {
             "@type": "Thing",
-            "name": "Advent Calendar Puzzle",
-            "description": "Daily word challenge - Scrabble anagram game festive brain teaser"
+            "name": "Daily Word Puzzle",
+            "description": "Daily word challenge - Scrabble anagram game"
         },
         "gameLocation": "https://sum-tile.uk/puzzle.html"
     }
@@ -110,6 +110,11 @@
         .slot.drag-over {
             border-color: #6366f1;
             background-color: #eef2ff;
+        }
+        .tile.drag-over {
+            outline: 2px solid #6366f1;
+            outline-offset: 2px;
+            transform: scale(1.05);
         }
         .slot.filled {
             border: none;
@@ -252,6 +257,7 @@
                 </svg>
             </button>
             <h2 id="modal-title" class="text-3xl font-bold text-indigo-900 mb-4 text-center">You solved the puzzle!</h2>
+            <p id="hints-used-message" class="text-center text-gray-600 mb-4"></p>
             <div id="share-message-container" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <p id="share-message" class="text-sm text-gray-700 whitespace-pre-wrap break-words"></p>
             </div>
@@ -461,7 +467,7 @@
                 }
             } else if (testValue === 'advent') {
                 if (indicator) {
-                    indicator.textContent = '🧪 Test Mode: Advent Calendar Mode';
+                    indicator.textContent = '🧪 Test Mode: Calendar View Mode';
                     indicator.classList.remove('hidden');
                 }
             }
@@ -503,14 +509,14 @@
             const testParam = (testValue === 'archive' || testValue === 'advent') ? `?test=${testValue}` : '';
             
             if (isAdvent || testValue === 'advent') {
-                // Advent mode: show "Back to Calendar"
+                // Advent test mode: show "Back to Calendar" (for testing calendar view)
                 if (backLink) {
                     backLink.textContent = '← Back to Calendar';
                     backLink.href = `index.html${testParam}`;
                 }
                 if (archiveLink) archiveLink.classList.add('hidden');
             } else {
-                // Daily mode: show "Back to Home" and "View Archive"
+                // Standard format: show "Back to Home" and "View Archive"
                 if (backLink) {
                     backLink.textContent = '← Back to Home';
                     backLink.href = `index.html${testParam}`;

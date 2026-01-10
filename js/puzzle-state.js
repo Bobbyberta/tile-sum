@@ -12,6 +12,12 @@ let hintsRemaining = 3;
 // Archive hint counter - track remaining hints for archive puzzles
 let archiveHintsRemaining = 3;
 
+// Solution shown state - track whether solution was shown (for regular puzzles)
+let solutionShown = false;
+
+// Archive solution shown state - track whether solution was shown (for archive puzzles)
+let archiveSolutionShown = false;
+
 // Getters and setters for dragged tile
 export function getDraggedTile() {
     return draggedTile;
@@ -62,5 +68,23 @@ export function setArchiveHintsRemaining(count) {
 
 export function decrementArchiveHintsRemaining() {
     archiveHintsRemaining = Math.max(0, archiveHintsRemaining - 1);
+}
+
+// Getters and setters for solution shown state
+export function getSolutionShown() {
+    return solutionShown;
+}
+
+export function setSolutionShown(value) {
+    solutionShown = value;
+}
+
+// Getters and setters for archive solution shown state
+export function getArchiveSolutionShown() {
+    return archiveSolutionShown;
+}
+
+export function setArchiveSolutionShown(value) {
+    archiveSolutionShown = value;
 }
 

@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Play Christmas word game - Daily word challenge advent puzzle! Arrange letter tiles to form words in this festive brain teaser. Scrabble anagram game with daily challenges starting Dec 1st.">
-    <meta name="keywords" content="Christmas word game, Advent puzzle, Daily word challenge, Scrabble anagram game, festive brain teaser, Dec 1st game, advent calendar puzzle, word puzzle game, anagram puzzle, daily puzzle, word game, tile puzzle, Scrabble puzzle">
+    <meta name="description" content="Daily word puzzle game - Arrange letter tiles to form words in this Scrabble anagram challenge. Play a new puzzle every day!">
+    <meta name="keywords" content="Daily word puzzle, Daily word challenge, Scrabble anagram game, word puzzle game, anagram puzzle, daily puzzle, word game, tile puzzle, Scrabble puzzle">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://sum-tile.uk/">
-    <title>Christmas Word Game - Advent Puzzle | Daily Word Challenge</title>
+    <title>Sum Tile - Daily Word Puzzle | Scrabble Anagram Game</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -15,15 +15,15 @@
     <link rel="apple-touch-icon" href="/favicon.png">
     
     <!-- Social Sharing Meta Tags -->
-    <meta property="og:title" content="Christmas Word Game - Advent Puzzle | Daily Word Challenge">
-    <meta property="og:description" content="Play Christmas word game - Daily word challenge advent puzzle! Scrabble anagram game with festive brain teaser challenges starting Dec 1st.">
+    <meta property="og:title" content="Sum Tile - Daily Word Puzzle | Scrabble Anagram Game">
+    <meta property="og:description" content="Daily word puzzle game - Arrange letter tiles to form words in this Scrabble anagram challenge. Play a new puzzle every day!">
     <meta property="og:image" content="https://sum-tile.uk/og-image.png">
     <meta property="og:url" content="https://sum-tile.uk/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Sum Tile">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Christmas Word Game - Advent Puzzle | Daily Word Challenge">
-    <meta name="twitter:description" content="Play Christmas word game - Daily word challenge advent puzzle! Scrabble anagram game with festive brain teaser challenges starting Dec 1st.">
+    <meta name="twitter:title" content="Sum Tile - Daily Word Puzzle | Scrabble Anagram Game">
+    <meta name="twitter:description" content="Daily word puzzle game - Arrange letter tiles to form words in this Scrabble anagram challenge. Play a new puzzle every day!">
     <meta name="twitter:image" content="https://sum-tile.uk/og-image.png">
     <meta name="twitter:image:src" content="https://sum-tile.uk/og-image.png">
     
@@ -102,6 +102,11 @@
             border-color: #6366f1;
             background-color: #eef2ff;
         }
+        .tile.drag-over {
+            outline: 2px solid #6366f1;
+            outline-offset: 2px;
+            transform: scale(1.05);
+        }
         .slot.filled {
             border: none;
             background-color: transparent;
@@ -152,7 +157,7 @@
     <a href="#main-content" class="sr-only focus:w-auto focus:h-auto focus:p-4 focus:m-0 focus:overflow-visible focus:clip-auto focus:whitespace-normal focus:border-0 focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-indigo-600 focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
         Skip to main content
     </a>
-    <!-- Christmas Countdown Overlay -->
+    <!-- Countdown Overlay (hidden - kept for potential future use) -->
     <div id="countdown-overlay" class="hidden fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-indigo-600 to-indigo-700 shadow-lg border-b-2 border-indigo-800">
         <div class="container mx-auto px-4 py-4">
             <div class="text-center">
@@ -178,7 +183,7 @@
                 </button>
             </div>
             <h1 class="text-4xl md:text-5xl font-bold text-indigo-900 mb-2">Sum Tile</h1>
-            <p class="text-lg text-indigo-900" id="header-subtitle">Christmas Advent Calendar Edition</p>
+            <p class="text-lg text-indigo-900 hidden" id="header-subtitle"></p>
             <p id="test-mode-indicator" class="hidden mt-2 text-sm text-orange-600 font-semibold"></p>
         </header>
 
@@ -283,7 +288,7 @@
                 }
             } else if (testValue === 'advent') {
                 if (indicator) {
-                    indicator.textContent = '🧪 Test Mode: Advent Calendar Mode';
+                    indicator.textContent = '🧪 Test Mode: Calendar View Mode';
                     indicator.classList.remove('hidden');
                 }
             }
@@ -296,10 +301,10 @@
             if (testValue === 'archive') {
                 initDailyPuzzle();
             } else if (isAdventMode()) {
-                // Show calendar (advent mode or advent test mode)
+                // Show calendar (advent test mode only - for testing calendar view)
                 initCalendar();
             } else {
-                // Show today's puzzle (daily mode)
+                // Standard format: always show today's puzzle (daily mode)
                 initDailyPuzzle();
             }
             
@@ -326,6 +331,7 @@
                 </svg>
             </button>
             <h2 id="daily-modal-title" class="text-3xl font-bold text-indigo-900 mb-4 text-center">You solved the puzzle!</h2>
+            <p id="daily-hints-used-message" class="text-center text-gray-600 mb-4"></p>
             <div id="daily-share-message-container" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <p id="daily-share-message" class="text-sm text-gray-700 whitespace-pre-wrap break-words"></p>
             </div>

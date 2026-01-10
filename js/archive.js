@@ -16,7 +16,9 @@ import { getDaySuffix } from './utils.js';
 import { 
     setArchiveHintsRemaining,
     getArchiveHintsRemaining,
-    decrementArchiveHintsRemaining
+    decrementArchiveHintsRemaining,
+    setArchiveSolutionShown,
+    getArchiveSolutionShown
 } from './puzzle-state.js';
 import { createTile, createSlot, updatePlaceholderTile } from './puzzle-core.js';
 import { 
@@ -45,9 +47,10 @@ import {
     handleSlotBlur
 } from './keyboard.js';
 import { updateScoreDisplay, updateSubmitButton, checkSolution } from './scoring.js';
-import { provideHint, updateHintButtonText } from './hints.js';
+import { provideHint, updateHintButtonText, showSolution } from './hints.js';
 import { showFeedback, triggerSnowflakeConfetti } from './feedback.js';
 import { showSuccessModal, showErrorModal, closeErrorModal, closeSuccessModal, copyShareMessage } from './modals.js';
+import { initAutoComplete, checkAutoComplete, areAllSlotsFilled } from './auto-complete.js';
 
 // Module-level variable to store the returnArchiveTileToContainer callback
 let currentReturnArchiveTileToContainer = null;
@@ -291,30 +294,19 @@ function initArchivePuzzle(puzzleNumber, dateString) {
     tilesContainer.innerHTML = '';
     
     // Make tiles container a drop zone
-    // Create callbacks for archive puzzle
-    const archivePlaceTileCallback = (tile, slot) => {
-        placeTileInSlot(tile, slot, {
-            isArchive: true,
-            updateArchiveScoreDisplay: updateArchiveScoreDisplay,
-            updateArchiveSubmitButton: updateArchiveSubmitButton,
-            removeTileCallback: archiveRemoveTileCallback,
-            handlers: null // Will be set after archiveHandlers is created
-        });
-    };
-    // archiveRemoveTileCallback will be updated after returnArchiveTileToContainer is defined
-    let archiveRemoveTileCallback;
-    
+    // Create handlers object first
     const archiveHandlers = {
         onDragStart: handleDragStart,
         onDragEnd: handleDragEnd,
-        onClick: (e) => handleTileClick(e, archivePlaceTileCallback),
-        onTouchStart: (e) => handleTouchStart(e, archivePlaceTileCallback, archiveRemoveTileCallback),
         onTouchMove: handleTouchMove,
         onTouchEnd: handleTouchEnd,
         onTouchCancel: handleTouchCancel
     };
     
-    // Update placeTileCallback to include handlers
+    // archiveRemoveTileCallback will be defined after returnArchiveTileToContainer
+    let archiveRemoveTileCallback;
+    
+    // Define placeTileCallback with handlers (removeTileCallback will be set later)
     const archivePlaceTileCallbackWithHandlers = (tile, slot) => {
         placeTileInSlot(tile, slot, {
             isArchive: true,
@@ -324,7 +316,6 @@ function initArchivePuzzle(puzzleNumber, dateString) {
             handlers: archiveHandlers
         });
     };
-    archiveHandlers.onClick = (e) => handleTileClick(e, archivePlaceTileCallbackWithHandlers);
     
     // Define returnArchiveTileToContainer here so it has access to archiveHandlers
     function returnArchiveTileToContainer(letter, originalIndex, isKeyboardNavigation = false) {
@@ -340,6 +331,15 @@ function initArchivePuzzle(puzzleNumber, dateString) {
 
         // Update score display
         updateArchiveScoreDisplay();
+        
+        // Check if solution is automatically complete
+        // Only check if all slots are filled (optimization)
+        // Use requestAnimationFrame to ensure DOM is fully updated
+        requestAnimationFrame(() => {
+            if (areAllSlotsFilled()) {
+                checkAutoComplete(puzzleNumber, 'archive-');
+            }
+        });
         
         // Focus the new tile only for keyboard navigation
         // Don't focus for drag/touch interactions
@@ -364,7 +364,8 @@ function initArchivePuzzle(puzzleNumber, dateString) {
         });
     };
     
-    // Now update archiveHandlers.onTouchStart with the updated callback
+    // Now update archiveHandlers with the final callbacks
+    archiveHandlers.onClick = (e) => handleTileClick(e, archivePlaceTileCallbackWithHandlers, archiveRemoveTileCallback);
     archiveHandlers.onTouchStart = (e) => handleTouchStart(e, archivePlaceTileCallbackWithHandlers, archiveRemoveTileCallback);
     
     tilesContainer.addEventListener('dragover', (e) => handleTilesContainerDragOver(e));
@@ -481,8 +482,9 @@ function initArchivePuzzle(puzzleNumber, dateString) {
         });
     }
 
-    // Initialize hint counter
+    // Initialize hint counter and reset solution shown state
     setArchiveHintsRemaining(3);
+    setArchiveSolutionShown(false);
     
     // Setup hint button
     const hintBtn = document.getElementById('archive-hint-btn');
@@ -490,7 +492,12 @@ function initArchivePuzzle(puzzleNumber, dateString) {
         hintBtn.disabled = false;
         updateHintButtonText('archive-hint-btn', getArchiveHintsRemaining());
         hintBtn.addEventListener('click', () => {
-            provideArchiveHint(puzzleNumber);
+            const hintsRemaining = getArchiveHintsRemaining();
+            if (hintsRemaining <= 0) {
+                showArchiveSolution(puzzleNumber);
+            } else {
+                provideArchiveHint(puzzleNumber);
+            }
         });
     }
 
@@ -558,6 +565,37 @@ function provideArchiveHint(puzzleNumber) {
     });
 }
 
+// Show solution for archive puzzle
+function showArchiveSolution(puzzleNumber) {
+    showSolution(puzzleNumber, {
+        isArchive: true,
+        returnArchiveTileToContainer: currentReturnArchiveTileToContainer,
+        updateArchiveScoreDisplay: updateArchiveScoreDisplay,
+        updateArchiveSubmitButton: updateArchiveSubmitButton,
+        handlers: {
+            onDragStart: handleDragStart,
+            onDragEnd: handleDragEnd,
+            onClick: (e) => handleTileClick(e, (tile, slot) => {
+                placeTileInSlot(tile, slot, {
+                    isArchive: true,
+                    updateArchiveScoreDisplay: updateArchiveScoreDisplay,
+                    updateArchiveSubmitButton: updateArchiveSubmitButton,
+                    removeTileCallback: (slot) => removeTileFromSlot(slot, {
+                        isArchive: true,
+                        returnArchiveTileToContainer: currentReturnArchiveTileToContainer
+                    })
+                });
+            })
+        }
+    });
+    
+    // Check if solution is automatically complete
+    // Only check if all slots are filled (optimization)
+    if (areAllSlotsFilled()) {
+        checkAutoComplete(puzzleNumber, 'archive-');
+    }
+}
+
 
 // Check solution for archive puzzle
 function checkArchiveSolution(puzzleNumber) {
@@ -573,7 +611,9 @@ function checkArchiveSolution(puzzleNumber) {
 
 // Show success modal for archive
 function showArchiveSuccessModal(puzzleNumber, word1Score, word2Score, word1MaxScore, word2MaxScore) {
-    showSuccessModal(puzzleNumber, word1Score, word2Score, word1MaxScore, word2MaxScore, 'archive-');
+    const hintsUsed = 3 - getArchiveHintsRemaining();
+    const solutionShown = getArchiveSolutionShown();
+    showSuccessModal(puzzleNumber, word1Score, word2Score, word1MaxScore, word2MaxScore, 'archive-', hintsUsed, solutionShown);
 }
 
 // Show error modal for archive

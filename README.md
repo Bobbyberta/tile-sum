@@ -1,12 +1,12 @@
-# Sum Tile - Advent Puzzle Calendar
+# Sum Tile - Daily Word Puzzle
 
-A daily puzzle site hosted on GitHub Pages featuring an advent calendar with 25 word puzzle challenges. Each puzzle is an anagram game where players arrange letter tiles to form two words, with Scrabble scoring.
+A daily puzzle site hosted on GitHub Pages featuring a new word puzzle challenge every day. Each puzzle is an anagram game where players arrange letter tiles to form two words, with Scrabble scoring.
 
 **Live Site**: [https://sum-tile.uk](https://sum-tile.uk)
 
 ## Features
 
-- **Advent Calendar Homepage**: 25 day containers that unlock based on the current date (December 1-25)
+- **Daily Puzzle Homepage**: Shows today's puzzle automatically
 - **Daily Puzzles**: Anagram puzzles where players arrange scrambled letter tiles to form two words
 - **Archive Page**: Browse and play past puzzles
 - **Scrabble Scoring**: Each tile displays its letter and Scrabble point value
@@ -73,7 +73,7 @@ A daily puzzle site hosted on GitHub Pages featuring an advent calendar with 25 
 
 ```
 tile-sum/
-├── index.html              # Home page with advent calendar
+├── index.html              # Home page with daily puzzle
 ├── puzzle.html             # Puzzle page
 ├── archive.html            # Archive page for accessing past puzzles
 ├── puzzle-data.js          # Puzzle definitions and Scrabble scores
@@ -244,7 +244,7 @@ When test mode is active, a test mode indicator appears at the top of the page.
 
 ## How It Works
 
-- **Calendar**: The home page displays 25 days. Days unlock based on the current date (December 1-25 of the current year).
+- **Daily Puzzle**: The home page displays today's puzzle automatically. Puzzles are numbered based on days since December 1, 2025.
 - **Puzzles**: Each puzzle consists of scrambled letter tiles that form an anagram of two words. Players drag tiles into slots to form the words.
 - **Scoring**: Each letter has a Scrabble point value displayed on the tile. The total score for each word and both words combined is calculated and displayed.
 - **Validation**: When all slots are filled, the submit button becomes enabled. Clicking it validates the solution against the correct answer.

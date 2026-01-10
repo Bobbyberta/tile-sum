@@ -30,7 +30,7 @@
   <text x="600" y="280" font-family="Arial, sans-serif" font-size="96" font-weight="bold" fill="#1e1b4b" text-anchor="middle">Sum Tile</text>
   
   <!-- Subtitle -->
-  <text x="600" y="360" font-family="Arial, sans-serif" font-size="48" fill="#4f46e5" text-anchor="middle">Christmas Advent Calendar Edition</text>
+  <text x="600" y="360" font-family="Arial, sans-serif" font-size="48" fill="#4f46e5" text-anchor="middle">Daily Word Puzzle</text>
   
   <!-- Puzzle tiles illustration -->
   <g transform="translate(600, 450)">

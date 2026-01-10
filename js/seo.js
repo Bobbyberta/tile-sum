@@ -35,10 +35,10 @@ export function updateSocialMetaTags(day) {
         const year = puzzleDate.getFullYear();
         title = `Puzzle - ${dayName} ${puzzleDate.getDate()}${daySuffix} ${monthName} ${year} | Sum Tile`;
     } else {
-        title = `Puzzle Day ${day} - Christmas Word Game | Advent Puzzle`;
+        title = `Puzzle Day ${day} | Sum Tile - Daily Word Puzzle`;
     }
     
-    const description = `Daily word challenge puzzle - Scrabble anagram game! Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}. Festive brain teaser with Scrabble scoring.`;
+    const description = `Daily word puzzle game - Arrange letter tiles to form the words: ${puzzle.words.join(' and ')}. Scrabble anagram challenge with scoring.`;
     
     // Update meta description
     const metaDescription = document.querySelector('meta[name="description"]');

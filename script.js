@@ -40,14 +40,15 @@ import {
     handleSlotBlur
 } from './js/keyboard.js';
 import { updateScoreDisplay, updateSubmitButton, checkSolution } from './js/scoring.js';
-import { provideHint, updateHintButtonText } from './js/hints.js';
+import { provideHint, updateHintButtonText, showSolution } from './js/hints.js';
 import { showFeedback, triggerSnowflakeConfetti } from './js/feedback.js';
 import { showSuccessModal, showErrorModal, closeErrorModal, closeSuccessModal, showHelpModal, closeHelpModal } from './js/modals.js';
 import { updateSocialMetaTags } from './js/seo.js';
 import { getDaySuffix } from './js/utils.js';
-import { setHintsRemaining, getHintsRemaining } from './js/puzzle-state.js';
+import { setHintsRemaining, getHintsRemaining, getSolutionShown, setSolutionShown } from './js/puzzle-state.js';
 import { initArchivePage } from './js/archive.js';
 import { isPuzzleCompletedToday, isPuzzleCompletedForDate } from './js/completion.js';
+import { initAutoComplete } from './js/auto-complete.js';
 
 // Shared puzzle initialization function that works with different prefixes
 function initPuzzleWithPrefix(day, prefix = '') {
@@ -107,27 +108,30 @@ function initPuzzleWithPrefix(day, prefix = '') {
     tilesContainer.innerHTML = '';
     
     // Make tiles container a drop zone
-    let placeTileCallback;
-    let removeTileCallback;
-    
+    // Create handlers object first
     const handlers = {
         onDragStart: handleDragStart,
         onDragEnd: handleDragEnd,
-        onClick: (e) => handleTileClick(e, (tile, slot) => placeTileInSlot(tile, slot, { handlers, removeTileCallback })),
-        onTouchStart: (e) => handleTouchStart(e, placeTileCallback, removeTileCallback),
         onTouchMove: handleTouchMove,
         onTouchEnd: handleTouchEnd,
         onTouchCancel: handleTouchCancel
     };
     
-    // Now define placeTileCallback and removeTileCallback with handlers available
-    placeTileCallback = (tile, slot) => placeTileInSlot(tile, slot, { handlers, removeTileCallback });
-    removeTileCallback = (slot) => removeTileFromSlot(slot, { handlers });
-    // Update the touch start handler to use the correct callback
+    // Create context with prefix for drag-drop functions
+    const dragDropContext = { handlers, prefix, isArchive: false };
+    
+    // Define removeTileCallback first (doesn't depend on placeTileCallback)
+    const removeTileCallback = (slot) => removeTileFromSlot(slot, dragDropContext);
+    
+    // Define placeTileCallback with handlers available
+    const placeTileCallback = (tile, slot) => placeTileInSlot(tile, slot, { ...dragDropContext, removeTileCallback });
+    
+    // Now update handlers with callbacks
+    handlers.onClick = (e) => handleTileClick(e, placeTileCallback, removeTileCallback);
     handlers.onTouchStart = (e) => handleTouchStart(e, placeTileCallback, removeTileCallback);
     
     tilesContainer.addEventListener('dragover', handleTilesContainerDragOver);
-    tilesContainer.addEventListener('drop', (e) => handleTilesContainerDrop(e, { handlers }));
+    tilesContainer.addEventListener('drop', (e) => handleTilesContainerDrop(e, dragDropContext));
     tilesContainer.addEventListener('dragleave', handleTilesContainerDragLeave);
     
     letters.forEach((letter, index) => {
@@ -149,12 +153,12 @@ function initPuzzleWithPrefix(day, prefix = '') {
     
     const slotHandlers = {
         onDragOver: handleDragOver,
-        onDrop: (e) => handleDrop(e, (tile, slot) => placeTileInSlot(tile, slot, { handlers, removeTileCallback })),
+        onDrop: (e) => handleDrop(e, (tile, slot) => placeTileInSlot(tile, slot, { ...dragDropContext, removeTileCallback })),
         onDragLeave: handleDragLeave,
-        onClick: (e) => handleSlotClick(e, (slot) => removeTileFromSlot(slot, { handlers })),
+        onClick: (e) => handleSlotClick(e, (slot) => removeTileFromSlot(slot, dragDropContext)),
         onKeyDown: (e) => handleSlotKeyDown(e, 
-            (tile, slot) => placeTileInSlot(tile, slot, { handlers, removeTileCallback, isKeyboardNavigation: true }),
-            (slot) => removeTileFromSlot(slot, { handlers, isKeyboardNavigation: true })
+            (tile, slot) => placeTileInSlot(tile, slot, { ...dragDropContext, removeTileCallback, isKeyboardNavigation: true }),
+            (slot) => removeTileFromSlot(slot, { ...dragDropContext, isKeyboardNavigation: true })
         ),
         onFocus: handleSlotFocus,
         onBlur: handleSlotBlur
@@ -210,15 +214,18 @@ function initPuzzleWithPrefix(day, prefix = '') {
                 day,
                 () => showErrorModal(prefix),
                 (day, word1Score, word2Score, word1MaxScore, word2MaxScore) => {
-                    showSuccessModal(day, word1Score, word2Score, word1MaxScore, word2MaxScore, prefix);
+                    const hintsUsed = 3 - getHintsRemaining();
+                    const solutionShown = getSolutionShown();
+                    showSuccessModal(day, word1Score, word2Score, word1MaxScore, word2MaxScore, prefix, hintsUsed, solutionShown);
                 },
                 () => triggerSnowflakeConfetti()
             );
         });
     }
 
-    // Initialize hint counter
+    // Initialize hint counter and reset solution shown state
     setHintsRemaining(3);
+    setSolutionShown(false);
     
     // Setup hint button
     const hintBtn = document.getElementById(`${prefix}hint-btn`);
@@ -230,7 +237,12 @@ function initPuzzleWithPrefix(day, prefix = '') {
         hintBtn.parentNode.replaceChild(newHintBtn, hintBtn);
         
         newHintBtn.addEventListener('click', () => {
-            provideHint(day);
+            const hintsRemaining = getHintsRemaining();
+            if (hintsRemaining <= 0) {
+                showSolution(day, { isArchive: false, prefix });
+            } else {
+                provideHint(day, { isArchive: false, prefix });
+            }
         });
     }
 
@@ -311,6 +323,15 @@ function initPuzzleWithPrefix(day, prefix = '') {
 
     // Update score display
     updateScoreDisplay(prefix);
+    
+    // Initialize auto-complete detection
+    console.log('[AutoComplete] About to call initAutoComplete', { day, prefix, dayType: typeof day });
+    if (day != null) {
+        initAutoComplete(day, prefix);
+        console.log('[AutoComplete] Initialization called in initPuzzleWithPrefix', { day, prefix });
+    } else {
+        console.error('[AutoComplete] ERROR: day is null or undefined, cannot initialize auto-complete', { day, prefix });
+    }
 }
 
 // Puzzle initialization (for puzzle.html)
