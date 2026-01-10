@@ -51,8 +51,22 @@ export function handleSlotKeyDown(e, placeTileCallback, removeTileCallback) {
                     removeTileCallback(slot);
                 }
                 // Focus the tile that was removed (will be in container)
+                // Detect which container to use by checking where the slot is
                 setTimeout(() => {
-                    const tilesContainer = document.getElementById('tiles-container') || 
+                    const slot = e.currentTarget;
+                    const wordSlotsContainer = slot.closest('#word-slots, #daily-word-slots, #archive-word-slots');
+                    let tilesContainerId = 'tiles-container';
+                    if (wordSlotsContainer) {
+                        const containerId = wordSlotsContainer.id;
+                        if (containerId === 'daily-word-slots') {
+                            tilesContainerId = 'daily-tiles-container';
+                        } else if (containerId === 'archive-word-slots') {
+                            tilesContainerId = 'archive-tiles-container';
+                        }
+                    }
+                    const tilesContainer = document.getElementById(tilesContainerId) ||
+                                         document.getElementById('tiles-container') ||
+                                         document.getElementById('daily-tiles-container') ||
                                          document.getElementById('archive-tiles-container');
                     if (tilesContainer && tile) {
                         const removedTile = tilesContainer.querySelector(`[data-letter="${tile.getAttribute('data-letter')}"]`);

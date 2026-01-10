@@ -73,7 +73,7 @@ function unlockBodyScroll() {
 }
 
 // Show success modal
-export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, word2MaxScore, prefix = '') {
+export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, word2MaxScore, prefix = '', hintsUsed = 0, solutionShown = false) {
     const modal = document.getElementById(`${prefix}success-modal`);
     if (!modal) return;
 
@@ -94,12 +94,12 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
         puzzleUrl = `${baseUrl}/puzzle.html?day=${day}${testParam}`;
     }
     
-    // Format the share message based on mode (advent vs daily)
+    // Format the share message (standard daily format)
     let shareText;
     const isAdvent = isAdventMode();
     
     if (isAdvent) {
-        // Calculate days until Christmas (December 25)
+        // Advent test mode: Calculate days until Christmas (for testing calendar view)
         const today = new Date();
         const currentYear = today.getFullYear();
         let christmas = new Date(currentYear, 11, 25); // Month is 0-indexed, so 11 = December
@@ -118,11 +118,23 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
         const timeDiff = christmas.getTime() - today.getTime();
         const daysTillChristmas = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
         
-        // Format advent mode message
+        // Format advent test mode message
         shareText = `${daysTillChristmas} Days till Christmas!\n\n${puzzleUrl}`;
     } else {
-        // Format daily mode message
-        shareText = `Play Sum Tiles #${day}\n\n${puzzleUrl}`;
+        // Standard format: daily puzzle message
+        shareText = `Play Sum Tile #${day}\n\n${puzzleUrl}`;
+    }
+    
+    // Display hints used message
+    const hintsUsedMessage = document.getElementById(`${prefix}hints-used-message`);
+    if (hintsUsedMessage) {
+        if (solutionShown) {
+            hintsUsedMessage.textContent = `You used ${hintsUsed} hint${hintsUsed !== 1 ? 's' : ''} and were shown the solution.`;
+        } else if (hintsUsed > 0) {
+            hintsUsedMessage.textContent = `You used ${hintsUsed} hint${hintsUsed !== 1 ? 's' : ''}.`;
+        } else {
+            hintsUsedMessage.textContent = '';
+        }
     }
     
     // Display share message in modal

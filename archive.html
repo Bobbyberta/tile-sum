@@ -65,6 +65,11 @@
             border-color: #6366f1;
             background-color: #eef2ff;
         }
+        .tile.drag-over {
+            outline: 2px solid #6366f1;
+            outline-offset: 2px;
+            transform: scale(1.05);
+        }
         .slot.filled {
             border: none;
             background-color: transparent;
@@ -190,6 +195,8 @@
 
             <h2 id="archive-modal-title" class="text-3xl font-bold text-indigo-900 mb-4 text-center">You solved the puzzle!</h2>
 
+            <p id="archive-hints-used-message" class="text-center text-gray-600 mb-4"></p>
+
             <div id="archive-share-message-container" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
 
                 <p id="archive-share-message" class="text-sm text-gray-700 whitespace-pre-wrap break-words"></p>
@@ -252,7 +259,7 @@
                 }
             } else if (testValue === 'advent') {
                 if (indicator) {
-                    indicator.textContent = '🧪 Test Mode: Advent Calendar Mode';
+                    indicator.textContent = '🧪 Test Mode: Calendar View Mode';
                     indicator.classList.remove('hidden');
                 }
             }

@@ -9,7 +9,7 @@ import { initPuzzleWithPrefix } from '../script.js';
 import { isPuzzleCompletedToday, isPuzzleCompletedForDate } from './completion.js';
 import { createTile, createSlot } from './puzzle-core.js';
 
-// Update Christmas countdown overlay
+// Update countdown overlay (hidden in standard format - only shown in advent test mode)
 export function updateCountdown() {
     const countdownOverlay = document.getElementById('countdown-overlay');
     const countdownDays = document.getElementById('countdown-days');
@@ -27,8 +27,9 @@ export function updateCountdown() {
         return;
     }
     
-    // Only show countdown in advent mode (before Dec 26) or advent test mode
-    if (!isAdventMode() && !isAdventTestMode()) {
+    // Only show countdown in advent test mode (for testing calendar view)
+    // Standard format: always hide countdown
+    if (!isAdventTestMode()) {
         countdownOverlay.classList.add('hidden');
         if (mainContent) {
             mainContent.style.paddingTop = '';
@@ -37,6 +38,7 @@ export function updateCountdown() {
         return;
     }
     
+    // Advent test mode: show countdown logic (for testing purposes)
     const today = new Date();
     const currentYear = today.getFullYear();
     const decemberFirst = new Date(currentYear, 11, 1); // Month is 0-indexed, so 11 = December
@@ -100,6 +102,7 @@ export function initDailyPuzzle() {
             puzzleNumberForSubtitle = getPuzzleNumberForDate(today);
         }
         headerSubtitle.textContent = `Daily Word Puzzle #${puzzleNumberForSubtitle}`;
+        headerSubtitle.classList.remove('hidden');
     }
     
     // Update archive link to preserve test mode (only show in archive test mode or normal daily mode)
@@ -247,16 +250,22 @@ function displayCompletedPuzzle(puzzleNumber, displayDate) {
     }
 }
 
-// Calendar initialization
+// Calendar initialization (kept for potential future use - only called in advent test mode)
 export function initCalendar() {
     const calendar = document.getElementById('calendar');
+    const headerSubtitle = document.getElementById('header-subtitle');
     if (!calendar) return;
+
+    // Hide subtitle in calendar view (or update if you want a different message)
+    if (headerSubtitle) {
+        headerSubtitle.classList.add('hidden');
+    }
 
     const adventTestMode = isAdventTestMode();
     const today = new Date();
     const currentYear = today.getFullYear();
 
-    // December 1-25
+    // December 1-25 (for advent test mode)
     const adventStart = new Date(currentYear, 11, 1); // Month is 0-indexed, so 11 = December
     const adventEnd = new Date(currentYear, 11, 25);
 

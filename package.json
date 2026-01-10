@@ -1,7 +1,7 @@
 {
   "name": "tile-sum",
   "version": "1.0.0",
-  "description": "Advent Puzzle Calendar - Daily word puzzle game",
+  "description": "Daily word puzzle game - Scrabble anagram challenges",
   "scripts": {
     "build:css": "postcss src/styles.css -o styles.css",
     "watch:css": "postcss src/styles.css -o styles.css --watch",
