@@ -49,6 +49,7 @@ import { setHintsRemaining, getHintsRemaining, getSolutionShown, setSolutionShow
 import { initArchivePage } from './js/archive.js';
 import { isPuzzleCompletedToday, isPuzzleCompletedForDate } from './js/completion.js';
 import { initAutoComplete } from './js/auto-complete.js';
+import { displayStreak } from './js/streak.js';
 
 // Shared puzzle initialization function that works with different prefixes
 function initPuzzleWithPrefix(day, prefix = '') {
