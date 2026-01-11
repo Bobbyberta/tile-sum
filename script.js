@@ -239,10 +239,16 @@ function initPuzzleWithPrefix(day, prefix = '') {
         
         newHintBtn.addEventListener('click', () => {
             const hintsRemaining = getHintsRemaining();
+            // Pass full dragDropContext to ensure handlers are properly attached to returned tiles
+            const hintContext = {
+                ...dragDropContext,
+                placeTileCallback,
+                removeTileCallback
+            };
             if (hintsRemaining <= 0) {
-                showSolution(day, { isArchive: false, prefix });
+                showSolution(day, hintContext);
             } else {
-                provideHint(day, { isArchive: false, prefix });
+                provideHint(day, hintContext);
             }
         });
     }

@@ -343,4 +343,6 @@ See `CURSOR_RULES_SOURCE.md` for detailed information about the rule format.
 
 ## License
 
-This project is open source and available for personal use.
+Copyright (c) 2025. All rights reserved.
+
+This project is proprietary and confidential. Unauthorized copying, distribution, or use of this project, via any medium, is strictly prohibited without the express written permission of the copyright holder.

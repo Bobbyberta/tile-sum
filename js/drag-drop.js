@@ -487,10 +487,42 @@ export function handleTouchEnd(e) {
             debugLog('handleTouchEnd: Dropped on slot, placing tile');
             touchDragState.placeTileCallback(touchDragState.tile, dropTarget);
         }
+    } else {
+        // This was a tap (not a drag) - handle it like a click
+        // Only handle taps on tiles in containers (not in slots)
+        const tile = touchDragState.tile;
+        const isInSlot = tile.closest('.slot');
+        const isInContainer = tile.closest('#tiles-container, #archive-tiles-container, #daily-tiles-container');
+        
+        if (!isInSlot && isInContainer && touchDragState.placeTileCallback) {
+            debugLog('handleTouchEnd: Tap detected on tile in container, placing in next slot');
+            // Use the same logic as handleTileClick for placing tile
+            const allSlots = document.querySelectorAll('.slot:not([data-locked="true"])');
+            let targetSlot = null;
+            
+            // Find first empty slot
+            for (const slot of allSlots) {
+                if (!slot.classList.contains('filled')) {
+                    targetSlot = slot;
+                    break;
+                }
+            }
+            
+            if (targetSlot) {
+                touchDragState.placeTileCallback(tile, targetSlot);
+            } else {
+                debugLog('handleTouchEnd: No available slot found for tap');
+            }
+        }
     }
     
     // Clean up drag state (idempotent - safe to call multiple times)
     cleanupTouchDrag();
+    
+    // Reset touch interaction flag after a delay to allow click events to be processed
+    setTimeout(() => {
+        interactionState.touchInteractionActive = false;
+    }, interactionState.CLICK_DELAY_AFTER_TOUCH);
 }
 
 // Clean up touch drag state
@@ -913,7 +945,7 @@ function swapTiles(draggedTile, existingTile, targetSlot, context = {}) {
             if (shouldUseArchiveReturn) {
                 context.returnArchiveTileToContainer(existingLetter, existingIndex);
             } else {
-                returnTileToContainer(existingLetter, existingIndex, context.handlers || {}, isKeyboardNavigation);
+                returnTileToContainer(existingLetter, existingIndex, context.handlers || {}, isKeyboardNavigation, '', context);
             }
         }
         
@@ -1040,7 +1072,7 @@ export function removeTileFromSlot(slot, context = {}) {
             // Pass isKeyboardNavigation to archive return function
             context.returnArchiveTileToContainer(letter, originalIndex, isKeyboardNavigation);
         } else {
-            returnTileToContainer(letter, originalIndex, context.handlers || {}, isKeyboardNavigation, prefix);
+            returnTileToContainer(letter, originalIndex, context.handlers || {}, isKeyboardNavigation, prefix, context);
         }
     } catch (error) {
         console.error('removeTileFromSlot error:', error);
@@ -1055,7 +1087,7 @@ export function removeTileFromSlot(slot, context = {}) {
                 if (isArchivePuzzle && context.returnArchiveTileToContainer) {
                     context.returnArchiveTileToContainer(letter, originalIndex, isKeyboardNavigation);
                 } else {
-                    returnTileToContainer(letter, originalIndex, context.handlers || {}, isKeyboardNavigation);
+                    returnTileToContainer(letter, originalIndex, context.handlers || {}, isKeyboardNavigation, '', context);
                 }
             }
         }
@@ -1065,7 +1097,7 @@ export function removeTileFromSlot(slot, context = {}) {
 }
 
 // Return tile to the starting container
-export function returnTileToContainer(letter, originalIndex, handlers = {}, isKeyboardNavigation = false, prefix = '') {
+export function returnTileToContainer(letter, originalIndex, handlers = {}, isKeyboardNavigation = false, prefix = '', context = null) {
     // Try to detect which container to use
     let tilesContainer = null;
     let containerId = '';
@@ -1110,7 +1142,20 @@ export function returnTileToContainer(letter, originalIndex, handlers = {}, isKe
         return;
     }
     
-    const newTile = createTile(letter, originalIndex, false, handlers);
+    let newTile;
+    
+    // If context is provided, use attachTileHandlers to ensure proper handler attachment
+    // This fixes the issue where tiles returned to container weren't moveable
+    if (context) {
+        // Create tile without handlers first (createTile will still set up basic attributes)
+        newTile = createTile(letter, originalIndex, false, {});
+        // Then attach handlers using attachTileHandlers which properly sets up click/touch handlers
+        attachTileHandlers(newTile, context, false);
+    } else {
+        // Fallback: use handlers parameter if no context provided (for backward compatibility)
+        newTile = createTile(letter, originalIndex, false, handlers);
+    }
+    
     tilesContainer.appendChild(newTile);
 
     // Update placeholder visibility
@@ -1193,7 +1238,7 @@ export function handleTilesContainerDrop(e, context = {}) {
                 context.returnArchiveTileToContainer(letter, originalIndex);
             } else {
                 const detectedPrefix = isDailyContainer ? 'daily-' : prefix;
-                returnTileToContainer(letter, originalIndex, context.handlers || {}, false, detectedPrefix);
+                returnTileToContainer(letter, originalIndex, context.handlers || {}, false, detectedPrefix, context);
             }
         }
         
@@ -1217,7 +1262,7 @@ export function handleTilesContainerDrop(e, context = {}) {
                         context.returnArchiveTileToContainer(letter, originalIndex);
                     } else {
                         const detectedPrefix = isDailyContainer ? 'daily-' : prefix;
-                        returnTileToContainer(letter, originalIndex, context.handlers || {}, false, detectedPrefix);
+                        returnTileToContainer(letter, originalIndex, context.handlers || {}, false, detectedPrefix, context);
                     }
                 }
             }

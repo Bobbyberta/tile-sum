@@ -4,8 +4,25 @@ import { calculateWordScore, validateSolution } from '../puzzle-data-encoded.js'
 
 // Update score display
 export function updateScoreDisplay(prefix = '') {
-    const word1Slots = document.querySelectorAll(`[data-word-slots="0"] .slot`);
-    const word2Slots = document.querySelectorAll(`[data-word-slots="1"] .slot`);
+    // Determine the correct word-slots container ID based on prefix
+    // Archive puzzles use 'archive-word-slots' (prefix would be 'archive-' but container doesn't use prefix)
+    // Regular puzzles use 'word-slots' (no prefix)
+    // Daily puzzles use 'daily-word-slots' (prefix = 'daily-')
+    let wordSlotsContainerId;
+    if (prefix === 'archive-') {
+        wordSlotsContainerId = 'archive-word-slots';
+    } else if (prefix) {
+        wordSlotsContainerId = `${prefix}word-slots`;
+    } else {
+        // No prefix - check for archive container first, then default to regular
+        wordSlotsContainerId = document.getElementById('archive-word-slots') ? 'archive-word-slots' : 'word-slots';
+    }
+    
+    const wordSlotsContainer = document.getElementById(wordSlotsContainerId);
+    
+    // Scope slot queries to the correct container
+    const word1Slots = wordSlotsContainer ? wordSlotsContainer.querySelectorAll(`[data-word-slots="0"] .slot`) : [];
+    const word2Slots = wordSlotsContainer ? wordSlotsContainer.querySelectorAll(`[data-word-slots="1"] .slot`) : [];
 
     const word1 = Array.from(word1Slots)
         .map(slot => {
@@ -24,9 +41,9 @@ export function updateScoreDisplay(prefix = '') {
     const word1Score = calculateWordScore(word1);
     const word2Score = calculateWordScore(word2);
 
-    // Get max scores from word containers
-    const word1Container = document.querySelector(`[data-word-index="0"]`);
-    const word2Container = document.querySelector(`[data-word-index="1"]`);
+    // Get max scores from word containers - scope to the same container
+    const word1Container = wordSlotsContainer ? wordSlotsContainer.querySelector(`[data-word-index="0"]`) : null;
+    const word2Container = wordSlotsContainer ? wordSlotsContainer.querySelector(`[data-word-index="1"]`) : null;
     const word1MaxScore = word1Container ? parseInt(word1Container.getAttribute('data-max-score')) : 0;
     const word2MaxScore = word2Container ? parseInt(word2Container.getAttribute('data-max-score')) : 0;
 

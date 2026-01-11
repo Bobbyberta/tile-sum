@@ -109,7 +109,14 @@ export function provideHint(day, context = {}) {
         existingTile.remove();
         targetSlot.classList.remove('filled');
         if (returnTileCallback) {
-            returnTileCallback(letter, index, context.handlers || {});
+            // Pass full context to ensure handlers are properly attached
+            if (isArchive && context.returnArchiveTileToContainer) {
+                // Archive uses its own return function
+                returnTileCallback(letter, index);
+            } else {
+                // Regular puzzles: pass handlers, isKeyboardNavigation (false), prefix, and full context
+                returnTileCallback(letter, index, context.handlers || {}, false, prefix, context);
+            }
         }
     }
     
@@ -271,7 +278,14 @@ export function showSolution(day, context = {}) {
             existingTile.remove();
             targetSlot.classList.remove('filled');
             if (returnTileCallback) {
-                returnTileCallback(letter, index, context.handlers || {});
+                // Pass full context to ensure handlers are properly attached
+                if (isArchive && context.returnArchiveTileToContainer) {
+                    // Archive uses its own return function
+                    returnTileCallback(letter, index);
+                } else {
+                    // Regular puzzles: pass handlers, isKeyboardNavigation (false), prefix, and full context
+                    returnTileCallback(letter, index, context.handlers || {}, false, prefix, context);
+                }
             }
         }
         
