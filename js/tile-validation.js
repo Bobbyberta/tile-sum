@@ -3,7 +3,8 @@
 // Validation helpers to ensure tiles are never deleted
 export function validateTileExists(tile) {
     // Check if tile is still in the DOM
-    return tile && tile.parentNode !== null && document.contains(tile);
+    if (!tile) return false;
+    return tile.parentNode !== null && document.contains(tile);
 }
 
 // Find a tile in a container by letter and index
@@ -23,7 +24,7 @@ export function findTileInContainer(letter, index, context = {}) {
         for (const tile of tiles) {
             const tileLetter = tile.getAttribute('data-letter');
             const tileIndex = tile.getAttribute('data-tile-index');
-            if (tileLetter === letter && tileIndex === String(index)) {
+            if (tileLetter?.toUpperCase() === letter.toUpperCase() && tileIndex === String(index)) {
                 return tile;
             }
         }
@@ -39,7 +40,8 @@ export function ensureTilePreserved(tile, context = {}, returnTileCallback = nul
         const originalIndex = tile.getAttribute('data-tile-index');
         const isArchivePuzzle = context.isArchive;
         
-        if (letter && originalIndex !== null) {
+        // Check if letter exists and index is not null/empty/undefined
+        if (letter && originalIndex !== null && originalIndex !== '' && originalIndex !== 'null' && originalIndex !== undefined) {
             console.warn('Tile was lost, recovering to container:', letter, originalIndex);
             if (isArchivePuzzle && context.returnArchiveTileToContainer) {
                 context.returnArchiveTileToContainer(letter, originalIndex);
@@ -47,6 +49,7 @@ export function ensureTilePreserved(tile, context = {}, returnTileCallback = nul
                 returnTileCallback(letter, originalIndex, context.handlers || {}, false, context?.prefix || '', context);
             } else {
                 console.error('ensureTilePreserved: No returnTileCallback provided');
+                return false; // No callback provided, recovery failed
             }
             return true; // Recovery attempted
         }

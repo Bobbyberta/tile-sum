@@ -121,7 +121,9 @@ export function createMockTile(letter, index = 0, isLocked = false) {
   tile.className = `tile bg-indigo-600 text-white rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center shadow-md`;
   tile.setAttribute('draggable', isLocked ? 'false' : 'true');
   tile.setAttribute('data-letter', letter);
-  tile.setAttribute('data-tile-index', String(index));
+  if (index !== null && index !== undefined) {
+    tile.setAttribute('data-tile-index', String(index));
+  }
   if (isLocked) {
     tile.setAttribute('data-locked', 'true');
   }

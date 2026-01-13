@@ -5,11 +5,19 @@ export function showFeedback(message, type, feedbackElementId = 'feedback') {
     const feedback = document.getElementById(feedbackElementId);
     if (!feedback) return;
 
+    // Remove previous type classes
+    feedback.classList.remove('success', 'error');
+    
+    // Set Tailwind classes and type class
     feedback.className = `p-4 rounded-lg mb-8 ${
         type === 'success' 
             ? 'bg-green-100 text-green-800 border-2 border-green-300' 
             : 'bg-red-100 text-red-800 border-2 border-red-300'
     }`;
+    
+    // Add type class for testing/scripting purposes
+    feedback.classList.add(type);
+    
     feedback.textContent = message;
     feedback.classList.remove('hidden');
     feedback.setAttribute('role', 'alert');

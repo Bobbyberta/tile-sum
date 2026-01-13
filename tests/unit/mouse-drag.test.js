@@ -4,9 +4,15 @@ import {
   handleDragEnd,
   handleDragOver,
   handleDragLeave,
-  handleDrop
+  handleDrop,
+  handleTileDragOver,
+  handleTileDragLeave,
+  handleTileDrop,
+  handleTilesContainerDragOver,
+  handleTilesContainerDrop,
+  handleTilesContainerDragLeave
 } from '../../js/mouse-drag.js';
-import { createMockTile, cleanupDOM } from '../helpers/dom-setup.js';
+import { createMockTile, createMockPuzzleDOM, cleanupDOM } from '../helpers/dom-setup.js';
 
 // Mock dependencies
 vi.mock('../../js/puzzle-state.js', () => ({
@@ -195,6 +201,432 @@ describe('mouse-drag.js', () => {
       handleDrop(event, placeTileCallback);
       
       expect(placeTileCallback).not.toHaveBeenCalled();
+    });
+
+    it('should ignore if drop already handled', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const slot = document.createElement('div');
+      const placeTileCallback = vi.fn();
+      
+      const event = {
+        defaultPrevented: true,
+        stopPropagation: vi.fn(),
+        currentTarget: slot
+      };
+      
+      handleDrop(event, placeTileCallback);
+      
+      expect(placeTileCallback).not.toHaveBeenCalled();
+    });
+
+    it('should clear dragged tile before placing', async () => {
+      const { getDraggedTile, clearDraggedTile } = await import('../../js/puzzle-state.js');
+      const tile = createMockTile('A', 0);
+      const slot = document.createElement('div');
+      const placeTileCallback = vi.fn();
+      
+      getDraggedTile.mockReturnValue(tile);
+      
+      const event = {
+        defaultPrevented: false,
+        stopPropagation: vi.fn(),
+        currentTarget: slot
+      };
+      
+      handleDrop(event, placeTileCallback);
+      
+      expect(clearDraggedTile).toHaveBeenCalled();
+      expect(placeTileCallback).toHaveBeenCalledWith(tile, slot);
+    });
+  });
+
+  describe('handleTileDragOver', () => {
+    it('should add drag-over class to tile and slot', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { slots1Container } = createMockPuzzleDOM();
+      const draggedTile = createMockTile('A', 0);
+      const targetTile = createMockTile('B', 1);
+      const slot = slots1Container.children[0];
+      slot.appendChild(targetTile);
+      
+      getDraggedTile.mockReturnValue(draggedTile);
+      
+      const event = {
+        preventDefault: vi.fn(),
+        stopPropagation: vi.fn(),
+        currentTarget: targetTile
+      };
+      
+      handleTileDragOver(event);
+      
+      expect(targetTile.classList.contains('drag-over')).toBe(true);
+      expect(slot.classList.contains('drag-over')).toBe(true);
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.stopPropagation).toHaveBeenCalled();
+    });
+
+    it('should not allow drop on locked tile', () => {
+      const tile = createMockTile('A', 0, true);
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.appendChild(tile);
+      
+      const event = {
+        preventDefault: vi.fn(),
+        currentTarget: tile
+      };
+      
+      const result = handleTileDragOver(event);
+      
+      expect(result).toBe(false);
+    });
+
+    it('should not allow drop if tile not in slot', () => {
+      const tile = createMockTile('A', 0);
+      tile.closest = vi.fn(() => null);
+      
+      const event = {
+        preventDefault: vi.fn(),
+        currentTarget: tile
+      };
+      
+      const result = handleTileDragOver(event);
+      
+      expect(result).toBe(false);
+    });
+
+    it('should not allow drop on locked slot', () => {
+      const { slots1Container } = createMockPuzzleDOM();
+      const tile = createMockTile('A', 0);
+      const slot = slots1Container.children[0];
+      slot.setAttribute('data-locked', 'true');
+      slot.appendChild(tile);
+      
+      const event = {
+        preventDefault: vi.fn(),
+        currentTarget: tile
+      };
+      
+      const result = handleTileDragOver(event);
+      
+      expect(result).toBe(false);
+    });
+
+    it('should not allow drop on itself', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { slots1Container } = createMockPuzzleDOM();
+      const tile = createMockTile('A', 0);
+      const slot = slots1Container.children[0];
+      slot.appendChild(tile);
+      
+      getDraggedTile.mockReturnValue(tile);
+      
+      const event = {
+        preventDefault: vi.fn(),
+        currentTarget: tile
+      };
+      
+      const result = handleTileDragOver(event);
+      
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('handleTileDragLeave', () => {
+    it('should remove drag-over class from tile and slot', () => {
+      const { slots1Container } = createMockPuzzleDOM();
+      const tile = createMockTile('A', 0);
+      const slot = slots1Container.children[0];
+      slot.appendChild(tile);
+      tile.classList.add('drag-over');
+      slot.classList.add('drag-over');
+      
+      const event = {
+        currentTarget: tile
+      };
+      
+      handleTileDragLeave(event);
+      
+      expect(tile.classList.contains('drag-over')).toBe(false);
+      expect(slot.classList.contains('drag-over')).toBe(false);
+    });
+
+    it('should handle tile without slot', () => {
+      const tile = createMockTile('A', 0);
+      tile.closest = vi.fn(() => null);
+      tile.classList.add('drag-over');
+      
+      const event = {
+        currentTarget: tile
+      };
+      
+      handleTileDragLeave(event);
+      
+      expect(tile.classList.contains('drag-over')).toBe(false);
+    });
+  });
+
+  describe('handleTileDrop', () => {
+    it('should call placeTileCallback for tile in slot', async () => {
+      const { getDraggedTile, clearDraggedTile } = await import('../../js/puzzle-state.js');
+      const { slots1Container } = createMockPuzzleDOM();
+      const draggedTile = createMockTile('A', 0);
+      const targetTile = createMockTile('B', 1);
+      const slot = slots1Container.children[0];
+      slot.appendChild(targetTile);
+      const placeTileCallback = vi.fn();
+      
+      getDraggedTile.mockReturnValue(draggedTile);
+      
+      const event = {
+        preventDefault: vi.fn(),
+        stopPropagation: vi.fn(),
+        stopImmediatePropagation: vi.fn(),
+        currentTarget: targetTile
+      };
+      
+      handleTileDrop(event, placeTileCallback);
+      
+      expect(clearDraggedTile).toHaveBeenCalled();
+      expect(placeTileCallback).toHaveBeenCalledWith(draggedTile, slot);
+      expect(targetTile.classList.contains('drag-over')).toBe(false);
+      expect(slot.classList.contains('drag-over')).toBe(false);
+    });
+
+    it('should not drop tile on itself', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { slots1Container } = createMockPuzzleDOM();
+      const tile = createMockTile('A', 0);
+      const slot = slots1Container.children[0];
+      slot.appendChild(tile);
+      const placeTileCallback = vi.fn();
+      
+      getDraggedTile.mockReturnValue(tile);
+      
+      const event = {
+        preventDefault: vi.fn(),
+        stopPropagation: vi.fn(),
+        currentTarget: tile
+      };
+      
+      const result = handleTileDrop(event, placeTileCallback);
+      
+      expect(placeTileCallback).not.toHaveBeenCalled();
+      expect(result).toBe(false);
+    });
+
+    it('should handle missing dragged tile', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { slots1Container } = createMockPuzzleDOM();
+      const targetTile = createMockTile('B', 1);
+      const slot = slots1Container.children[0];
+      slot.appendChild(targetTile);
+      const placeTileCallback = vi.fn();
+      
+      getDraggedTile.mockReturnValue(null);
+      
+      const event = {
+        preventDefault: vi.fn(),
+        stopPropagation: vi.fn(),
+        currentTarget: targetTile
+      };
+      
+      const result = handleTileDrop(event, placeTileCallback);
+      
+      expect(placeTileCallback).not.toHaveBeenCalled();
+      expect(result).toBe(false);
+    });
+
+    it('should handle tile not in slot', () => {
+      const tile = createMockTile('A', 0);
+      tile.closest = vi.fn(() => null);
+      const placeTileCallback = vi.fn();
+      
+      const event = {
+        preventDefault: vi.fn(),
+        stopPropagation: vi.fn(),
+        currentTarget: tile
+      };
+      
+      const result = handleTileDrop(event, placeTileCallback);
+      
+      expect(placeTileCallback).not.toHaveBeenCalled();
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('handleTilesContainerDragOver', () => {
+    it('should prevent default and set drop effect', () => {
+      const event = {
+        preventDefault: vi.fn(),
+        dataTransfer: {
+          dropEffect: ''
+        }
+      };
+      
+      handleTilesContainerDragOver(event);
+      
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(event.dataTransfer.dropEffect).toBe('move');
+    });
+  });
+
+  describe('handleTilesContainerDrop', () => {
+    it('should return tile from slot to container', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
+      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
+      const tile = createMockTile('A', 0);
+      const slot = slots1Container.children[0];
+      slot.appendChild(tile);
+      const returnTileToContainer = vi.fn();
+      
+      getDraggedTile.mockReturnValue(tile);
+      validateTileExists.mockReturnValue(true);
+      
+      const event = {
+        stopPropagation: vi.fn(),
+        currentTarget: tilesContainer
+      };
+      
+      handleTilesContainerDrop(event, {
+        returnTileToContainer
+      });
+      
+      await new Promise(resolve => setTimeout(resolve, 10));
+      
+      expect(returnTileToContainer).toHaveBeenCalled();
+      expect(slot.classList.contains('filled')).toBe(false);
+    });
+
+    it('should handle archive puzzle', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
+      const archiveContainer = document.createElement('div');
+      archiveContainer.id = 'archive-tiles-container';
+      document.body.appendChild(archiveContainer);
+      
+      const archiveSlots = document.createElement('div');
+      archiveSlots.id = 'archive-word-slots';
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      archiveSlots.appendChild(slot);
+      document.body.appendChild(archiveSlots);
+      
+      const tile = createMockTile('A', 0);
+      slot.appendChild(tile);
+      const returnArchiveTileToContainer = vi.fn();
+      
+      getDraggedTile.mockReturnValue(tile);
+      validateTileExists.mockReturnValue(true);
+      
+      const event = {
+        stopPropagation: vi.fn(),
+        currentTarget: archiveContainer
+      };
+      
+      handleTilesContainerDrop(event, {
+        isArchive: true,
+        returnArchiveTileToContainer
+      });
+      
+      await new Promise(resolve => setTimeout(resolve, 10));
+      
+      expect(returnArchiveTileToContainer).toHaveBeenCalled();
+      
+      archiveContainer.remove();
+      archiveSlots.remove();
+    });
+
+    it('should handle missing dragged tile', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { tilesContainer } = createMockPuzzleDOM();
+      
+      getDraggedTile.mockReturnValue(null);
+      
+      const event = {
+        stopPropagation: vi.fn(),
+        currentTarget: tilesContainer
+      };
+      
+      const result = handleTilesContainerDrop(event, {});
+      
+      expect(result).toBe(false);
+    });
+
+    it('should handle tile not in DOM', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { tilesContainer } = createMockPuzzleDOM();
+      const tile = createMockTile('A', 0);
+      
+      getDraggedTile.mockReturnValue(tile);
+      validateTileExists.mockReturnValue(false);
+      
+      const event = {
+        stopPropagation: vi.fn(),
+        currentTarget: tilesContainer
+      };
+      
+      const result = handleTilesContainerDrop(event, {});
+      
+      expect(result).toBe(false);
+      expect(consoleError).toHaveBeenCalled();
+      consoleError.mockRestore();
+    });
+
+    it('should handle tile without letter or index', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      const slot = slots1Container.children[0];
+      slot.appendChild(tile);
+      
+      getDraggedTile.mockReturnValue(tile);
+      validateTileExists.mockReturnValue(true);
+      
+      const event = {
+        stopPropagation: vi.fn(),
+        currentTarget: tilesContainer
+      };
+      
+      const result = handleTilesContainerDrop(event, {});
+      
+      expect(result).toBe(false);
+      expect(consoleError).toHaveBeenCalled();
+      consoleError.mockRestore();
+    });
+
+    it('should handle tile not from slot', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
+      const { tilesContainer } = createMockPuzzleDOM();
+      const tile = createMockTile('A', 0);
+      tile.closest = vi.fn(() => null);
+      
+      getDraggedTile.mockReturnValue(tile);
+      validateTileExists.mockReturnValue(true);
+      
+      const event = {
+        stopPropagation: vi.fn(),
+        currentTarget: tilesContainer
+      };
+      
+      const result = handleTilesContainerDrop(event, {});
+      
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('handleTilesContainerDragLeave', () => {
+    it('should not throw', () => {
+      const event = {};
+      
+      expect(() => handleTilesContainerDragLeave(event)).not.toThrow();
     });
   });
 });

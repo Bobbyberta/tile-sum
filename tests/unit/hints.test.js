@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { updateHintButtonText, provideHint } from '../../js/hints.js';
+import { updateHintButtonText, provideHint, showSolution } from '../../js/hints.js';
 import { createMockPuzzleDOM, createMockTile, cleanupDOM } from '../helpers/dom-setup.js';
 
 // Mock dependencies
@@ -217,6 +217,334 @@ describe('hints.js', () => {
       
       // provideHint only updates score if it successfully places a tile
       // Verify it was called (will only be called if tile was found and placed)
+      expect(scoring.updateScoreDisplay).toHaveBeenCalled();
+    });
+
+    it('should handle archive puzzle', async () => {
+      await setupCreateTileMock();
+      const puzzleState = await import('../../js/puzzle-state.js');
+      
+      // Create archive container
+      const archiveContainer = document.createElement('div');
+      archiveContainer.id = 'archive-tiles-container';
+      document.body.appendChild(archiveContainer);
+      
+      // Create archive word slots container matching createMockPuzzleDOM structure
+      const archiveSlots = document.createElement('div');
+      archiveSlots.id = 'archive-word-slots';
+      
+      // Create word containers with proper structure
+      const word1Container = document.createElement('div');
+      word1Container.setAttribute('data-word-index', '0');
+      word1Container.setAttribute('data-max-score', '10');
+      
+      const slots1Container = document.createElement('div');
+      slots1Container.setAttribute('data-word-slots', '0');
+      slots1Container.className = 'flex flex-wrap gap-2 mb-3';
+      
+      // Create 4 slots for word 1 (SNOW)
+      for (let i = 0; i < 4; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.setAttribute('data-word-index', '0');
+        slot.setAttribute('data-slot-index', String(i));
+        slots1Container.appendChild(slot);
+      }
+      
+      word1Container.appendChild(slots1Container);
+      archiveSlots.appendChild(word1Container);
+      document.body.appendChild(archiveSlots);
+      
+      ['S', 'N', 'O', 'W'].forEach((letter, index) => {
+        const tile = createMockTile(letter, index);
+        tile.setAttribute('data-letter', letter.toUpperCase());
+        tile.className = 'tile';
+        archiveContainer.appendChild(tile);
+      });
+      
+      const returnArchiveTileToContainer = vi.fn();
+      const updateArchiveScoreDisplay = vi.fn();
+      const updateArchiveSubmitButton = vi.fn();
+      
+      provideHint(1, {
+        isArchive: true,
+        returnArchiveTileToContainer,
+        updateArchiveScoreDisplay,
+        updateArchiveSubmitButton
+      });
+      
+      expect(puzzleState.decrementArchiveHintsRemaining).toHaveBeenCalled();
+      
+      archiveContainer.remove();
+      archiveSlots.remove();
+    });
+
+    it('should handle tile from slot', async () => {
+      await setupCreateTileMock();
+      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
+      
+      // Place 'S' tile in slot 1 (wrong position - should be in slot 0)
+      const tileS = createMockTile('S', 0);
+      tileS.setAttribute('data-letter', 'S');
+      tileS.className = 'tile';
+      slots1Container.children[1].appendChild(tileS);
+      slots1Container.children[1].classList.add('filled');
+      
+      // Add other tiles to container
+      ['N', 'O', 'W'].forEach((letter, index) => {
+        const t = createMockTile(letter, index + 1);
+        t.setAttribute('data-letter', letter.toUpperCase());
+        t.className = 'tile';
+        tilesContainer.appendChild(t);
+      });
+      
+      provideHint(1, {
+        placeTileCallback: vi.fn(),
+        removeTileCallback: vi.fn()
+      });
+      
+      // provideHint should move 'S' from slot 1 to slot 0 and lock it
+      // Check that slot 0 now has a locked tile
+      const lockedTile = slots1Container.children[0].querySelector('.tile[data-locked="true"]');
+      expect(lockedTile).toBeTruthy();
+      expect(lockedTile.getAttribute('data-letter')).toBe('S');
+    });
+
+    it('should show feedback when all tiles correct', async () => {
+      const feedback = await import('../../js/feedback.js');
+      const { slots1Container, slots2Container } = createMockPuzzleDOM();
+      
+      // Place all tiles correctly
+      ['S', 'N', 'O', 'W'].forEach((letter, index) => {
+        const tile = createMockTile(letter, index);
+        tile.setAttribute('data-letter', letter);
+        tile.setAttribute('data-locked', 'true');
+        slots1Container.children[index].appendChild(tile);
+      });
+      
+      ['F', 'L', 'A', 'K', 'E'].forEach((letter, index) => {
+        const tile = createMockTile(letter, index + 4);
+        tile.setAttribute('data-letter', letter);
+        tile.setAttribute('data-locked', 'true');
+        slots2Container.children[index].appendChild(tile);
+      });
+      
+      provideHint(1, {});
+      
+      expect(feedback.showFeedback).toHaveBeenCalledWith('All tiles are already correct!', 'success', 'feedback');
+    });
+
+    it('should handle prefix', async () => {
+      await setupCreateTileMock();
+      const puzzleState = await import('../../js/puzzle-state.js');
+      const { tilesContainer } = createMockPuzzleDOM('daily-');
+      
+      ['S', 'N', 'O', 'W', 'F', 'L', 'A', 'K', 'E'].forEach((letter, index) => {
+        const tile = createMockTile(letter, index);
+        tile.setAttribute('data-letter', letter.toUpperCase());
+        tile.className = 'tile';
+        tilesContainer.appendChild(tile);
+      });
+      
+      provideHint(1, {
+        prefix: 'daily-',
+        placeTileCallback: vi.fn(),
+        removeTileCallback: vi.fn()
+      });
+      
+      expect(puzzleState.decrementHintsRemaining).toHaveBeenCalled();
+    });
+  });
+
+  describe('showSolution', () => {
+    const setupCreateTileMock = async () => {
+      const puzzleCore = await import('../../js/puzzle-core.js');
+      puzzleCore.createTile.mockImplementation((letter, index, isLocked) => {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.setAttribute('data-letter', letter);
+        tile.setAttribute('data-tile-index', String(index));
+        if (isLocked) {
+          tile.setAttribute('data-locked', 'true');
+        }
+        return tile;
+      });
+    };
+
+    it('should place all remaining tiles correctly', async () => {
+      await setupCreateTileMock();
+      const puzzleState = await import('../../js/puzzle-state.js');
+      const { tilesContainer, slots1Container, slots2Container } = createMockPuzzleDOM();
+      
+      // Add all tiles to container
+      ['S', 'N', 'O', 'W', 'F', 'L', 'A', 'K', 'E'].forEach((letter, index) => {
+        const tile = createMockTile(letter, index);
+        tile.setAttribute('data-letter', letter.toUpperCase());
+        tile.className = 'tile';
+        tilesContainer.appendChild(tile);
+      });
+      
+      showSolution(1, {
+        placeTileCallback: vi.fn(),
+        removeTileCallback: vi.fn()
+      });
+      
+      // All slots should have locked tiles
+      const allSlots = [...slots1Container.children, ...slots2Container.children];
+      allSlots.forEach(slot => {
+        const tile = slot.querySelector('.tile[data-locked="true"]');
+        expect(tile).toBeTruthy();
+      });
+      
+      expect(puzzleState.setSolutionShown).toHaveBeenCalledWith(true);
+    });
+
+    it('should not show solution when puzzle does not exist', () => {
+      createMockPuzzleDOM();
+      
+      expect(() => showSolution(999, {})).not.toThrow();
+    });
+
+    it('should show feedback when all tiles correct', async () => {
+      const feedback = await import('../../js/feedback.js');
+      const { slots1Container, slots2Container } = createMockPuzzleDOM();
+      
+      // Place all tiles correctly
+      ['S', 'N', 'O', 'W'].forEach((letter, index) => {
+        const tile = createMockTile(letter, index);
+        tile.setAttribute('data-letter', letter);
+        tile.setAttribute('data-locked', 'true');
+        slots1Container.children[index].appendChild(tile);
+      });
+      
+      ['F', 'L', 'A', 'K', 'E'].forEach((letter, index) => {
+        const tile = createMockTile(letter, index + 4);
+        tile.setAttribute('data-letter', letter);
+        tile.setAttribute('data-locked', 'true');
+        slots2Container.children[index].appendChild(tile);
+      });
+      
+      showSolution(1, {});
+      
+      expect(feedback.showFeedback).toHaveBeenCalledWith('All tiles are already correct!', 'success', 'feedback');
+    });
+
+    it('should handle archive puzzle', async () => {
+      await setupCreateTileMock();
+      const puzzleState = await import('../../js/puzzle-state.js');
+      
+      // Create archive container
+      const archiveContainer = document.createElement('div');
+      archiveContainer.id = 'archive-tiles-container';
+      document.body.appendChild(archiveContainer);
+      
+      // Create archive word slots container matching createMockPuzzleDOM structure
+      const archiveSlots = document.createElement('div');
+      archiveSlots.id = 'archive-word-slots';
+      
+      // Create word containers with proper structure
+      const word1Container = document.createElement('div');
+      word1Container.setAttribute('data-word-index', '0');
+      word1Container.setAttribute('data-max-score', '10');
+      
+      const slots1Container = document.createElement('div');
+      slots1Container.setAttribute('data-word-slots', '0');
+      slots1Container.className = 'flex flex-wrap gap-2 mb-3';
+      
+      // Create 4 slots for word 1 (SNOW)
+      for (let i = 0; i < 4; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.setAttribute('data-word-index', '0');
+        slot.setAttribute('data-slot-index', String(i));
+        slots1Container.appendChild(slot);
+      }
+      
+      // Create word 2 container
+      const word2Container = document.createElement('div');
+      word2Container.setAttribute('data-word-index', '1');
+      word2Container.setAttribute('data-max-score', '12');
+      
+      const slots2Container = document.createElement('div');
+      slots2Container.setAttribute('data-word-slots', '1');
+      slots2Container.className = 'flex flex-wrap gap-2 mb-3';
+      
+      // Create 5 slots for word 2 (FLAKE)
+      for (let i = 0; i < 5; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.setAttribute('data-word-index', '1');
+        slot.setAttribute('data-slot-index', String(i));
+        slots2Container.appendChild(slot);
+      }
+      
+      word1Container.appendChild(slots1Container);
+      word2Container.appendChild(slots2Container);
+      archiveSlots.appendChild(word1Container);
+      archiveSlots.appendChild(word2Container);
+      document.body.appendChild(archiveSlots);
+      
+      ['S', 'N', 'O', 'W', 'F', 'L', 'A', 'K', 'E'].forEach((letter, index) => {
+        const tile = createMockTile(letter, index);
+        tile.setAttribute('data-letter', letter.toUpperCase());
+        tile.className = 'tile';
+        archiveContainer.appendChild(tile);
+      });
+      
+      const returnArchiveTileToContainer = vi.fn();
+      const updateArchiveScoreDisplay = vi.fn();
+      const updateArchiveSubmitButton = vi.fn();
+      
+      showSolution(1, {
+        isArchive: true,
+        returnArchiveTileToContainer,
+        updateArchiveScoreDisplay,
+        updateArchiveSubmitButton
+      });
+      
+      expect(puzzleState.setArchiveSolutionShown).toHaveBeenCalledWith(true);
+      
+      archiveContainer.remove();
+      archiveSlots.remove();
+    });
+
+    it('should handle prefix', async () => {
+      await setupCreateTileMock();
+      const puzzleState = await import('../../js/puzzle-state.js');
+      const { tilesContainer } = createMockPuzzleDOM('daily-');
+      
+      ['S', 'N', 'O', 'W', 'F', 'L', 'A', 'K', 'E'].forEach((letter, index) => {
+        const tile = createMockTile(letter, index);
+        tile.setAttribute('data-letter', letter.toUpperCase());
+        tile.className = 'tile';
+        tilesContainer.appendChild(tile);
+      });
+      
+      showSolution(1, {
+        prefix: 'daily-',
+        placeTileCallback: vi.fn(),
+        removeTileCallback: vi.fn()
+      });
+      
+      expect(puzzleState.setSolutionShown).toHaveBeenCalledWith(true);
+    });
+
+    it('should update score display', async () => {
+      await setupCreateTileMock();
+      const scoring = await import('../../js/scoring.js');
+      const { tilesContainer } = createMockPuzzleDOM();
+      
+      ['S', 'N', 'O', 'W', 'F', 'L', 'A', 'K', 'E'].forEach((letter, index) => {
+        const tile = createMockTile(letter, index);
+        tile.setAttribute('data-letter', letter.toUpperCase());
+        tile.className = 'tile';
+        tilesContainer.appendChild(tile);
+      });
+      
+      showSolution(1, {});
+      
+      await new Promise(resolve => setTimeout(resolve, 10));
+      
       expect(scoring.updateScoreDisplay).toHaveBeenCalled();
     });
   });
