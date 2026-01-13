@@ -325,6 +325,46 @@ This project uses Cursor's folder-based rules system. Rules are defined in `CURS
 
 See `CURSOR_RULES_SOURCE.md` for detailed information about the rule format.
 
+## Testing
+
+This project includes comprehensive test coverage using Vitest for unit/integration tests and Playwright for E2E browser tests.
+
+### Running Tests
+
+- **Unit/Integration Tests**: `npm test` - Run all unit and integration tests
+- **Watch Mode**: `npm run test:watch` - Run tests in watch mode during development
+- **Test UI**: `npm run test:ui` - Open Vitest UI for interactive test running
+- **Coverage Report**: `npm run test:coverage` - Generate code coverage report
+- **E2E Tests**: `npm run test:e2e` - Run Playwright browser tests
+- **E2E UI**: `npm run test:e2e:ui` - Run E2E tests with Playwright UI
+- **All Tests**: `npm run test:all` - Run both unit and E2E tests
+
+### Test Structure
+
+```
+tests/
+├── unit/              # Unit tests for individual modules
+├── integration/      # Integration tests for module interactions
+├── e2e/              # End-to-end browser tests
+└── helpers/          # Test utilities and fixtures
+```
+
+### Test Coverage
+
+Tests cover:
+- **Pure Functions**: Utility functions, state management, completion tracking, streak calculation
+- **DOM Functions**: Tile/slot creation, scoring, hints, keyboard navigation
+- **Event Handlers**: Drag & drop, touch events, keyboard events
+- **Integration**: Complete user flows, module interactions
+- **E2E**: Full browser testing of puzzle solving, hints, keyboard navigation
+
+### Writing Tests
+
+- Unit tests use Vitest with jsdom for DOM simulation
+- Integration tests verify module interactions
+- E2E tests use Playwright for real browser testing
+- Test helpers provide utilities for DOM setup and mock data
+
 ## Troubleshooting
 
 - **Site not loading?** Check that `index.html` is in the root directory
@@ -333,6 +373,7 @@ See `CURSOR_RULES_SOURCE.md` for detailed information about the rule format.
 - **Modules not loading?** Ensure you're using a local server (not `file://` protocol) due to ES6 module requirements
 - **Puzzle data not working?** Ensure `puzzle-data-encoded.js` exists (run `npm run build:data` if missing)
 - **Changes to puzzle data not showing?** Make sure you ran `npm run build:data` after editing `puzzle-data.js`
+- **Tests failing?** Make sure all dependencies are installed (`npm install`) and puzzle data is built (`npm run build:data`)
 
 ## Browser Support
 

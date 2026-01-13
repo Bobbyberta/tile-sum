@@ -1,6 +1,8 @@
 // Keyboard typing input handler - allows users to type letters to place tiles
 
 import { SCRABBLE_SCORES } from '../puzzle-data-encoded.js';
+import { selectTile, deselectTile } from './keyboard.js';
+import { getSelectedTile } from './puzzle-state.js';
 
 // Context storage for keyboard input handlers
 let keyboardContext = null;
@@ -103,12 +105,24 @@ function getAllSlotsInOrder(prefix = '') {
     const slots = [];
     
     // Get slots from word 0, then word 1
+    // Try two approaches: query by data-word-index (word container) or data-word-slots (slots container)
     for (let wordIndex = 0; wordIndex < 2; wordIndex++) {
+        // First try: find word container by data-word-index, then get slots within it
+        let wordSlots = [];
         const wordContainer = wordSlotsContainer.querySelector(`[data-word-index="${wordIndex}"]`);
         if (wordContainer) {
-            const wordSlots = wordContainer.querySelectorAll('.slot:not([data-locked="true"])');
-            slots.push(...Array.from(wordSlots));
+            wordSlots = wordContainer.querySelectorAll('.slot:not([data-locked="true"])');
         }
+        
+        // Fallback: if no slots found, try querying by data-word-slots directly
+        if (wordSlots.length === 0) {
+            const slotsContainer = wordSlotsContainer.querySelector(`[data-word-slots="${wordIndex}"]`);
+            if (slotsContainer) {
+                wordSlots = slotsContainer.querySelectorAll('.slot:not([data-locked="true"])');
+            }
+        }
+        
+        slots.push(...Array.from(wordSlots));
     }
     
     return slots;
@@ -291,6 +305,9 @@ function handleTabNavigation(e, currentElement, context) {
     const prefix = context.prefix || '';
     const isShiftTab = e.shiftKey;
     
+    // Prevent default Tab behavior first
+    e.preventDefault();
+    
     // Get all focusable elements in order: tiles first, then slots
     const tiles = getAllTilesInOrder(prefix);
     const slots = getAllSlotsInOrder(prefix);
@@ -316,8 +333,21 @@ function handleTabNavigation(e, currentElement, context) {
     // Focus next element
     const nextElement = allFocusable[nextIndex];
     if (nextElement && document.contains(nextElement)) {
-        e.preventDefault();
-        nextElement.focus();
+        // Use requestAnimationFrame for more reliable focus timing
+        requestAnimationFrame(() => {
+            if (document.contains(nextElement)) {
+                nextElement.focus();
+                // Verify focus was successful (for debugging)
+                if (document.activeElement !== nextElement) {
+                    // Fallback: try again on next frame if focus didn't work
+                    requestAnimationFrame(() => {
+                        if (document.contains(nextElement)) {
+                            nextElement.focus();
+                        }
+                    });
+                }
+            }
+        });
     }
 }
 
@@ -529,6 +559,18 @@ export function handleSlotKeyDown(e, context) {
         return;
     }
     
+    // Handle Enter key - place selected tile in slot
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const selectedTile = getSelectedTile();
+        if (selectedTile && activeContext.placeTileCallback) {
+            // Place selected tile in this slot
+            activeContext.placeTileCallback(selectedTile, slot);
+            deselectTile();
+        }
+        return;
+    }
+    
     // Handle Escape (clear any selection if needed)
     if (e.key === 'Escape') {
         // Escape can be used to blur focus if needed
@@ -595,6 +637,17 @@ export function handleTileKeyDown(e, context) {
         } else {
             // Tile is in container, find next empty slot
             handleTypeLetter(e.key, tile, activeContext);
+        }
+        return;
+    }
+    
+    // Handle Enter key - select tile for keyboard placement
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        // Only select tiles in container, not tiles already in slots
+        const slot = tile.closest('.slot');
+        if (!slot) {
+            selectTile(tile);
         }
         return;
     }

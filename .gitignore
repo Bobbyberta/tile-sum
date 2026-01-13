@@ -38,3 +38,9 @@ build/
 *.min.js
 *.min.css
 
+# Test outputs and reports
+test-results/
+playwright-report/
+coverage/
+.playwright/
+

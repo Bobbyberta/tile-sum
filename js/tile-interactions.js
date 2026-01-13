@@ -153,6 +153,9 @@ export function handleTileInteraction(tile, placeTileCallback, removeTileCallbac
         return;
     }
     
+    const isInSlot = tile.closest('.slot');
+    const selectedTile = getSelectedTile();
+    
     // For click events, prevent if recent touch interaction occurred (mobile tap-to-click prevention)
     if (event && event.type === 'click') {
         const interactionState = getInteractionState();
@@ -164,8 +167,9 @@ export function handleTileInteraction(tile, placeTileCallback, removeTileCallbac
             return;
         }
         
-        // Stop propagation to prevent slot click handler from firing
-        if (event.stopPropagation) {
+        // Only stop propagation if tile is in container, not if it's in a slot
+        // This allows slot click handler to fire when clicking a tile in a slot (if not handled above)
+        if (!isInSlot && event.stopPropagation) {
             event.stopPropagation();
         }
     }

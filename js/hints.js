@@ -181,13 +181,19 @@ export function provideHint(day, context = {}) {
         updateHintButtonText(hintBtnId, getHintsRemaining());
     }
     
-    // Update score display
+    // Update score display - ensure DOM is fully updated before calculating score
     if (updateScoreCallback) {
-        if (isArchive) {
-            updateScoreCallback();
-        } else {
-            updateScoreCallback(prefix);
-        }
+        // Use requestAnimationFrame to ensure DOM is fully updated before score calculation
+        requestAnimationFrame(() => {
+            // Double-check that the tile is in the DOM
+            if (targetSlot && targetSlot.querySelector('.tile')) {
+                if (isArchive) {
+                    updateScoreCallback();
+                } else {
+                    updateScoreCallback(prefix);
+                }
+            }
+        });
     }
     if (updateSubmitCallback) {
         updateSubmitCallback();
