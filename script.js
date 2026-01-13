@@ -156,7 +156,10 @@ function initPuzzleWithPrefix(day, prefix = '') {
         onDragOver: handleDragOver,
         onDrop: (e) => handleDrop(e, (tile, slot) => placeTileInSlot(tile, slot, { ...dragDropContext, removeTileCallback })),
         onDragLeave: handleDragLeave,
-        onClick: (e) => handleSlotClick(e, (slot) => removeTileFromSlot(slot, dragDropContext)),
+        onClick: (e) => handleSlotClick(e, 
+            (tile, slot) => placeTileInSlot(tile, slot, { ...dragDropContext, removeTileCallback }),
+            (slot) => removeTileFromSlot(slot, dragDropContext)
+        ),
         onKeyDown: (e) => handleSlotKeyDown(e, 
             (tile, slot) => placeTileInSlot(tile, slot, { ...dragDropContext, removeTileCallback, isKeyboardNavigation: true }),
             (slot) => removeTileFromSlot(slot, { ...dragDropContext, isKeyboardNavigation: true })

@@ -8,7 +8,7 @@ import {
     clearSelectedTile
 } from './puzzle-state.js';
 import { createTile, updatePlaceholderTile } from './puzzle-core.js';
-import { deselectTile } from './keyboard.js';
+import { deselectTile, selectTile } from './keyboard.js';
 import { handleTileKeyDown } from './keyboard.js';
 import { updateScoreDisplay, updateSubmitButton } from './scoring.js';
 import { checkAutoComplete, areAllSlotsFilled } from './auto-complete.js';
@@ -24,7 +24,10 @@ let interactionState = {
     isProcessing: false,
     lastTouchTime: 0,
     touchInteractionActive: false,
-    CLICK_DELAY_AFTER_TOUCH: 300 // ms
+    CLICK_DELAY_AFTER_TOUCH: 300, // ms
+    lastClickTime: 0,
+    lastClickedTile: null,
+    DOUBLE_CLICK_THRESHOLD: 300 // ms
 };
 
 // Touch drag state
@@ -234,39 +237,44 @@ export function handleTileClick(e, placeTileCallback, removeTileCallback) {
         return;
     }
     
-    // Determine if tile is in container or slot (detect prefix from container)
-    const tilesContainer = tile.closest('#tiles-container, #archive-tiles-container, #daily-tiles-container');
-    let prefix = '';
-    if (tilesContainer) {
-        const containerId = tilesContainer.id;
-        if (containerId === 'daily-tiles-container') {
-            prefix = 'daily-';
-        } else if (containerId === 'archive-tiles-container') {
-            // Archive handled separately
-        }
-    }
-    const isInContainer = tilesContainer !== null;
-    const isInSlot = tile.closest('.slot');
+    // Stop propagation to prevent slot click handler from firing
+    e.stopPropagation();
     
-    if (isInSlot) {
-        // Tile is in a slot - clicking should remove it
-        debugLog('handleTileClick: Tile in slot, removing');
-        const slot = tile.closest('.slot');
-        if (slot && removeTileCallback) {
-            removeTileCallback(slot);
-        }
-    } else if (isInContainer) {
-        // Tile is in container - clicking should place it in next available slot
-        debugLog('handleTileClick: Tile in container, placing in next slot');
-        // Find next available slot more reliably
-        const allSlots = document.querySelectorAll('.slot:not([data-locked="true"])');
-        let targetSlot = null;
+    const currentTime = Date.now();
+    const timeSinceLastClick = currentTime - interactionState.lastClickTime;
+    const isDoubleClick = interactionState.lastClickedTile === tile && 
+                         timeSinceLastClick < interactionState.DOUBLE_CLICK_THRESHOLD;
+    
+    // Update last click tracking
+    interactionState.lastClickTime = currentTime;
+    interactionState.lastClickedTile = tile;
+    
+    // Handle double-click
+    if (isDoubleClick) {
+        debugLog('handleTileClick: Double-click detected');
+        const isInSlot = tile.closest('.slot');
+        const isInContainer = tile.closest('#tiles-container, #archive-tiles-container, #daily-tiles-container');
         
-        // First check for drag-over slot (if user was dragging)
-        const dragOverSlot = document.querySelector('.slot.drag-over:not([data-locked="true"])');
-        if (dragOverSlot) {
-            targetSlot = dragOverSlot;
-        } else {
+        if (isInSlot) {
+            // Double-click on tile in slot - return to container
+            debugLog('handleTileClick: Double-click on tile in slot, returning to container');
+            const slot = tile.closest('.slot');
+            if (slot && removeTileCallback) {
+                // Clear selection if this tile was selected
+                if (getSelectedTile() === tile) {
+                    deselectTile();
+                }
+                removeTileCallback(slot);
+                // Reset double-click tracking to prevent triple-click issues
+                interactionState.lastClickedTile = null;
+                return;
+            }
+        } else if (isInContainer) {
+            // Double-click on tile in container - place in next available slot
+            debugLog('handleTileClick: Double-click on tile in container, placing in next slot');
+            const allSlots = document.querySelectorAll('.slot:not([data-locked="true"])');
+            let targetSlot = null;
+            
             // Find first empty slot
             for (const slot of allSlots) {
                 if (!slot.classList.contains('filled')) {
@@ -274,24 +282,81 @@ export function handleTileClick(e, placeTileCallback, removeTileCallback) {
                     break;
                 }
             }
-        }
-        
-        if (targetSlot && placeTileCallback) {
-            placeTileCallback(tile, targetSlot);
-        } else {
-            debugLog('handleTileClick: No available slot found');
+            
+            if (targetSlot && placeTileCallback) {
+                // Clear selection if this tile was selected
+                if (getSelectedTile() === tile) {
+                    deselectTile();
+                }
+                placeTileCallback(tile, targetSlot);
+                // Reset double-click tracking to prevent triple-click issues
+                interactionState.lastClickedTile = null;
+                return;
+            } else {
+                debugLog('handleTileClick: No available slot found for double-click');
+            }
         }
     }
+    
+    // Single-click logic (selection)
+    const selectedTile = getSelectedTile();
+    
+    // If this tile is already selected, deselect it
+    if (selectedTile === tile) {
+        debugLog('handleTileClick: Tile already selected, deselecting');
+        deselectTile();
+        return;
+    }
+    
+    // If another tile is selected, swap them
+    if (selectedTile && selectedTile !== tile) {
+        debugLog('handleTileClick: Another tile selected, swapping');
+        const clickedSlot = tile.closest('.slot');
+        const selectedSlot = selectedTile.closest('.slot');
+        
+        // If clicked tile is in a slot, place selected tile there (will swap)
+        if (clickedSlot && placeTileCallback) {
+            placeTileCallback(selectedTile, clickedSlot);
+            deselectTile();
+            return;
+        }
+        
+        // If selected tile is in a slot and clicked tile is in container, place clicked tile in selected slot (will swap)
+        if (selectedSlot && placeTileCallback) {
+            placeTileCallback(tile, selectedSlot);
+            deselectTile();
+            return;
+        }
+        
+        // Both in containers - just select the new tile
+        selectTile(tile);
+        return;
+    }
+    
+    // No tile selected - select this tile
+    debugLog('handleTileClick: No tile selected, selecting this tile');
+    selectTile(tile);
 }
 
-export function handleSlotClick(e, removeTileCallback) {
+export function handleSlotClick(e, placeTileCallback, removeTileCallback) {
     const slot = e.currentTarget;
     // Don't allow clicking locked slots
     if (slot.getAttribute('data-locked') === 'true') {
         return;
     }
+    
+    const selectedTile = getSelectedTile();
+    
+    // If a tile is selected, place it in this slot (or swap if slot is filled)
+    if (selectedTile && placeTileCallback) {
+        debugLog('handleSlotClick: Tile selected, placing in slot');
+        placeTileCallback(selectedTile, slot);
+        deselectTile();
+        return;
+    }
+    
+    // No tile selected - if slot is filled, remove tile (existing behavior)
     if (slot.classList.contains('filled')) {
-        // Remove tile from slot
         const tile = slot.querySelector('.tile');
         if (tile && tile.getAttribute('data-locked') !== 'true' && removeTileCallback) {
             removeTileCallback(slot);
@@ -488,32 +553,104 @@ export function handleTouchEnd(e) {
             touchDragState.placeTileCallback(touchDragState.tile, dropTarget);
         }
     } else {
-        // This was a tap (not a drag) - handle it like a click
-        // Only handle taps on tiles in containers (not in slots)
+        // This was a tap (not a drag) - handle it like a click with selection logic
         const tile = touchDragState.tile;
-        const isInSlot = tile.closest('.slot');
-        const isInContainer = tile.closest('#tiles-container, #archive-tiles-container, #daily-tiles-container');
+        const currentTime = Date.now();
+        const timeSinceLastClick = currentTime - interactionState.lastClickTime;
+        const isDoubleTap = interactionState.lastClickedTile === tile && 
+                           timeSinceLastClick < interactionState.DOUBLE_CLICK_THRESHOLD;
         
-        if (!isInSlot && isInContainer && touchDragState.placeTileCallback) {
-            debugLog('handleTouchEnd: Tap detected on tile in container, placing in next slot');
-            // Use the same logic as handleTileClick for placing tile
-            const allSlots = document.querySelectorAll('.slot:not([data-locked="true"])');
-            let targetSlot = null;
+        // Update last click tracking (shared with mouse clicks)
+        interactionState.lastClickTime = currentTime;
+        interactionState.lastClickedTile = tile;
+        
+        // Handle double-tap
+        if (isDoubleTap) {
+            debugLog('handleTouchEnd: Double-tap detected');
+            const isInSlot = tile.closest('.slot');
+            const isInContainer = tile.closest('#tiles-container, #archive-tiles-container, #daily-tiles-container');
             
-            // Find first empty slot
-            for (const slot of allSlots) {
-                if (!slot.classList.contains('filled')) {
-                    targetSlot = slot;
-                    break;
+            if (isInSlot) {
+                // Double-tap on tile in slot - return to container
+                debugLog('handleTouchEnd: Double-tap on tile in slot, returning to container');
+                const slot = tile.closest('.slot');
+                if (slot && touchDragState.removeTileCallback) {
+                    // Clear selection if this tile was selected
+                    if (getSelectedTile() === tile) {
+                        deselectTile();
+                    }
+                    touchDragState.removeTileCallback(slot);
+                    // Reset double-tap tracking to prevent triple-tap issues
+                    interactionState.lastClickedTile = null;
+                    return;
+                }
+            } else if (isInContainer) {
+                // Double-tap on tile in container - place in next available slot
+                debugLog('handleTouchEnd: Double-tap on tile in container, placing in next slot');
+                const allSlots = document.querySelectorAll('.slot:not([data-locked="true"])');
+                let targetSlot = null;
+                
+                // Find first empty slot
+                for (const slot of allSlots) {
+                    if (!slot.classList.contains('filled')) {
+                        targetSlot = slot;
+                        break;
+                    }
+                }
+                
+                if (targetSlot && touchDragState.placeTileCallback) {
+                    // Clear selection if this tile was selected
+                    if (getSelectedTile() === tile) {
+                        deselectTile();
+                    }
+                    touchDragState.placeTileCallback(tile, targetSlot);
+                    // Reset double-tap tracking to prevent triple-tap issues
+                    interactionState.lastClickedTile = null;
+                    return;
+                } else {
+                    debugLog('handleTouchEnd: No available slot found for double-tap');
                 }
             }
-            
-            if (targetSlot) {
-                touchDragState.placeTileCallback(tile, targetSlot);
-            } else {
-                debugLog('handleTouchEnd: No available slot found for tap');
-            }
         }
+        
+        // Single-tap logic (selection)
+        const selectedTile = getSelectedTile();
+        
+        // If this tile is already selected, deselect it
+        if (selectedTile === tile) {
+            debugLog('handleTouchEnd: Tile already selected, deselecting');
+            deselectTile();
+            return;
+        }
+        
+        // If another tile is selected, swap them
+        if (selectedTile && selectedTile !== tile) {
+            debugLog('handleTouchEnd: Another tile selected, swapping');
+            const clickedSlot = tile.closest('.slot');
+            const selectedSlot = selectedTile.closest('.slot');
+            
+            // If clicked tile is in a slot, place selected tile there (will swap)
+            if (clickedSlot && touchDragState.placeTileCallback) {
+                touchDragState.placeTileCallback(selectedTile, clickedSlot);
+                deselectTile();
+                return;
+            }
+            
+            // If selected tile is in a slot and clicked tile is in container, place clicked tile in selected slot (will swap)
+            if (selectedSlot && touchDragState.placeTileCallback) {
+                touchDragState.placeTileCallback(tile, selectedSlot);
+                deselectTile();
+                return;
+            }
+            
+            // Both in containers - just select the new tile
+            selectTile(tile);
+            return;
+        }
+        
+        // No tile selected - select this tile
+        debugLog('handleTouchEnd: No tile selected, selecting this tile');
+        selectTile(tile);
     }
     
     // Clean up drag state (idempotent - safe to call multiple times)
@@ -613,14 +750,9 @@ function attachTileHandlers(tile, context, isInSlot = false) {
             handleTileDrop(e, placeTileCallback);
         }, true); // Use capture phase to handle before slot
         
-        // Tile in slot: clicking removes it
+        // Tile in slot: clicking uses selection logic
         tile.addEventListener('click', (e) => {
-            if (removeTileCallback) {
-                const slot = tile.closest('.slot');
-                if (slot) {
-                    removeTileCallback(slot);
-                }
-            }
+            handleTileClick(e, placeTileCallback, removeTileCallback);
         });
     } else {
         // Tile in container: clicking places it
@@ -917,6 +1049,7 @@ function swapTiles(draggedTile, existingTile, targetSlot, context = {}) {
         const isDraggedFromContainer = draggedTile.closest('#tiles-container');
         const isDraggedFromArchiveContainer = draggedTile.closest('#archive-tiles-container');
         const isArchivePuzzle = targetSlot.closest('#archive-word-slots') !== null || context.isArchive;
+        const prefix = context?.prefix || '';
         
         // SAFEGUARD: Clone both tiles BEFORE removing originals
         const clonedDraggedTile = draggedTile.cloneNode(true);
@@ -945,7 +1078,7 @@ function swapTiles(draggedTile, existingTile, targetSlot, context = {}) {
             if (shouldUseArchiveReturn) {
                 context.returnArchiveTileToContainer(existingLetter, existingIndex);
             } else {
-                returnTileToContainer(existingLetter, existingIndex, context.handlers || {}, isKeyboardNavigation, '', context);
+                returnTileToContainer(existingLetter, existingIndex, context.handlers || {}, isKeyboardNavigation, prefix, context);
             }
         }
         
@@ -994,14 +1127,15 @@ function swapTiles(draggedTile, existingTile, targetSlot, context = {}) {
                 }
             });
         } else {
-            updateScoreDisplay();
+            // Pass prefix to updateScoreDisplay for daily puzzle support
+            updateScoreDisplay(prefix);
             updateSubmitButton();
             // Check if solution is automatically complete
             // Only check if all slots are filled (optimization)
             // Use requestAnimationFrame to ensure DOM is fully updated
             requestAnimationFrame(() => {
                 if (areAllSlotsFilled()) {
-                    checkAutoComplete();
+                    checkAutoComplete(null, prefix);
                 }
             });
         }
@@ -1066,6 +1200,17 @@ export function removeTileFromSlot(slot, context = {}) {
         slot.classList.remove('filled');
 
         debugLog('removeTileFromSlot: Successfully removed tile');
+
+        // Update score display before returning tile to container
+        if (isArchivePuzzle && context.updateArchiveScoreDisplay) {
+            context.updateArchiveScoreDisplay();
+            if (context.updateArchiveSubmitButton) {
+                context.updateArchiveSubmitButton();
+            }
+        } else {
+            updateScoreDisplay(prefix);
+            updateSubmitButton();
+        }
 
         // Add back to tiles container (creates new tile, so safe)
         if (isArchivePuzzle && context.returnArchiveTileToContainer) {

@@ -404,13 +404,22 @@ function initArchivePuzzle(puzzleNumber, dateString) {
             });
         }),
         onDragLeave: handleDragLeave,
-        onClick: (e) => handleSlotClick(e, (slot) => {
-            removeTileFromSlot(slot, {
+        onClick: (e) => handleSlotClick(e, 
+            (tile, slot) => placeTileInSlot(tile, slot, {
                 isArchive: true,
-                returnArchiveTileToContainer: returnArchiveTileToContainer,
+                updateArchiveScoreDisplay: updateArchiveScoreDisplay,
+                updateArchiveSubmitButton: updateArchiveSubmitButton,
+                removeTileCallback: archiveRemoveTileCallback,
                 handlers: archiveHandlers
-            });
-        }),
+            }),
+            (slot) => {
+                removeTileFromSlot(slot, {
+                    isArchive: true,
+                    returnArchiveTileToContainer: returnArchiveTileToContainer,
+                    handlers: archiveHandlers
+                });
+            }
+        ),
         onKeyDown: (e) => handleSlotKeyDown(e, 
             (tile, slot) => {
                 placeTileInSlot(tile, slot, {
