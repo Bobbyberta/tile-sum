@@ -79,8 +79,10 @@ test.describe('Hints System', () => {
   });
 
   test('should update score after hint is placed', async ({ page }) => {
-    const scoreDisplay = page.locator('#word1-score-display');
-    const initialScore = await scoreDisplay.textContent();
+    const word1ScoreDisplay = page.locator('#word1-score-display');
+    const word2ScoreDisplay = page.locator('#word2-score-display');
+    const initialWord1Score = await word1ScoreDisplay.textContent();
+    const initialWord2Score = await word2ScoreDisplay.textContent();
     
     // Use hint
     await page.click('#hint-btn');
@@ -88,24 +90,38 @@ test.describe('Hints System', () => {
     // Wait for hint to be placed and score to update
     await page.waitForTimeout(500);
     
-    // Wait for score to change from initial value
+    // Wait for either score to change from initial value (hint can place in word 1 or word 2)
     await page.waitForFunction(
-      ({ selector, initial }) => {
-        const element = document.querySelector(selector);
-        return element && element.textContent !== initial;
+      ({ initial1, initial2 }) => {
+        const element1 = document.querySelector('#word1-score-display');
+        const element2 = document.querySelector('#word2-score-display');
+        return (element1 && element1.textContent !== initial1) || 
+               (element2 && element2.textContent !== initial2);
       },
-      { selector: '#word1-score-display', initial: initialScore },
+      { initial1: initialWord1Score, initial2: initialWord2Score },
       { timeout: 3000 }
     );
     
-    // Verify score has changed
-    const newScore = await scoreDisplay.textContent();
-    expect(newScore).not.toBe(initialScore);
+    // Verify at least one score has changed
+    const newWord1Score = await word1ScoreDisplay.textContent();
+    const newWord2Score = await word2ScoreDisplay.textContent();
+    const word1Changed = newWord1Score !== initialWord1Score;
+    const word2Changed = newWord2Score !== initialWord2Score;
     
-    // Verify score shows at least 1 point (hint places a tile with score >= 1)
-    const scoreMatch = newScore.match(/(\d+)\s*\/\s*\d+\s*points/);
-    expect(scoreMatch).not.toBeNull();
-    const currentScore = parseInt(scoreMatch[1]);
-    expect(currentScore).toBeGreaterThan(0);
+    expect(word1Changed || word2Changed).toBe(true);
+    
+    // Verify the changed score shows at least 1 point (hint places a tile with score >= 1)
+    if (word1Changed) {
+      const scoreMatch = newWord1Score.match(/(\d+)\s*\/\s*\d+\s*points/);
+      expect(scoreMatch).not.toBeNull();
+      const currentScore = parseInt(scoreMatch[1]);
+      expect(currentScore).toBeGreaterThan(0);
+    }
+    if (word2Changed) {
+      const scoreMatch = newWord2Score.match(/(\d+)\s*\/\s*\d+\s*points/);
+      expect(scoreMatch).not.toBeNull();
+      const currentScore = parseInt(scoreMatch[1]);
+      expect(currentScore).toBeGreaterThan(0);
+    }
   });
 });

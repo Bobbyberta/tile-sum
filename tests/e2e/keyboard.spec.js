@@ -88,13 +88,14 @@ test.describe('Keyboard Navigation', () => {
     // Verify tile is selected (has ring-4 class)
     await expect(firstTile).toHaveClass(/ring-4/);
     
-    // Navigate to first slot using Tab
+    // Press Tab to navigate to next tile
     await page.keyboard.press('Tab');
     
-    // Verify tile remains focused (not the slot)
-    await expect(firstTile).toBeFocused();
+    // Verify focus moved to next tile (not the selected tile)
+    const secondTile = page.locator('.tile').nth(1);
+    await expect(secondTile).toBeFocused();
     
-    // Verify tile is still selected
+    // Verify first tile is still selected
     await expect(firstTile).toHaveClass(/ring-4/);
   });
 });
