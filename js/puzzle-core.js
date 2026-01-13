@@ -52,7 +52,12 @@ export function createTile(letter, index, isLocked = false, handlers = {}) {
         if (handlers.onTouchCancel) {
             tile.addEventListener('touchcancel', handlers.onTouchCancel, { passive: true });
         }
-        tile.addEventListener('keydown', handleTileKeyDown);
+        // Use custom keyboard handler if provided, otherwise use default
+        if (handlers.onKeyDown) {
+            tile.addEventListener('keydown', handlers.onKeyDown);
+        } else {
+            tile.addEventListener('keydown', handleTileKeyDown);
+        }
     }
 
     return tile;

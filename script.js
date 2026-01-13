@@ -39,6 +39,7 @@ import {
     handleSlotFocus,
     handleSlotBlur
 } from './js/keyboard.js';
+import { initKeyboardInput } from './js/keyboard-input.js';
 import { updateScoreDisplay, updateSubmitButton, checkSolution } from './js/scoring.js';
 import { provideHint, updateHintButtonText, showSolution } from './js/hints.js';
 import { showFeedback, triggerSnowflakeConfetti } from './js/feedback.js';
@@ -127,9 +128,18 @@ function initPuzzleWithPrefix(day, prefix = '') {
     // Define placeTileCallback with handlers available
     const placeTileCallback = (tile, slot) => placeTileInSlot(tile, slot, { ...dragDropContext, removeTileCallback });
     
+    // Initialize keyboard input system with context
+    const keyboardContext = {
+        placeTileCallback,
+        removeTileCallback,
+        prefix
+    };
+    initKeyboardInput(keyboardContext);
+    
     // Now update handlers with callbacks
     handlers.onClick = (e) => handleTileClick(e, placeTileCallback, removeTileCallback);
     handlers.onTouchStart = (e) => handleTouchStart(e, placeTileCallback, removeTileCallback);
+    handlers.onKeyDown = (e) => handleTileKeyDown(e, keyboardContext);
     
     tilesContainer.addEventListener('dragover', handleTilesContainerDragOver);
     tilesContainer.addEventListener('drop', (e) => handleTilesContainerDrop(e, dragDropContext));
@@ -167,6 +177,9 @@ function initPuzzleWithPrefix(day, prefix = '') {
         onFocus: handleSlotFocus,
         onBlur: handleSlotBlur
     };
+    
+    // Update keyboard context for slots (they use the same context)
+    // The handleSlotKeyDown function will detect prefix from slot's container
     
     puzzle.words.forEach((word, wordIndex) => {
         const wordContainer = document.createElement('div');
@@ -243,10 +256,12 @@ function initPuzzleWithPrefix(day, prefix = '') {
         newHintBtn.addEventListener('click', () => {
             const hintsRemaining = getHintsRemaining();
             // Pass full dragDropContext to ensure handlers are properly attached to returned tiles
+            // Include keyboard context properties for keyboard input system
             const hintContext = {
                 ...dragDropContext,
                 placeTileCallback,
-                removeTileCallback
+                removeTileCallback,
+                prefix // Ensure prefix is included for keyboard input system
             };
             if (hintsRemaining <= 0) {
                 showSolution(day, hintContext);

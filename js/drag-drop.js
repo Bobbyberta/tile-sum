@@ -626,12 +626,42 @@ export function handleTouchEnd(e) {
         // If another tile is selected, swap them
         if (selectedTile && selectedTile !== tile) {
             debugLog('handleTouchEnd: Another tile selected, swapping');
+            
+            // Validate selected tile exists before using
+            let actualSelectedTile = selectedTile;
+            if (!validateTileExists(selectedTile)) {
+                // Try to find actual tile in container
+                const letter = selectedTile.getAttribute('data-letter');
+                const index = selectedTile.getAttribute('data-tile-index');
+                if (letter && index !== null) {
+                    // Try to get context from touchDragState or use empty context
+                    const context = touchDragState.placeTileCallback ? { prefix: '' } : {};
+                    const foundTile = findTileInContainer(letter, index, context);
+                    if (foundTile) {
+                        actualSelectedTile = foundTile;
+                        debugLog('handleTouchEnd: Found actual tile in container, using it');
+                    } else {
+                        // Tile doesn't exist anywhere, clear selection and return
+                        debugLog('handleTouchEnd: Selected tile not found, clearing selection');
+                        deselectTile();
+                        selectTile(tile);
+                        return;
+                    }
+                } else {
+                    // No letter/index, clear selection and return
+                    debugLog('handleTouchEnd: Selected tile has no data, clearing selection');
+                    deselectTile();
+                    selectTile(tile);
+                    return;
+                }
+            }
+            
             const clickedSlot = tile.closest('.slot');
-            const selectedSlot = selectedTile.closest('.slot');
+            const selectedSlot = actualSelectedTile.closest('.slot');
             
             // If clicked tile is in a slot, place selected tile there (will swap)
             if (clickedSlot && touchDragState.placeTileCallback) {
-                touchDragState.placeTileCallback(selectedTile, clickedSlot);
+                touchDragState.placeTileCallback(actualSelectedTile, clickedSlot);
                 deselectTile();
                 return;
             }
@@ -783,8 +813,8 @@ function attachTileHandlers(tile, context, isInSlot = false) {
         tile.addEventListener('touchcancel', handleTouchCancel, { passive: true });
     }
     
-    // Attach keyboard handler
-    tile.addEventListener('keydown', handleTileKeyDown);
+    // Attach keyboard handler with context
+    tile.addEventListener('keydown', (e) => handleTileKeyDown(e, context));
 }
 
 // Validation helpers to ensure tiles are never deleted
@@ -852,8 +882,26 @@ export function placeTileInSlot(tile, slot, context = {}) {
         // Validate tile exists before proceeding
         if (!validateTileExists(tile)) {
             console.error('placeTileInSlot: Tile does not exist in DOM');
-            ensureTilePreserved(tile, context);
-            return;
+            
+            // Try to find existing tile in container before recovery
+            const letter = tile.getAttribute('data-letter');
+            const originalIndex = tile.getAttribute('data-tile-index');
+            if (letter && originalIndex !== null) {
+                const existingTile = findTileInContainer(letter, originalIndex, context);
+                if (existingTile) {
+                    debugLog('placeTileInSlot: Found existing tile in container, using it');
+                    // Use the existing tile instead
+                    tile = existingTile;
+                } else {
+                    // Tile truly doesn't exist, attempt recovery
+                    ensureTilePreserved(tile, context);
+                    return;
+                }
+            } else {
+                // No letter/index, can't recover
+                console.error('placeTileInSlot: Tile has no letter/index, cannot recover');
+                return;
+            }
         }
         
         // Check if tile is already in this slot (prevent duplicate placement)
@@ -1002,12 +1050,6 @@ function swapTiles(draggedTile, existingTile, targetSlot, context = {}) {
     
     const isKeyboardNavigation = context.isKeyboardNavigation || false;
     try {
-        debugLog('swapTiles: Starting swap', {
-            dragged: draggedTile.getAttribute('data-letter'),
-            existing: existingTile.getAttribute('data-letter'),
-            slot: targetSlot.getAttribute('data-slot-index')
-        });
-        
         // Validate inputs
         if (!draggedTile || !existingTile || !targetSlot) {
             console.error('swapTiles: Invalid tiles or slot');
@@ -1017,49 +1059,86 @@ function swapTiles(draggedTile, existingTile, targetSlot, context = {}) {
             return;
         }
         
-        // Validate tiles exist before proceeding
+        // Validate tiles exist before proceeding, and find actual tiles if needed
+        let actualDraggedTile = draggedTile;
         if (!validateTileExists(draggedTile)) {
             console.error('swapTiles: Dragged tile does not exist in DOM');
-            ensureTilePreserved(draggedTile, context);
-            return;
-        }
-        if (!validateTileExists(existingTile)) {
-            console.error('swapTiles: Existing tile does not exist in DOM');
-            ensureTilePreserved(existingTile, context);
-            return;
+            // Try to find existing tile in container before recovery
+            const draggedLetter = draggedTile.getAttribute('data-letter');
+            const draggedIndex = draggedTile.getAttribute('data-tile-index');
+            if (draggedLetter && draggedIndex !== null) {
+                const foundDraggedTile = findTileInContainer(draggedLetter, draggedIndex, context);
+                if (foundDraggedTile) {
+                    debugLog('swapTiles: Found existing dragged tile in container, using it');
+                    actualDraggedTile = foundDraggedTile;
+                } else {
+                    ensureTilePreserved(draggedTile, context);
+                    return;
+                }
+            } else {
+                ensureTilePreserved(draggedTile, context);
+                return;
+            }
         }
         
+        let actualExistingTile = existingTile;
+        if (!validateTileExists(existingTile)) {
+            console.error('swapTiles: Existing tile does not exist in DOM');
+            // Try to find existing tile in container before recovery
+            const existingLetter = existingTile.getAttribute('data-letter');
+            const existingIndex = existingTile.getAttribute('data-tile-index');
+            if (existingLetter && existingIndex !== null) {
+                const foundExistingTile = findTileInContainer(existingLetter, existingIndex, context);
+                if (foundExistingTile) {
+                    debugLog('swapTiles: Found existing tile in container, using it');
+                    actualExistingTile = foundExistingTile;
+                } else {
+                    ensureTilePreserved(existingTile, context);
+                    return;
+                }
+            } else {
+                ensureTilePreserved(existingTile, context);
+                return;
+            }
+        }
+        
+        debugLog('swapTiles: Starting swap', {
+            dragged: actualDraggedTile.getAttribute('data-letter'),
+            existing: actualExistingTile.getAttribute('data-letter'),
+            slot: targetSlot.getAttribute('data-slot-index')
+        });
+        
         // Prevent swapping tile with itself
-        if (draggedTile === existingTile) {
+        if (actualDraggedTile === actualExistingTile) {
             debugLog('swapTiles: Cannot swap tile with itself');
             return;
         }
         
-        const draggedSlot = draggedTile.closest('.slot');
-        const draggedLetter = draggedTile.getAttribute('data-letter');
-        const draggedIndex = draggedTile.getAttribute('data-tile-index');
-        const existingLetter = existingTile.getAttribute('data-letter');
-        const existingIndex = existingTile.getAttribute('data-tile-index');
+        const draggedSlot = actualDraggedTile.closest('.slot');
+        const draggedLetter = actualDraggedTile.getAttribute('data-letter');
+        const draggedIndex = actualDraggedTile.getAttribute('data-tile-index');
+        const existingLetter = actualExistingTile.getAttribute('data-letter');
+        const existingIndex = actualExistingTile.getAttribute('data-tile-index');
         
         // Clear selected tile if either tile is selected
-        if (getSelectedTile() === draggedTile || getSelectedTile() === existingTile) {
+        if (getSelectedTile() === actualDraggedTile || getSelectedTile() === actualExistingTile) {
             deselectTile();
         }
         
-        const isDraggedFromContainer = draggedTile.closest('#tiles-container');
-        const isDraggedFromArchiveContainer = draggedTile.closest('#archive-tiles-container');
+        const isDraggedFromContainer = actualDraggedTile.closest('#tiles-container');
+        const isDraggedFromArchiveContainer = actualDraggedTile.closest('#archive-tiles-container');
         const isArchivePuzzle = targetSlot.closest('#archive-word-slots') !== null || context.isArchive;
         const prefix = context?.prefix || '';
         
         // SAFEGUARD: Clone both tiles BEFORE removing originals
-        const clonedDraggedTile = draggedTile.cloneNode(true);
+        const clonedDraggedTile = actualDraggedTile.cloneNode(true);
         clonedDraggedTile.setAttribute('draggable', 'true');
         clonedDraggedTile.classList.remove('dragging');
         clonedDraggedTile.style.opacity = ''; // Reset any inline styles from drag
         // Attach handlers - dragged tile will be in target slot
         attachTileHandlers(clonedDraggedTile, context, true);
         
-        const clonedExistingTile = existingTile.cloneNode(true);
+        const clonedExistingTile = actualExistingTile.cloneNode(true);
         clonedExistingTile.setAttribute('draggable', 'true');
         clonedExistingTile.classList.remove('dragging');
         clonedExistingTile.style.opacity = ''; // Reset any inline styles from drag
@@ -1089,15 +1168,15 @@ function swapTiles(draggedTile, existingTile, targetSlot, context = {}) {
         
         // SAFEGUARD: Only remove original tiles AFTER successful placement
         // Validate tiles still exist before removing
-        if (validateTileExists(draggedTile)) {
-            draggedTile.remove();
+        if (validateTileExists(actualDraggedTile)) {
+            actualDraggedTile.remove();
             debugLog('swapTiles: Dragged tile removed');
         } else {
             console.warn('swapTiles: Dragged tile was already removed');
         }
         
-        if (validateTileExists(existingTile)) {
-            existingTile.remove();
+        if (validateTileExists(actualExistingTile)) {
+            actualExistingTile.remove();
             debugLog('swapTiles: Existing tile removed');
         } else {
             console.warn('swapTiles: Existing tile was already removed');
@@ -1154,8 +1233,8 @@ function swapTiles(draggedTile, existingTile, targetSlot, context = {}) {
         console.error('swapTiles error:', error);
         debugLog('swapTiles: Error occurred', error);
         // Recovery: ensure both tiles are preserved
-        ensureTilePreserved(draggedTile, context);
-        ensureTilePreserved(existingTile, context);
+        ensureTilePreserved(actualDraggedTile, context);
+        ensureTilePreserved(actualExistingTile, context);
     } finally {
         // Only clear isProcessing if we set it (not if called from placeTileInSlot)
         if (!wasAlreadyProcessing) {
@@ -1193,6 +1272,11 @@ export function removeTileFromSlot(slot, context = {}) {
         if (!validateTileExists(tile)) {
             console.error('removeTileFromSlot: Tile does not exist in DOM');
             return;
+        }
+        
+        // Clear selected tile if it matches the removed tile
+        if (getSelectedTile() === tile) {
+            clearSelectedTile();
         }
         
         // Remove from slot

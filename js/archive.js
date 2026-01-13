@@ -40,12 +40,14 @@ import {
     handleTouchEnd,
     handleTouchCancel
 } from './drag-drop.js';
+// Note: attachTileHandlers is not exported, so we'll need to use returnTileToContainer with context
 import { 
     handleTileKeyDown,
     handleSlotKeyDown,
     handleSlotFocus,
     handleSlotBlur
 } from './keyboard.js';
+import { initKeyboardInput } from './keyboard-input.js';
 import { updateScoreDisplay, updateSubmitButton, checkSolution } from './scoring.js';
 import { provideHint, updateHintButtonText, showSolution } from './hints.js';
 import { showFeedback, triggerSnowflakeConfetti } from './feedback.js';
@@ -364,9 +366,18 @@ function initArchivePuzzle(puzzleNumber, dateString) {
         });
     };
     
+    // Initialize keyboard input system with archive context
+    const archiveKeyboardContext = {
+        placeTileCallback: archivePlaceTileCallbackWithHandlers,
+        removeTileCallback: archiveRemoveTileCallback,
+        prefix: 'archive-'
+    };
+    initKeyboardInput(archiveKeyboardContext);
+    
     // Now update archiveHandlers with the final callbacks
     archiveHandlers.onClick = (e) => handleTileClick(e, archivePlaceTileCallbackWithHandlers, archiveRemoveTileCallback);
     archiveHandlers.onTouchStart = (e) => handleTouchStart(e, archivePlaceTileCallbackWithHandlers, archiveRemoveTileCallback);
+    archiveHandlers.onKeyDown = (e) => handleTileKeyDown(e, archiveKeyboardContext);
     
     tilesContainer.addEventListener('dragover', (e) => handleTilesContainerDragOver(e));
     tilesContainer.addEventListener('drop', (e) => handleTilesContainerDrop(e, {

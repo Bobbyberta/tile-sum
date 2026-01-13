@@ -2,93 +2,41 @@
 
 import { getSelectedTile, setSelectedTile, clearSelectedTile } from './puzzle-state.js';
 import { SCRABBLE_SCORES } from '../puzzle-data-encoded.js';
+import { handleTileKeyDown as handleTileKeyDownInput, handleSlotKeyDown as handleSlotKeyDownInput, getKeyboardContext } from './keyboard-input.js';
 
-// Keyboard handler for tiles
-export function handleTileKeyDown(e) {
-    const tile = e.currentTarget;
-    
-    // Don't allow keyboard interaction with locked tiles
-    if (tile.getAttribute('data-locked') === 'true') {
-        return;
-    }
-    
-    if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        
-        // If this tile is already selected, deselect it
-        if (getSelectedTile() === tile) {
-            deselectTile();
-        } else {
-            // Select this tile
-            selectTile(tile);
-        }
-    } else if (e.key === 'Escape') {
-        // Deselect if this tile is selected
-        if (getSelectedTile() === tile) {
-            deselectTile();
-        }
-    }
+// Keyboard handler for tiles - delegates to keyboard-input module
+export function handleTileKeyDown(e, context) {
+    // Use provided context or fall back to stored context
+    const activeContext = context || getKeyboardContext();
+    // Delegate to keyboard-input module
+    handleTileKeyDownInput(e, activeContext);
 }
 
-// Keyboard handler for slots
+// Keyboard handler for slots - delegates to keyboard-input module
 export function handleSlotKeyDown(e, placeTileCallback, removeTileCallback) {
+    // Build context - use stored context as base, merge with callbacks and detected prefix
+    const baseContext = getKeyboardContext() || {};
+    const context = {
+        ...baseContext,
+        placeTileCallback: placeTileCallback || baseContext.placeTileCallback,
+        removeTileCallback: removeTileCallback || baseContext.removeTileCallback,
+        prefix: baseContext.prefix || '' // Will be determined from slot's container if needed
+    };
+    
+    // Try to detect prefix from slot's container
     const slot = e.currentTarget;
-    
-    // Don't allow keyboard interaction with locked slots
-    if (slot.getAttribute('data-locked') === 'true') {
-        return;
-    }
-    
-    if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        
-        if (slot.classList.contains('filled')) {
-            // Remove tile from slot if it's filled and not locked
-            const tile = slot.querySelector('.tile');
-            if (tile && tile.getAttribute('data-locked') !== 'true') {
-                if (removeTileCallback) {
-                    // removeTileCallback will pass isKeyboardNavigation via context
-                    removeTileCallback(slot);
-                }
-                // Focus the tile that was removed (will be in container)
-                // Detect which container to use by checking where the slot is
-                setTimeout(() => {
-                    const slot = e.currentTarget;
-                    const wordSlotsContainer = slot.closest('#word-slots, #daily-word-slots, #archive-word-slots');
-                    let tilesContainerId = 'tiles-container';
-                    if (wordSlotsContainer) {
-                        const containerId = wordSlotsContainer.id;
-                        if (containerId === 'daily-word-slots') {
-                            tilesContainerId = 'daily-tiles-container';
-                        } else if (containerId === 'archive-word-slots') {
-                            tilesContainerId = 'archive-tiles-container';
-                        }
-                    }
-                    const tilesContainer = document.getElementById(tilesContainerId) ||
-                                         document.getElementById('tiles-container') ||
-                                         document.getElementById('daily-tiles-container') ||
-                                         document.getElementById('archive-tiles-container');
-                    if (tilesContainer && tile) {
-                        const removedTile = tilesContainer.querySelector(`[data-letter="${tile.getAttribute('data-letter')}"]`);
-                        if (removedTile) removedTile.focus();
-                    }
-                }, 100);
-            }
-        } else if (getSelectedTile()) {
-            // Place selected tile in this slot
-            if (placeTileCallback) {
-                placeTileCallback(getSelectedTile(), slot);
-            }
-            deselectTile();
-            // Keep focus on the slot
-            slot.focus();
-        }
-    } else if (e.key === 'Escape') {
-        // Deselect tile if one is selected
-        if (getSelectedTile()) {
-            deselectTile();
+    const wordSlotsContainer = slot.closest('#word-slots, #daily-word-slots, #archive-word-slots');
+    if (wordSlotsContainer) {
+        const containerId = wordSlotsContainer.id;
+        if (containerId === 'daily-word-slots') {
+            context.prefix = 'daily-';
+        } else if (containerId === 'archive-word-slots') {
+            context.prefix = 'archive-';
         }
     }
+    
+    // Delegate to keyboard-input module
+    handleSlotKeyDownInput(e, context);
 }
 
 // Handle slot focus for visual feedback
