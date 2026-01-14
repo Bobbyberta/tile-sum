@@ -170,7 +170,7 @@ describe('tile-validation.js', () => {
       const result = ensureTilePreserved(tile, {}, returnTileCallback);
       
       expect(result).toBe(true);
-      expect(returnTileCallback).toHaveBeenCalledWith('B', 1, {}, false, '', {});
+      expect(returnTileCallback).toHaveBeenCalledWith('B', '1', {}, false, '', {});
       
       // Restore
       document.contains = originalContains;

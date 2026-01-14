@@ -253,6 +253,27 @@ describe('hints.js', () => {
       
       word1Container.appendChild(slots1Container);
       archiveSlots.appendChild(word1Container);
+      
+      // Create word 2 container with slots (FLAKE - 5 letters)
+      const word2Container = document.createElement('div');
+      word2Container.setAttribute('data-word-index', '1');
+      word2Container.setAttribute('data-max-score', '12');
+      
+      const slots2Container = document.createElement('div');
+      slots2Container.setAttribute('data-word-slots', '1');
+      slots2Container.className = 'flex flex-wrap gap-2 mb-3';
+      
+      // Create 5 slots for word 2 (FLAKE)
+      for (let i = 0; i < 5; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.setAttribute('data-word-index', '1');
+        slot.setAttribute('data-slot-index', String(i));
+        slots2Container.appendChild(slot);
+      }
+      
+      word2Container.appendChild(slots2Container);
+      archiveSlots.appendChild(word2Container);
       document.body.appendChild(archiveSlots);
       
       ['S', 'N', 'O', 'W'].forEach((letter, index) => {
@@ -283,6 +304,10 @@ describe('hints.js', () => {
       await setupCreateTileMock();
       const { tilesContainer, slots1Container } = createMockPuzzleDOM();
       
+      // Mock Math.random to always select the first hint (slot 0)
+      const originalRandom = Math.random;
+      Math.random = vi.fn(() => 0);
+      
       // Place 'S' tile in slot 1 (wrong position - should be in slot 0)
       const tileS = createMockTile('S', 0);
       tileS.setAttribute('data-letter', 'S');
@@ -308,6 +333,9 @@ describe('hints.js', () => {
       const lockedTile = slots1Container.children[0].querySelector('.tile[data-locked="true"]');
       expect(lockedTile).toBeTruthy();
       expect(lockedTile.getAttribute('data-letter')).toBe('S');
+      
+      // Restore Math.random
+      Math.random = originalRandom;
     });
 
     it('should show feedback when all tiles correct', async () => {

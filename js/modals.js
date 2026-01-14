@@ -276,9 +276,12 @@ export function closeErrorModal(prefix = '') {
     
     // Restore focus to triggering element
     if (triggeringElement && document.contains(triggeringElement)) {
+        const elementToFocus = triggeringElement;
+        triggeringElement = null;
         setTimeout(() => {
-            triggeringElement.focus();
-            triggeringElement = null;
+            if (elementToFocus && document.contains(elementToFocus)) {
+                elementToFocus.focus();
+            }
         }, 100);
     } else {
         triggeringElement = null;
@@ -350,9 +353,12 @@ export function closeHelpModal() {
     
     // Restore focus to triggering element
     if (triggeringElement && document.contains(triggeringElement)) {
+        const elementToFocus = triggeringElement;
+        triggeringElement = null;
         setTimeout(() => {
-            triggeringElement.focus();
-            triggeringElement = null;
+            if (elementToFocus && document.contains(elementToFocus)) {
+                elementToFocus.focus();
+            }
         }, 100);
     } else {
         triggeringElement = null;
@@ -385,9 +391,12 @@ export function closeSuccessModal(prefix = '') {
     
     // Restore focus to triggering element
     if (triggeringElement && document.contains(triggeringElement)) {
+        const elementToFocus = triggeringElement;
+        triggeringElement = null;
         setTimeout(() => {
-            triggeringElement.focus();
-            triggeringElement = null;
+            if (elementToFocus && document.contains(elementToFocus)) {
+                elementToFocus.focus();
+            }
         }, 100);
     } else {
         triggeringElement = null;

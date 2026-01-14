@@ -51,11 +51,32 @@ describe('modals.js', () => {
     document.body.classList.remove('overflow-hidden');
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     // Close all modals to reset modalCount
-    closeErrorModal();
-    closeSuccessModal();
-    closeHelpModal();
+    // Create modals if they don't exist so close functions can properly decrement modalCount
+    // We need to ensure modalCount is reset to 0, so we close modals multiple times
+    // to handle cases where modalCount might be > number of actual modals
+    if (!document.getElementById('error-modal')) {
+      createErrorModal();
+    }
+    if (!document.getElementById('success-modal')) {
+      createSuccessModal();
+    }
+    if (!document.getElementById('help-modal')) {
+      createHelpModal();
+    }
+    
+    // Close all modals multiple times to ensure modalCount reaches 0
+    // (in case modalCount was > number of modals due to test failures)
+    for (let i = 0; i < 5; i++) {
+      closeErrorModal();
+      closeSuccessModal();
+      closeHelpModal();
+    }
+    
+    // Wait for any pending timeouts to complete
+    await new Promise(resolve => setTimeout(resolve, 150));
+    
     // Clear any pending timeouts
     vi.clearAllTimers();
     vi.restoreAllMocks();
@@ -354,6 +375,7 @@ describe('modals.js', () => {
       const { modal } = createErrorModal();
       const triggerBtn = document.createElement('button');
       triggerBtn.id = 'trigger-btn';
+      triggerBtn.tabIndex = 0; // Make it focusable
       document.body.appendChild(triggerBtn);
       triggerBtn.focus();
       
@@ -361,9 +383,13 @@ describe('modals.js', () => {
       expect(document.activeElement).toBe(triggerBtn);
       
       showErrorModal();
+      
+      // Wait a bit for modal to open and focus to move to close button
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
       closeErrorModal();
       
-      // Wait for setTimeout in closeErrorModal
+      // Wait for setTimeout in closeErrorModal to restore focus
       await new Promise(resolve => setTimeout(resolve, 150));
       
       // Focus should be restored to trigger button
@@ -478,6 +504,27 @@ describe('modals.js', () => {
   });
 
   describe('scroll lock management', () => {
+    beforeEach(() => {
+      // Ensure modalCount is 0 before scroll lock tests
+      // Create all modals and close them to reset modalCount
+      if (!document.getElementById('error-modal')) {
+        createErrorModal();
+      }
+      if (!document.getElementById('success-modal')) {
+        createSuccessModal();
+      }
+      if (!document.getElementById('help-modal')) {
+        createHelpModal();
+      }
+      
+      // Close all modals multiple times to ensure modalCount is 0
+      for (let i = 0; i < 5; i++) {
+        closeErrorModal();
+        closeSuccessModal();
+        closeHelpModal();
+      }
+    });
+
     it('should handle multiple modals', () => {
       const { modal: errorModal } = createErrorModal();
       const { modal: helpModal } = createHelpModal();
@@ -506,7 +553,8 @@ describe('modals.js', () => {
     it('should restore scroll position', () => {
       const { modal } = createErrorModal();
       
-      // Mock window.pageYOffset and document.documentElement.scrollTop
+      // Mock window.pageYOffset and document.documentElement.scrollTop BEFORE opening modal
+      // so lockBodyScroll can read the scroll position
       Object.defineProperty(window, 'pageYOffset', {
         writable: true,
         configurable: true,

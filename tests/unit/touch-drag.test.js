@@ -63,6 +63,16 @@ function createTouch(clientX, clientY, target = null) {
   };
 }
 
+// Helper to create touch event with mockable currentTarget
+function createTouchEventWithTarget(type, touches = [], changedTouches = [], currentTarget) {
+  const event = createTouchEvent(type, touches, changedTouches);
+  Object.defineProperty(event, 'currentTarget', {
+    get: () => currentTarget,
+    configurable: true
+  });
+  return event;
+}
+
 describe('touch-drag.js', () => {
   let touchDragState;
   let setTouchDragStateMock;
@@ -152,8 +162,7 @@ describe('touch-drag.js', () => {
       const tile = createMockTile('A', 0);
       const touch1 = createTouch(100, 200, tile);
       const touch2 = createTouch(150, 250, tile);
-      const event = createTouchEvent('touchstart', [touch1, touch2]);
-      event.currentTarget = tile;
+      const event = createTouchEventWithTarget('touchstart', [touch1, touch2], [], tile);
       
       handleTouchStart(event, vi.fn(), vi.fn());
       
