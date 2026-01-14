@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createTile, createSlot, updatePlaceholderTile } from '../../js/puzzle-core.js';
+import { createTile, createSlot, updatePlaceholderTile, createPuzzleDOMStructure } from '../../js/puzzle-core.js';
 import { createMockPuzzleDOM, cleanupDOM } from '../helpers/dom-setup.js';
 
 // Mock puzzle-data-encoded.js
@@ -187,6 +187,148 @@ describe('puzzle-core.js', () => {
       expect(placeholder).toBeTruthy();
       
       document.body.removeChild(container);
+    });
+  });
+
+  describe('createPuzzleDOMStructure', () => {
+    it('should clear container before creating structure', () => {
+      const container = document.createElement('div');
+      container.innerHTML = '<p>Existing content</p>';
+      document.body.appendChild(container);
+
+      createPuzzleDOMStructure(container, '', 'Test Title');
+
+      expect(container.querySelector('p')).toBeFalsy();
+      expect(container.querySelector('header')).toBeTruthy();
+    });
+
+    it('should create header with title', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      createPuzzleDOMStructure(container, '', 'Test Puzzle Title');
+
+      const header = container.querySelector('header');
+      expect(header).toBeTruthy();
+      const title = header.querySelector('h1');
+      expect(title).toBeTruthy();
+      expect(title.textContent).toBe('Test Puzzle Title');
+    });
+
+    it('should create tiles container with correct ID and prefix', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      createPuzzleDOMStructure(container, 'archive-', 'Test Title');
+
+      const tilesContainer = document.getElementById('archive-tiles-container');
+      expect(tilesContainer).toBeTruthy();
+      expect(tilesContainer.classList.contains('flex')).toBe(true);
+    });
+
+    it('should create word slots container with correct ID and prefix', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      createPuzzleDOMStructure(container, 'daily-', 'Test Title');
+
+      const wordSlotsContainer = document.getElementById('daily-word-slots');
+      expect(wordSlotsContainer).toBeTruthy();
+      expect(wordSlotsContainer.classList.contains('grid')).toBe(true);
+    });
+
+    it('should create hint button with correct ID and prefix', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      createPuzzleDOMStructure(container, 'test-', 'Test Title');
+
+      const hintBtn = document.getElementById('test-hint-btn');
+      expect(hintBtn).toBeTruthy();
+      expect(hintBtn.textContent).toBe('Get Hint');
+      expect(hintBtn.tagName).toBe('BUTTON');
+    });
+
+    it('should create submit button with correct ID and prefix', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      createPuzzleDOMStructure(container, 'archive-', 'Test Title');
+
+      const submitBtn = document.getElementById('archive-submit-btn');
+      expect(submitBtn).toBeTruthy();
+      expect(submitBtn.textContent).toBe('Submit Solution');
+      expect(submitBtn.tagName).toBe('BUTTON');
+    });
+
+    it('should return object with references to created elements', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      const result = createPuzzleDOMStructure(container, '', 'Test Title');
+
+      expect(result).toHaveProperty('header');
+      expect(result).toHaveProperty('puzzleTitle');
+      expect(result).toHaveProperty('tilesContainer');
+      expect(result).toHaveProperty('wordSlotsContainer');
+      expect(result).toHaveProperty('hintBtn');
+      expect(result).toHaveProperty('submitBtn');
+      
+      expect(result.header).toBeTruthy();
+      expect(result.puzzleTitle).toBeTruthy();
+      expect(result.tilesContainer).toBeTruthy();
+      expect(result.wordSlotsContainer).toBeTruthy();
+      expect(result.hintBtn).toBeTruthy();
+      expect(result.submitBtn).toBeTruthy();
+    });
+
+    it('should create tiles heading for screen readers', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      createPuzzleDOMStructure(container, '', 'Test Title');
+
+      const tilesHeading = container.querySelector('h2.sr-only');
+      expect(tilesHeading).toBeTruthy();
+      expect(tilesHeading.textContent).toBe('Available Tiles');
+    });
+
+    it('should create slots heading for screen readers', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      createPuzzleDOMStructure(container, '', 'Test Title');
+
+      const headings = container.querySelectorAll('h2.sr-only');
+      expect(headings.length).toBeGreaterThanOrEqual(2);
+      const slotsHeading = Array.from(headings).find(h => h.textContent === 'Word Slots');
+      expect(slotsHeading).toBeTruthy();
+    });
+
+    it('should work with empty prefix', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      createPuzzleDOMStructure(container, '', 'Test Title');
+
+      const tilesContainer = document.getElementById('tiles-container');
+      expect(tilesContainer).toBeTruthy();
+      const wordSlots = document.getElementById('word-slots');
+      expect(wordSlots).toBeTruthy();
+    });
+
+    it('should create buttons container with correct structure', () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      createPuzzleDOMStructure(container, '', 'Test Title');
+
+      const buttonsContainer = container.querySelector('.mb-8.flex');
+      expect(buttonsContainer).toBeTruthy();
+      const hintBtn = buttonsContainer.querySelector('#hint-btn');
+      const submitBtn = buttonsContainer.querySelector('#submit-btn');
+      expect(hintBtn).toBeTruthy();
+      expect(submitBtn).toBeTruthy();
     });
   });
 });

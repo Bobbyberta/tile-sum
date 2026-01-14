@@ -127,8 +127,8 @@ export function checkAutoComplete(day = null, prefix = null) {
         // Get max scores from word containers
         const word1Container = document.querySelector(`[data-word-index="0"]`);
         const word2Container = document.querySelector(`[data-word-index="1"]`);
-        const word1MaxScore = word1Container ? parseInt(word1Container.getAttribute('data-max-score')) : 0;
-        const word2MaxScore = word2Container ? parseInt(word2Container.getAttribute('data-max-score')) : 0;
+        const word1MaxScore = word1Container ? (parseInt(word1Container.getAttribute('data-max-score')) || 0) : 0;
+        const word2MaxScore = word2Container ? (parseInt(word2Container.getAttribute('data-max-score')) || 0) : 0;
         
         // Calculate hints used and check if solution was shown
         const isArchive = puzzlePrefix === 'archive-';

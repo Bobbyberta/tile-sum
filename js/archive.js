@@ -61,12 +61,18 @@ export function initArchivePage() {
         datePrevBtn.addEventListener('click', () => {
             const currentDate = parseDateString(datePicker.value);
             if (currentDate) {
-                currentDate.setDate(currentDate.getDate() - 1);
-                const newDateStr = formatDateString(currentDate);
+                currentDate.setHours(0, 0, 0, 0);
+                const newDate = new Date(currentDate);
+                newDate.setDate(newDate.getDate() - 1);
+                newDate.setHours(0, 0, 0, 0);
                 const minDate = parseDateString(datePicker.min);
-                if (minDate && currentDate >= minDate) {
-                    datePicker.value = newDateStr;
-                    loadArchivePuzzle(newDateStr);
+                if (minDate) {
+                    minDate.setHours(0, 0, 0, 0);
+                    if (newDate.getTime() >= minDate.getTime()) {
+                        const newDateStr = formatDateString(newDate);
+                        datePicker.value = newDateStr;
+                        loadArchivePuzzle(newDateStr);
+                    }
                 }
             }
         });
@@ -77,12 +83,15 @@ export function initArchivePage() {
         dateNextBtn.addEventListener('click', () => {
             const currentDate = parseDateString(datePicker.value);
             if (currentDate) {
-                currentDate.setDate(currentDate.getDate() + 1);
-                const newDateStr = formatDateString(currentDate);
+                currentDate.setHours(0, 0, 0, 0);
+                const newDate = new Date(currentDate);
+                newDate.setDate(newDate.getDate() + 1);
+                newDate.setHours(0, 0, 0, 0);
                 const todayDate = new Date();
                 todayDate.setHours(0, 0, 0, 0);
                 // Allow future dates in archive test mode
-                if (isArchiveTestMode() || currentDate <= todayDate) {
+                if (isArchiveTestMode() || newDate.getTime() <= todayDate.getTime()) {
+                    const newDateStr = formatDateString(newDate);
                     datePicker.value = newDateStr;
                     loadArchivePuzzle(newDateStr);
                 }

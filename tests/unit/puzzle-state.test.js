@@ -15,7 +15,8 @@ import {
   getSolutionShown,
   setSolutionShown,
   getArchiveSolutionShown,
-  setArchiveSolutionShown
+  setArchiveSolutionShown,
+  createStateManager
 } from '../../js/puzzle-state.js';
 
 describe('puzzle-state.js', () => {
@@ -170,6 +171,83 @@ describe('puzzle-state.js', () => {
       expect(getArchiveSolutionShown()).toBe(true);
       setArchiveSolutionShown(false);
       expect(getArchiveSolutionShown()).toBe(false);
+    });
+  });
+
+  describe('createStateManager', () => {
+    it('should return archive state manager for archive prefix', () => {
+      const stateManager = createStateManager('archive-');
+      
+      expect(stateManager).toHaveProperty('getHintsRemaining');
+      expect(stateManager).toHaveProperty('setHintsRemaining');
+      expect(stateManager).toHaveProperty('decrementHintsRemaining');
+      expect(stateManager).toHaveProperty('getSolutionShown');
+      expect(stateManager).toHaveProperty('setSolutionShown');
+      
+      // Verify it uses archive functions
+      setArchiveHintsRemaining(2);
+      expect(stateManager.getHintsRemaining()).toBe(2);
+      
+      stateManager.setHintsRemaining(1);
+      expect(getArchiveHintsRemaining()).toBe(1);
+      
+      setArchiveSolutionShown(true);
+      expect(stateManager.getSolutionShown()).toBe(true);
+      
+      stateManager.setSolutionShown(false);
+      expect(getArchiveSolutionShown()).toBe(false);
+    });
+
+    it('should return regular state manager for empty prefix', () => {
+      const stateManager = createStateManager('');
+      
+      expect(stateManager).toHaveProperty('getHintsRemaining');
+      expect(stateManager).toHaveProperty('setHintsRemaining');
+      expect(stateManager).toHaveProperty('decrementHintsRemaining');
+      expect(stateManager).toHaveProperty('getSolutionShown');
+      expect(stateManager).toHaveProperty('setSolutionShown');
+      
+      // Verify it uses regular functions
+      setHintsRemaining(2);
+      expect(stateManager.getHintsRemaining()).toBe(2);
+      
+      stateManager.setHintsRemaining(1);
+      expect(getHintsRemaining()).toBe(1);
+      
+      setSolutionShown(true);
+      expect(stateManager.getSolutionShown()).toBe(true);
+      
+      stateManager.setSolutionShown(false);
+      expect(getSolutionShown()).toBe(false);
+    });
+
+    it('should return regular state manager for non-archive prefix', () => {
+      const stateManager = createStateManager('daily-');
+      
+      expect(stateManager).toHaveProperty('getHintsRemaining');
+      expect(stateManager).toHaveProperty('setHintsRemaining');
+      
+      // Verify it uses regular functions, not archive
+      setHintsRemaining(3);
+      setArchiveHintsRemaining(1);
+      
+      expect(stateManager.getHintsRemaining()).toBe(3); // Should use regular, not archive
+    });
+
+    it('should handle decrementHintsRemaining for archive', () => {
+      const stateManager = createStateManager('archive-');
+      
+      setArchiveHintsRemaining(3);
+      stateManager.decrementHintsRemaining();
+      expect(getArchiveHintsRemaining()).toBe(2);
+    });
+
+    it('should handle decrementHintsRemaining for regular', () => {
+      const stateManager = createStateManager('');
+      
+      setHintsRemaining(3);
+      stateManager.decrementHintsRemaining();
+      expect(getHintsRemaining()).toBe(2);
     });
   });
 });

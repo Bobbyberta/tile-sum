@@ -86,6 +86,56 @@ describe('scoring.js', () => {
       expect(score2Display.textContent).toBe('0 / 12 points');
     });
 
+    it('should use archive-word-slots for archive prefix', () => {
+      // Create archive word slots container
+      const archiveWordSlots = document.createElement('div');
+      archiveWordSlots.id = 'archive-word-slots';
+      document.body.appendChild(archiveWordSlots);
+      
+      // Create word containers
+      const word1Container = document.createElement('div');
+      word1Container.setAttribute('data-word-index', '0');
+      word1Container.setAttribute('data-max-score', '10');
+      const slots1Container = document.createElement('div');
+      slots1Container.setAttribute('data-word-slots', '0');
+      for (let i = 0; i < 4; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.setAttribute('data-word-index', '0');
+        slot.setAttribute('data-slot-index', String(i));
+        slots1Container.appendChild(slot);
+      }
+      word1Container.appendChild(slots1Container);
+      const score1Display = document.createElement('div');
+      score1Display.id = 'archive-word1-score-display';
+      word1Container.appendChild(score1Display);
+      
+      const word2Container = document.createElement('div');
+      word2Container.setAttribute('data-word-index', '1');
+      word2Container.setAttribute('data-max-score', '12');
+      const slots2Container = document.createElement('div');
+      slots2Container.setAttribute('data-word-slots', '1');
+      for (let i = 0; i < 5; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.setAttribute('data-word-index', '1');
+        slot.setAttribute('data-slot-index', String(i));
+        slots2Container.appendChild(slot);
+      }
+      word2Container.appendChild(slots2Container);
+      const score2Display = document.createElement('div');
+      score2Display.id = 'archive-word2-score-display';
+      word2Container.appendChild(score2Display);
+      
+      archiveWordSlots.appendChild(word1Container);
+      archiveWordSlots.appendChild(word2Container);
+      
+      updateScoreDisplay('archive-');
+      
+      expect(score1Display.textContent).toBe('0 / 10 points');
+      expect(score2Display.textContent).toBe('0 / 12 points');
+    });
+
     it('should handle missing score displays gracefully', () => {
       createMockPuzzleDOM();
       document.getElementById('word1-score-display')?.remove();

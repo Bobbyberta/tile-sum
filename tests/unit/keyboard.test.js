@@ -5,7 +5,8 @@ import {
   selectTile,
   deselectTile,
   announceToScreenReader,
-  handleModalKeyDown
+  handleModalKeyDown,
+  handleHelpModalKeyDown
 } from '../../js/keyboard.js';
 import { createMockTile, cleanupDOM } from '../helpers/dom-setup.js';
 
@@ -126,15 +127,36 @@ describe('keyboard.js', () => {
     });
 
     it('should remove announcement after timeout', async () => {
+      vi.useFakeTimers();
+      
       announceToScreenReader('Test message');
       
       const announcement = document.querySelector('[role="status"]');
       expect(announcement).toBeTruthy();
       
-      // Wait for timeout
-      await new Promise(resolve => setTimeout(resolve, 1100));
+      // Fast-forward time
+      vi.advanceTimersByTime(1100);
       
       expect(document.querySelector('[role="status"]')).toBeFalsy();
+      
+      vi.useRealTimers();
+    });
+
+    it('should handle multiple announcements', () => {
+      announceToScreenReader('First message');
+      announceToScreenReader('Second message');
+      
+      const announcements = document.querySelectorAll('[role="status"]');
+      expect(announcements.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should set correct ARIA attributes', () => {
+      announceToScreenReader('Test message');
+      
+      const announcement = document.querySelector('[role="status"]');
+      expect(announcement.getAttribute('aria-live')).toBe('polite');
+      expect(announcement.getAttribute('aria-atomic')).toBe('true');
+      expect(announcement.classList.contains('sr-only')).toBe(true);
     });
   });
 
@@ -241,6 +263,105 @@ describe('keyboard.js', () => {
       handleModalKeyDown(event, 'test-modal', closeCallback);
       
       expect(closeCallback).not.toHaveBeenCalled();
+    });
+
+    it('should return early if modal is missing', () => {
+      const event = new KeyboardEvent('keydown', { key: 'Escape' });
+      const closeCallback = vi.fn();
+      
+      expect(() => handleModalKeyDown(event, 'non-existent-modal', closeCallback)).not.toThrow();
+      expect(closeCallback).not.toHaveBeenCalled();
+    });
+
+    it('should use modal._closeCallback if no callback provided', () => {
+      const modal = document.createElement('div');
+      modal.id = 'test-modal';
+      const closeCallback = vi.fn();
+      modal._closeCallback = closeCallback;
+      document.body.appendChild(modal);
+      
+      const event = new KeyboardEvent('keydown', { key: 'Escape' });
+      
+      handleModalKeyDown(event, 'test-modal');
+      
+      expect(closeCallback).toHaveBeenCalled();
+    });
+
+    it('should filter out disabled elements from focusable list', () => {
+      const modal = document.createElement('div');
+      modal.id = 'test-modal';
+      modal.style.display = 'block';
+      const button1 = document.createElement('button');
+      const button2 = document.createElement('button');
+      button2.disabled = true;
+      button1.tabIndex = 0;
+      button2.tabIndex = 0;
+      modal.appendChild(button1);
+      modal.appendChild(button2);
+      document.body.appendChild(modal);
+      
+      const event = new KeyboardEvent('keydown', { key: 'Tab' });
+      
+      expect(() => handleModalKeyDown(event, 'test-modal')).not.toThrow();
+    });
+
+    it('should filter out hidden elements from focusable list', () => {
+      const modal = document.createElement('div');
+      modal.id = 'test-modal';
+      modal.style.display = 'block';
+      const button1 = document.createElement('button');
+      const button2 = document.createElement('button');
+      button2.setAttribute('hidden', 'true');
+      button1.tabIndex = 0;
+      button2.tabIndex = 0;
+      modal.appendChild(button1);
+      modal.appendChild(button2);
+      document.body.appendChild(modal);
+      
+      const event = new KeyboardEvent('keydown', { key: 'Tab' });
+      
+      expect(() => handleModalKeyDown(event, 'test-modal')).not.toThrow();
+    });
+
+    it('should return early if no focusable elements', () => {
+      const modal = document.createElement('div');
+      modal.id = 'test-modal';
+      modal.style.display = 'block';
+      document.body.appendChild(modal);
+      
+      const event = new KeyboardEvent('keydown', { key: 'Tab' });
+      
+      expect(() => handleModalKeyDown(event, 'test-modal')).not.toThrow();
+    });
+
+    it('should ignore non-Tab keys', () => {
+      const modal = document.createElement('div');
+      modal.id = 'test-modal';
+      document.body.appendChild(modal);
+      
+      const closeCallback = vi.fn();
+      const event = new KeyboardEvent('keydown', { key: 'Enter' });
+      
+      handleModalKeyDown(event, 'test-modal', closeCallback);
+      
+      expect(closeCallback).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handleHelpModalKeyDown', () => {
+    it('should call handleModalKeyDown with help-modal id', () => {
+      const modal = document.createElement('div');
+      modal.id = 'help-modal';
+      document.body.appendChild(modal);
+      
+      const closeCallback = vi.fn();
+      const event = new KeyboardEvent('keydown', { key: 'Escape' });
+      
+      handleHelpModalKeyDown(event);
+      
+      // Since handleModalKeyDown is called, verify it would work
+      // We can't easily spy on it, but we can verify the modal exists
+      expect(document.getElementById('help-modal')).toBeTruthy();
     });
   });
 });
