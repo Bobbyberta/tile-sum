@@ -377,8 +377,8 @@ export const PUZZLE_DATA = {
         solution: ['SWISH', 'IMPLY']
     },
     92: {
-        words: ['BIPED', 'CRAGS'],
-        solution: ['BIPED', 'CRAGS']
+        words: ['BANGS', 'CRAGS'],
+        solution: ['BANGS', 'CRAGS']
     },
     93: {
         words: ['VEGAN', 'COSTS'],
@@ -1393,8 +1393,8 @@ export const PUZZLE_DATA = {
         solution: ['WOUND', 'ALLOW']
     },
     346: {
-        words: ['SPICY', 'STABS'],
-        solution: ['SPICY', 'STABS']
+        words: ['LAPEL', 'STABS'],
+        solution: ['LAPEL', 'STABS']
     },
     347: {
         words: ['RAYON', 'SWIMS'],

@@ -235,8 +235,8 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
                 day,
                 () => showErrorModal(prefix),
                 (day, word1Score, word2Score, word1MaxScore, word2MaxScore) => {
-                    const hintsUsed = 3 - getHintsRemaining();
-                    const solutionShown = getSolutionShown();
+                    const hintsUsed = 3 - stateManager.getHintsRemaining();
+                    const solutionShown = stateManager.getSolutionShown();
                     showSuccessModal(day, word1Score, word2Score, word1MaxScore, word2MaxScore, prefix, hintsUsed, solutionShown);
                 },
                 () => triggerSnowflakeConfetti()
@@ -245,14 +245,14 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
     }
 
     // Initialize hint counter and reset solution shown state
-    setHintsRemaining(3);
-    setSolutionShown(false);
+    stateManager.setHintsRemaining(3);
+    stateManager.setSolutionShown(false);
     
     // Setup hint button
     const hintBtn = document.getElementById(`${prefix}hint-btn`);
     if (hintBtn) {
         hintBtn.disabled = false;
-        updateHintButtonText(`${prefix}hint-btn`, getHintsRemaining());
+        updateHintButtonText(`${prefix}hint-btn`, stateManager.getHintsRemaining());
         // Remove existing listeners by cloning
         const newHintBtn = hintBtn.cloneNode(true);
         hintBtn.parentNode.replaceChild(newHintBtn, hintBtn);
