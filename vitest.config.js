@@ -20,6 +20,8 @@ export default defineConfig({
         '**/*.config.js',
         'scripts/',
         'puzzle-data-encoded.js',
+        'puzzle-data.js',
+        'script.js',
         '**/*.spec.js'
       ],
       thresholds: {

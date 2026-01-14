@@ -232,9 +232,11 @@ export function showSolution(day, context = {}) {
         const slot = word1Slots[index];
         const currentTile = slot.querySelector('.tile');
         const currentLetter = currentTile ? currentTile.getAttribute('data-letter') : null;
+        const isSlotLocked = slot.getAttribute('data-locked') === 'true';
+        const isTileLocked = currentTile ? currentTile.getAttribute('data-locked') === 'true' : false;
         
-        // If slot is empty or has wrong letter, and not already locked
-        if ((!currentTile || currentLetter !== correctLetter) && slot.getAttribute('data-locked') !== 'true') {
+        // If slot is not locked and (slot is empty, has wrong letter, or has correct letter but tile is not locked)
+        if (!isSlotLocked && (!currentTile || currentLetter !== correctLetter || !isTileLocked)) {
             tilesToPlace.push({
                 wordIndex: 0,
                 slotIndex: index,
@@ -248,9 +250,11 @@ export function showSolution(day, context = {}) {
         const slot = word2Slots[index];
         const currentTile = slot.querySelector('.tile');
         const currentLetter = currentTile ? currentTile.getAttribute('data-letter') : null;
+        const isSlotLocked = slot.getAttribute('data-locked') === 'true';
+        const isTileLocked = currentTile ? currentTile.getAttribute('data-locked') === 'true' : false;
         
-        // If slot is empty or has wrong letter, and not already locked
-        if ((!currentTile || currentLetter !== correctLetter) && slot.getAttribute('data-locked') !== 'true') {
+        // If slot is not locked and (slot is empty, has wrong letter, or has correct letter but tile is not locked)
+        if (!isSlotLocked && (!currentTile || currentLetter !== correctLetter || !isTileLocked)) {
             tilesToPlace.push({
                 wordIndex: 1,
                 slotIndex: index,
@@ -270,51 +274,64 @@ export function showSolution(day, context = {}) {
         const slots = hint.wordIndex === 0 ? word1Slots : word2Slots;
         const targetSlot = slots[hint.slotIndex];
         
-        // Remove existing tile if present
+        // Check if target slot already has the correct tile (just needs to be locked)
         const existingTile = targetSlot.querySelector('.tile');
-        if (existingTile && existingTile.getAttribute('data-locked') !== 'true') {
-            const letter = existingTile.getAttribute('data-letter');
-            const index = existingTile.getAttribute('data-tile-index');
-            existingTile.remove();
-            targetSlot.classList.remove('filled');
-            if (returnTileCallback) {
-                // Pass full context to ensure handlers are properly attached
-                if (isArchive && context.returnArchiveTileToContainer) {
-                    // Archive uses its own return function
-                    returnTileCallback(letter, index);
-                } else if (context.handlers) {
-                    // Regular puzzles: pass handlers, isKeyboardNavigation (false), prefix, and full context
-                    returnTileCallback(letter, index, context.handlers, false, prefix, context);
-                } else {
-                    // Fallback: use default returnTileToContainer signature
-                    returnTileCallback(letter, index);
-                }
-            }
-        }
+        const existingTileLetter = existingTile ? existingTile.getAttribute('data-letter') : null;
+        const existingTileIsCorrect = existingTile && existingTileLetter === hint.letter;
+        const existingTileIndex = existingTile ? existingTile.getAttribute('data-tile-index') : null;
         
         // Find the correct tile in the container or slots
         const tilesContainer = document.getElementById(tilesContainerId);
         let sourceTile = null;
+        let shouldReturnExistingTile = false;
         
-        // First check container
-        if (tilesContainer) {
-            const containerTiles = tilesContainer.querySelectorAll('.tile:not([data-locked="true"])');
-            for (let tile of containerTiles) {
-                if (tile.getAttribute('data-letter') === hint.letter) {
-                    sourceTile = tile;
-                    break;
+        // If target slot has correct tile, use it as source (will be removed and recreated as locked)
+        if (existingTileIsCorrect && existingTile.getAttribute('data-locked') !== 'true') {
+            sourceTile = existingTile;
+            shouldReturnExistingTile = false; // Don't return it to container since we're locking it in place
+        } else {
+            // Remove existing tile if present (wrong letter or needs to be replaced)
+            if (existingTile && existingTile.getAttribute('data-locked') !== 'true') {
+                const letter = existingTile.getAttribute('data-letter');
+                const index = existingTile.getAttribute('data-tile-index');
+                existingTile.remove();
+                targetSlot.classList.remove('filled');
+                shouldReturnExistingTile = true;
+                if (returnTileCallback) {
+                    // Pass full context to ensure handlers are properly attached
+                    if (isArchive && context.returnArchiveTileToContainer) {
+                        // Archive uses its own return function
+                        returnTileCallback(letter, index);
+                    } else if (context.handlers) {
+                        // Regular puzzles: pass handlers, isKeyboardNavigation (false), prefix, and full context
+                        returnTileCallback(letter, index, context.handlers, false, prefix, context);
+                    } else {
+                        // Fallback: use default returnTileToContainer signature
+                        returnTileCallback(letter, index);
+                    }
                 }
             }
-        }
-        
-        // If not in container, check other slots
-        if (!sourceTile) {
-            const allSlots = document.querySelectorAll('.slot:not([data-locked="true"])');
-            for (let slot of allSlots) {
-                const tile = slot.querySelector('.tile:not([data-locked="true"])');
-                if (tile && tile.getAttribute('data-letter') === hint.letter) {
-                    sourceTile = tile;
-                    break;
+            
+            // First check container
+            if (tilesContainer) {
+                const containerTiles = tilesContainer.querySelectorAll('.tile:not([data-locked="true"])');
+                for (let tile of containerTiles) {
+                    if (tile.getAttribute('data-letter') === hint.letter) {
+                        sourceTile = tile;
+                        break;
+                    }
+                }
+            }
+            
+            // If not in container, check other slots
+            if (!sourceTile) {
+                const allSlots = document.querySelectorAll('.slot:not([data-locked="true"])');
+                for (let slot of allSlots) {
+                    const tile = slot.querySelector('.tile:not([data-locked="true"])');
+                    if (tile && tile.getAttribute('data-letter') === hint.letter) {
+                        sourceTile = tile;
+                        break;
+                    }
                 }
             }
         }
@@ -325,8 +342,10 @@ export function showSolution(day, context = {}) {
             const originalIndex = sourceTile.getAttribute('data-tile-index');
             const sourceSlot = sourceTile.closest('.slot');
             const isFromContainer = sourceTile.closest(`#${tilesContainerId}`);
+            const isFromTargetSlot = sourceSlot === targetSlot;
             
             sourceTile.remove();
+            // Remove filled class from source slot (will be re-added to target slot when locked tile is added)
             if (sourceSlot) {
                 sourceSlot.classList.remove('filled');
             }
@@ -336,10 +355,15 @@ export function showSolution(day, context = {}) {
                 updatePlaceholderTile(tilesContainerId);
             }
             
+            // Only return tile to container if it was wrong letter (not if it was correct but just needed locking)
+            if (shouldReturnExistingTile && !isFromTargetSlot && returnTileCallback) {
+                // This case is already handled above when removing wrong tile
+            }
+            
             // Create locked tile in target slot
             const lockedTile = createTile(letter, originalIndex, true);
             targetSlot.appendChild(lockedTile);
-            targetSlot.classList.add('filled');
+            // Locked slots don't need the 'filled' class since data-locked="true" indicates they're filled
             targetSlot.setAttribute('data-locked', 'true');
         }
     });

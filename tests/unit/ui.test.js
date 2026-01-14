@@ -446,5 +446,78 @@ describe('ui.js', () => {
       document.body.innerHTML = '';
       expect(() => initCalendar()).not.toThrow();
     });
+
+    it('should handle locked days with proper aria-label', async () => {
+      vi.setSystemTime(new Date(2025, 11, 5)); // Dec 5, 2025
+      const calendar = document.getElementById('calendar');
+
+      // Ensure advent test mode is off so days are properly locked
+      const utils = await import('../../js/utils.js');
+      utils.isAdventTestMode.mockReturnValue(false);
+
+      // Ensure completion mock returns false for locked days
+      const completion = await import('../../js/completion.js');
+      completion.isPuzzleCompletedForDate.mockReturnValue(false);
+
+      initCalendar();
+
+      const day25 = calendar.children[24]; // Day 25 (locked)
+      const ariaLabel = day25.getAttribute('aria-label');
+      expect(ariaLabel).toContain('locked');
+      expect(day25.getAttribute('tabindex')).toBeNull();
+    });
+
+    it('should handle header subtitle missing', () => {
+      const headerSubtitle = document.getElementById('header-subtitle');
+      headerSubtitle.remove();
+
+      expect(() => initCalendar()).not.toThrow();
+    });
+  });
+
+  describe('initDailyPuzzle - score displays', () => {
+    beforeEach(() => {
+      const dailyPuzzleContainer = document.createElement('div');
+      dailyPuzzleContainer.id = 'daily-puzzle-container';
+      dailyPuzzleContainer.classList.add('hidden');
+      document.body.appendChild(dailyPuzzleContainer);
+
+      const calendarContainer = document.createElement('div');
+      calendarContainer.id = 'calendar-container';
+      document.body.appendChild(calendarContainer);
+
+      const headerSubtitle = document.createElement('div');
+      headerSubtitle.id = 'header-subtitle';
+      document.body.appendChild(headerSubtitle);
+    });
+
+    it('should create score displays for daily puzzle', async () => {
+      const utils = await import('../../js/utils.js');
+      utils.isArchiveTestMode.mockReturnValue(false);
+      
+      const completion = await import('../../js/completion.js');
+      completion.isPuzzleCompletedToday.mockReturnValue(true);
+
+      const container = document.getElementById('daily-puzzle-container');
+      
+      // Create header element inside container (required for displayCompletedPuzzle)
+      const header = document.createElement('header');
+      container.appendChild(header);
+
+      const tilesContainer = document.createElement('div');
+      tilesContainer.id = 'daily-tiles-container';
+      container.appendChild(tilesContainer);
+
+      const wordSlots = document.createElement('div');
+      wordSlots.id = 'daily-word-slots';
+      container.appendChild(wordSlots);
+
+      initDailyPuzzle();
+
+      const score1Display = document.getElementById('daily-word1-score-display');
+      const score2Display = document.getElementById('daily-word2-score-display');
+      expect(score1Display).toBeTruthy();
+      expect(score2Display).toBeTruthy();
+    });
   });
 });

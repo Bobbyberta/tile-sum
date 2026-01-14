@@ -63,7 +63,7 @@ export function selectTile(tile) {
     
     setSelectedTile(tile);
     tile.classList.add('ring-4', 'ring-yellow-400', 'ring-offset-2');
-    const currentLabel = tile.getAttribute('aria-label').replace(' (selected)', '');
+    const currentLabel = (tile.getAttribute('aria-label') || '').replace(' (selected)', '');
     tile.setAttribute('aria-label', currentLabel + ' (selected)');
     
     // Ensure the selected tile maintains focus for keyboard navigation
@@ -82,7 +82,7 @@ export function deselectTile() {
     const selected = getSelectedTile();
     if (selected) {
         selected.classList.remove('ring-4', 'ring-yellow-400', 'ring-offset-2');
-        const ariaLabel = selected.getAttribute('aria-label').replace(' (selected)', '');
+        const ariaLabel = (selected.getAttribute('aria-label') || '').replace(' (selected)', '');
         selected.setAttribute('aria-label', ariaLabel);
         
         // Maintain focus on the tile when deselected (user can continue tabbing)

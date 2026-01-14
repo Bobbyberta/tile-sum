@@ -331,4 +331,59 @@ describe('puzzle-core.js', () => {
       expect(submitBtn).toBeTruthy();
     });
   });
+
+  describe('createSlot handler attachment', () => {
+    it('should attach onKeyDown handler', () => {
+      const onKeyDown = vi.fn();
+      const handlers = { onKeyDown };
+      
+      const slot = createSlot(0, 0, false, handlers);
+      
+      const keyDownEvent = new KeyboardEvent('keydown', { key: 'Enter' });
+      slot.dispatchEvent(keyDownEvent);
+      
+      expect(onKeyDown).toHaveBeenCalled();
+    });
+
+    it('should attach onFocus handler', () => {
+      const onFocus = vi.fn();
+      const handlers = { onFocus };
+      
+      const slot = createSlot(0, 0, false, handlers);
+      
+      const focusEvent = new FocusEvent('focus');
+      slot.dispatchEvent(focusEvent);
+      
+      expect(onFocus).toHaveBeenCalled();
+    });
+
+    it('should attach onBlur handler', () => {
+      const onBlur = vi.fn();
+      const handlers = { onBlur };
+      
+      const slot = createSlot(0, 0, false, handlers);
+      
+      const blurEvent = new FocusEvent('blur');
+      slot.dispatchEvent(blurEvent);
+      
+      expect(onBlur).toHaveBeenCalled();
+    });
+
+    it('should attach all handlers together', () => {
+      const onKeyDown = vi.fn();
+      const onFocus = vi.fn();
+      const onBlur = vi.fn();
+      const handlers = { onKeyDown, onFocus, onBlur };
+      
+      const slot = createSlot(0, 0, false, handlers);
+      
+      slot.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+      slot.dispatchEvent(new FocusEvent('focus'));
+      slot.dispatchEvent(new FocusEvent('blur'));
+      
+      expect(onKeyDown).toHaveBeenCalled();
+      expect(onFocus).toHaveBeenCalled();
+      expect(onBlur).toHaveBeenCalled();
+    });
+  });
 });

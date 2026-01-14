@@ -6,9 +6,21 @@ import {
   deselectTile,
   announceToScreenReader,
   handleModalKeyDown,
-  handleHelpModalKeyDown
+  handleHelpModalKeyDown,
+  handleTileKeyDown,
+  handleSlotKeyDown
 } from '../../js/keyboard.js';
-import { createMockTile, cleanupDOM } from '../helpers/dom-setup.js';
+import { createMockTile, createMockPuzzleDOM, cleanupDOM } from '../helpers/dom-setup.js';
+
+// Helper to create a keyboard event with mockable currentTarget
+function createKeyboardEventWithTarget(type, options, currentTarget) {
+  const event = new KeyboardEvent(type, options);
+  Object.defineProperty(event, 'currentTarget', {
+    get: () => currentTarget,
+    configurable: true
+  });
+  return event;
+}
 
 // Mock dependencies
 vi.mock('../../js/puzzle-state.js', () => ({
@@ -362,6 +374,270 @@ describe('keyboard.js', () => {
       // Since handleModalKeyDown is called, verify it would work
       // We can't easily spy on it, but we can verify the modal exists
       expect(document.getElementById('help-modal')).toBeTruthy();
+    });
+  });
+
+  describe('handleTileKeyDown', () => {
+    it('should delegate to keyboard-input with provided context', async () => {
+      const keyboardInput = await import('../../js/keyboard-input.js');
+      const tile = createMockTile('A', 0);
+      document.body.appendChild(tile);
+      
+      const context = { prefix: 'daily-' };
+      const event = createKeyboardEventWithTarget('keydown', { key: 'Enter' }, tile);
+      
+      handleTileKeyDown(event, context);
+      
+      expect(keyboardInput.handleTileKeyDown).toHaveBeenCalledWith(event, context);
+    });
+
+    it('should use stored context if no context provided', async () => {
+      const keyboardInput = await import('../../js/keyboard-input.js');
+      const tile = createMockTile('A', 0);
+      document.body.appendChild(tile);
+      
+      const storedContext = { prefix: 'archive-' };
+      keyboardInput.getKeyboardContext.mockReturnValue(storedContext);
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'Enter' }, tile);
+      
+      handleTileKeyDown(event);
+      
+      expect(keyboardInput.handleTileKeyDown).toHaveBeenCalledWith(event, storedContext);
+    });
+
+    it('should use provided context over stored context', async () => {
+      const keyboardInput = await import('../../js/keyboard-input.js');
+      const tile = createMockTile('A', 0);
+      document.body.appendChild(tile);
+      
+      const storedContext = { prefix: 'archive-' };
+      const providedContext = { prefix: 'daily-' };
+      keyboardInput.getKeyboardContext.mockReturnValue(storedContext);
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'Enter' }, tile);
+      
+      handleTileKeyDown(event, providedContext);
+      
+      expect(keyboardInput.handleTileKeyDown).toHaveBeenCalledWith(event, providedContext);
+    });
+  });
+
+  describe('handleSlotKeyDown', () => {
+    it('should delegate to keyboard-input with built context', async () => {
+      const keyboardInput = await import('../../js/keyboard-input.js');
+      const { slots1Container } = createMockPuzzleDOM();
+      const slot = slots1Container.children[0];
+      
+      const placeTileCallback = vi.fn();
+      const removeTileCallback = vi.fn();
+      const storedContext = { prefix: 'test-' };
+      keyboardInput.getKeyboardContext.mockReturnValue(storedContext);
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'A' }, slot);
+      
+      handleSlotKeyDown(event, placeTileCallback, removeTileCallback);
+      
+      expect(keyboardInput.handleSlotKeyDown).toHaveBeenCalled();
+      const callArgs = keyboardInput.handleSlotKeyDown.mock.calls[0];
+      expect(callArgs[1].placeTileCallback).toBe(placeTileCallback);
+      expect(callArgs[1].removeTileCallback).toBe(removeTileCallback);
+    });
+
+    it('should detect daily- prefix from container', async () => {
+      const keyboardInput = await import('../../js/keyboard-input.js');
+      const dailyContainer = document.createElement('div');
+      dailyContainer.id = 'daily-word-slots';
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      dailyContainer.appendChild(slot);
+      document.body.appendChild(dailyContainer);
+      
+      keyboardInput.getKeyboardContext.mockReturnValue({});
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'A' }, slot);
+      
+      handleSlotKeyDown(event);
+      
+      expect(keyboardInput.handleSlotKeyDown).toHaveBeenCalled();
+      const callArgs = keyboardInput.handleSlotKeyDown.mock.calls[0];
+      expect(callArgs[1].prefix).toBe('daily-');
+    });
+
+    it('should detect archive- prefix from container', async () => {
+      const keyboardInput = await import('../../js/keyboard-input.js');
+      const archiveContainer = document.createElement('div');
+      archiveContainer.id = 'archive-word-slots';
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      archiveContainer.appendChild(slot);
+      document.body.appendChild(archiveContainer);
+      
+      keyboardInput.getKeyboardContext.mockReturnValue({});
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'A' }, slot);
+      
+      handleSlotKeyDown(event);
+      
+      expect(keyboardInput.handleSlotKeyDown).toHaveBeenCalled();
+      const callArgs = keyboardInput.handleSlotKeyDown.mock.calls[0];
+      expect(callArgs[1].prefix).toBe('archive-');
+    });
+
+    it('should use stored context prefix if container has no prefix', async () => {
+      const keyboardInput = await import('../../js/keyboard-input.js');
+      const container = document.createElement('div');
+      container.id = 'word-slots';
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      container.appendChild(slot);
+      document.body.appendChild(container);
+      
+      const storedContext = { prefix: 'stored-' };
+      keyboardInput.getKeyboardContext.mockReturnValue(storedContext);
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'A' }, slot);
+      
+      handleSlotKeyDown(event);
+      
+      expect(keyboardInput.handleSlotKeyDown).toHaveBeenCalled();
+      const callArgs = keyboardInput.handleSlotKeyDown.mock.calls[0];
+      expect(callArgs[1].prefix).toBe('stored-');
+    });
+
+    it('should merge callbacks with stored context', async () => {
+      const keyboardInput = await import('../../js/keyboard-input.js');
+      const { slots1Container } = createMockPuzzleDOM();
+      const slot = slots1Container.children[0];
+      
+      const storedPlaceCallback = vi.fn();
+      const storedRemoveCallback = vi.fn();
+      const newPlaceCallback = vi.fn();
+      const storedContext = {
+        prefix: '',
+        placeTileCallback: storedPlaceCallback,
+        removeTileCallback: storedRemoveCallback
+      };
+      keyboardInput.getKeyboardContext.mockReturnValue(storedContext);
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'A' }, slot);
+      
+      handleSlotKeyDown(event, newPlaceCallback);
+      
+      expect(keyboardInput.handleSlotKeyDown).toHaveBeenCalled();
+      const callArgs = keyboardInput.handleSlotKeyDown.mock.calls[0];
+      expect(callArgs[1].placeTileCallback).toBe(newPlaceCallback);
+      expect(callArgs[1].removeTileCallback).toBe(storedRemoveCallback);
+    });
+  });
+
+  describe('selectTile edge cases', () => {
+    it('should handle tile without aria-label', async () => {
+      const puzzleState = await import('../../js/puzzle-state.js');
+      const tile = createMockTile('A', 0);
+      tile.removeAttribute('aria-label');
+      document.body.appendChild(tile);
+      
+      selectTile(tile);
+      
+      expect(puzzleState.setSelectedTile).toHaveBeenCalledWith(tile);
+      expect(tile.classList.contains('ring-4')).toBe(true);
+    });
+
+    it('should maintain focus if tile is already focused', async () => {
+      const puzzleState = await import('../../js/puzzle-state.js');
+      const tile = createMockTile('A', 0);
+      tile.setAttribute('aria-label', 'Tile A');
+      document.body.appendChild(tile);
+      tile.focus();
+      
+      const focusSpy = vi.spyOn(tile, 'focus');
+      selectTile(tile);
+      
+      // Focus should not be called again if already focused
+      expect(focusSpy).not.toHaveBeenCalled();
+      expect(puzzleState.setSelectedTile).toHaveBeenCalledWith(tile);
+    });
+
+    it('should focus tile if not already focused', async () => {
+      const puzzleState = await import('../../js/puzzle-state.js');
+      const tile = createMockTile('A', 0);
+      tile.setAttribute('aria-label', 'Tile A');
+      document.body.appendChild(tile);
+      
+      const focusSpy = vi.spyOn(tile, 'focus');
+      selectTile(tile);
+      
+      expect(focusSpy).toHaveBeenCalled();
+      expect(puzzleState.setSelectedTile).toHaveBeenCalledWith(tile);
+    });
+  });
+
+  describe('deselectTile edge cases', () => {
+    it('should handle focus restoration when tile was focused', async () => {
+      const puzzleState = await import('../../js/puzzle-state.js');
+      vi.useFakeTimers();
+      
+      const tile = createMockTile('A', 0);
+      tile.setAttribute('aria-label', 'Tile A (selected)');
+      document.body.appendChild(tile);
+      tile.focus();
+      
+      puzzleState.getSelectedTile.mockReturnValue(tile);
+      const focusSpy = vi.spyOn(tile, 'focus');
+      
+      deselectTile();
+      
+      vi.advanceTimersByTime(1);
+      
+      expect(focusSpy).toHaveBeenCalled();
+      expect(puzzleState.clearSelectedTile).toHaveBeenCalled();
+      
+      vi.useRealTimers();
+    });
+
+    it('should not restore focus if tile was not focused', async () => {
+      const puzzleState = await import('../../js/puzzle-state.js');
+      vi.useFakeTimers();
+      
+      const tile = createMockTile('A', 0);
+      tile.setAttribute('aria-label', 'Tile A (selected)');
+      document.body.appendChild(tile);
+      
+      puzzleState.getSelectedTile.mockReturnValue(tile);
+      const focusSpy = vi.spyOn(tile, 'focus');
+      
+      deselectTile();
+      
+      vi.advanceTimersByTime(1);
+      
+      expect(focusSpy).not.toHaveBeenCalled();
+      expect(puzzleState.clearSelectedTile).toHaveBeenCalled();
+      
+      vi.useRealTimers();
+    });
+
+    it('should not restore focus if tile removed from DOM', async () => {
+      const puzzleState = await import('../../js/puzzle-state.js');
+      vi.useFakeTimers();
+      
+      const tile = createMockTile('A', 0);
+      tile.setAttribute('aria-label', 'Tile A (selected)');
+      document.body.appendChild(tile);
+      tile.focus();
+      
+      puzzleState.getSelectedTile.mockReturnValue(tile);
+      const focusSpy = vi.spyOn(tile, 'focus');
+      
+      deselectTile();
+      document.body.removeChild(tile);
+      
+      vi.advanceTimersByTime(1);
+      
+      // Focus should not be called if tile is not in DOM
+      expect(focusSpy).not.toHaveBeenCalled();
+      
+      vi.useRealTimers();
     });
   });
 });

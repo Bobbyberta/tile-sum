@@ -500,5 +500,110 @@ describe('keyboard-input.js', () => {
       
       expect(() => handleTileKeyDown(event, context)).not.toThrow();
     });
+
+    it('should handle Escape key in slot', () => {
+      const { slots1Container } = createMockPuzzleDOM();
+      const slot = slots1Container.children[0];
+      
+      const context = {
+        prefix: ''
+      };
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'Escape' }, slot);
+      
+      expect(() => handleSlotKeyDown(event, context)).not.toThrow();
+    });
+
+    it('should handle type letter when tile is in container', async () => {
+      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
+      const tile = createMockTile('A', 0);
+      tilesContainer.appendChild(tile);
+      const slot = slots1Container.children[0];
+      
+      const placeTileCallback = vi.fn();
+      const context = {
+        prefix: '',
+        placeTileCallback
+      };
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'A' }, tile);
+      event.preventDefault = vi.fn();
+      
+      handleTileKeyDown(event, context);
+      
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(placeTileCallback).toHaveBeenCalled();
+    });
+
+    it('should handle arrow navigation when nextElement is not in document', () => {
+      const { slots1Container } = createMockPuzzleDOM();
+      const slot = slots1Container.children[0];
+      
+      const context = {
+        prefix: '',
+        slotsByWord: [
+          [slots1Container.children[0], slots1Container.children[1]],
+          [slots1Container.children[2], slots1Container.children[3]]
+        ]
+      };
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'ArrowRight' }, slot);
+      event.preventDefault = vi.fn();
+      
+      // Remove the next slot from document to test document.contains check
+      const nextSlot = slots1Container.children[1];
+      if (nextSlot) {
+        nextSlot.remove();
+      }
+      
+      handleSlotKeyDown(event, context);
+      
+      // Should not throw even if element not in document
+      expect(() => handleSlotKeyDown(event, context)).not.toThrow();
+    });
+
+    it('should handle Escape key in slot without doing anything', () => {
+      const { slots1Container } = createMockPuzzleDOM();
+      const slot = slots1Container.children[0];
+      
+      const context = {
+        prefix: '',
+        placeTileCallback: vi.fn(),
+        removeTileCallback: vi.fn()
+      };
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'Escape' }, slot);
+      
+      handleSlotKeyDown(event, context);
+      
+      // Escape should not trigger any callbacks
+      expect(context.placeTileCallback).not.toHaveBeenCalled();
+      expect(context.removeTileCallback).not.toHaveBeenCalled();
+    });
+
+    it('should handle type letter when tile is in container', async () => {
+      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
+      const tile = createMockTile('A', 0);
+      tilesContainer.appendChild(tile);
+      
+      const placeTileCallback = vi.fn();
+      const context = {
+        prefix: '',
+        placeTileCallback
+      };
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'A' }, tile);
+      event.preventDefault = vi.fn();
+      
+      handleTileKeyDown(event, context);
+      
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      expect(event.preventDefault).toHaveBeenCalled();
+      // Should call placeTileCallback to place tile in next empty slot
+      expect(placeTileCallback).toHaveBeenCalled();
+    });
   });
 });

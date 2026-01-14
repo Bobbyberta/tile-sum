@@ -602,5 +602,79 @@ describe('hints.js', () => {
       
       expect(scoring.updateScoreDisplay).toHaveBeenCalled();
     });
+
+    it('should handle hint when tile is in slot not container', async () => {
+      await setupCreateTileMock();
+      const { tilesContainer, slots1Container, slots2Container } = createMockPuzzleDOM();
+      
+      // Place a tile in a slot
+      const tile = createMockTile('S', 0);
+      slots1Container.children[0].appendChild(tile);
+      slots1Container.children[0].classList.add('filled');
+      
+      // The hint needs 'S' which is already in a slot
+      showSolution(1, {
+        prefix: '',
+        placeTileCallback: vi.fn(),
+        removeTileCallback: vi.fn()
+      });
+      
+      await new Promise(resolve => setTimeout(resolve, 10));
+      
+      // Should have removed tile from slot and created locked tile
+      expect(slots1Container.children[0].querySelector('[data-locked="true"]')).toBeTruthy();
+    });
+
+    it('should remove filled class from source slot', async () => {
+      await setupCreateTileMock();
+      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
+      
+      const tile = createMockTile('S', 0);
+      const slot = slots1Container.children[0];
+      slot.appendChild(tile);
+      slot.classList.add('filled');
+      
+      showSolution(1, {
+        prefix: '',
+        placeTileCallback: vi.fn(),
+        removeTileCallback: vi.fn()
+      });
+      
+      await new Promise(resolve => setTimeout(resolve, 10));
+      
+      // Slot should have filled class removed when tile is removed
+      expect(slot.classList.contains('filled')).toBe(false);
+    });
+
+    it('should call checkAutoComplete when all slots filled', async () => {
+      await setupCreateTileMock();
+      const { checkAutoComplete, areAllSlotsFilled } = await import('../../js/auto-complete.js');
+      const { tilesContainer, slots1Container, slots2Container } = createMockPuzzleDOM();
+      
+      // Fill all slots except one
+      for (let i = 0; i < 3; i++) {
+        const tile = createMockTile('S', i);
+        slots1Container.children[i].appendChild(tile);
+        slots1Container.children[i].classList.add('filled');
+      }
+      for (let i = 0; i < 5; i++) {
+        const tile = createMockTile('N', i + 3);
+        slots2Container.children[i].appendChild(tile);
+        slots2Container.children[i].classList.add('filled');
+      }
+      
+      areAllSlotsFilled.mockReturnValue(true);
+      global.requestAnimationFrame = vi.fn((cb) => setTimeout(cb, 0));
+      
+      showSolution(1, {
+        prefix: '',
+        placeTileCallback: vi.fn(),
+        removeTileCallback: vi.fn()
+      });
+      
+      await new Promise(resolve => setTimeout(resolve, 20));
+      
+      expect(global.requestAnimationFrame).toHaveBeenCalled();
+    });
   });
 });

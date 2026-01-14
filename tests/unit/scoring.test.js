@@ -260,5 +260,92 @@ describe('scoring.js', () => {
       
       expect(showSuccessModal).toHaveBeenCalled();
     });
+
+    it('should handle missing word containers in checkSolution', () => {
+      const showSuccessModal = vi.fn();
+      
+      // No word containers in DOM
+      checkSolution(1, vi.fn(), showSuccessModal);
+      
+      // Should not throw
+      expect(() => checkSolution(1, vi.fn(), showSuccessModal)).not.toThrow();
+    });
+  });
+
+  describe('updateScoreDisplay branch coverage', () => {
+    it('should detect archive-word-slots when no prefix', () => {
+      const archiveContainer = document.createElement('div');
+      archiveContainer.id = 'archive-word-slots';
+      document.body.appendChild(archiveContainer);
+      
+      const word1Container = document.createElement('div');
+      word1Container.setAttribute('data-word-index', '0');
+      word1Container.setAttribute('data-max-score', '10');
+      const slots1 = document.createElement('div');
+      slots1.setAttribute('data-word-slots', '0');
+      word1Container.appendChild(slots1);
+      archiveContainer.appendChild(word1Container);
+      
+      const word1ScoreDisplay = document.createElement('div');
+      word1ScoreDisplay.id = 'word1-score-display';
+      document.body.appendChild(word1ScoreDisplay);
+      
+      updateScoreDisplay('');
+      
+      // Should use archive container
+      expect(word1ScoreDisplay.textContent).toContain('points');
+      
+      archiveContainer.remove();
+    });
+
+    it('should fallback to word-slots when archive not found', () => {
+      const regularContainer = document.createElement('div');
+      regularContainer.id = 'word-slots';
+      document.body.appendChild(regularContainer);
+      
+      const word1Container = document.createElement('div');
+      word1Container.setAttribute('data-word-index', '0');
+      word1Container.setAttribute('data-max-score', '10');
+      const slots1 = document.createElement('div');
+      slots1.setAttribute('data-word-slots', '0');
+      word1Container.appendChild(slots1);
+      regularContainer.appendChild(word1Container);
+      
+      const word1ScoreDisplay = document.createElement('div');
+      word1ScoreDisplay.id = 'word1-score-display';
+      document.body.appendChild(word1ScoreDisplay);
+      
+      updateScoreDisplay('');
+      
+      expect(word1ScoreDisplay.textContent).toContain('points');
+      
+      regularContainer.remove();
+    });
+
+    it('should handle missing word containers gracefully', () => {
+      const container = document.createElement('div');
+      container.id = 'word-slots';
+      document.body.appendChild(container);
+      
+      const word1ScoreDisplay = document.createElement('div');
+      word1ScoreDisplay.id = 'word1-score-display';
+      document.body.appendChild(word1ScoreDisplay);
+      
+      // No word containers - should not throw
+      expect(() => updateScoreDisplay('')).not.toThrow();
+      expect(word1ScoreDisplay.textContent).toBe('0 / 0 points');
+      
+      container.remove();
+    });
+
+    it('should handle missing wordSlotsContainer', () => {
+      const word1ScoreDisplay = document.createElement('div');
+      word1ScoreDisplay.id = 'word1-score-display';
+      document.body.appendChild(word1ScoreDisplay);
+      
+      // No container at all - should not throw
+      expect(() => updateScoreDisplay('')).not.toThrow();
+      expect(word1ScoreDisplay.textContent).toBe('0 / 0 points');
+    });
   });
 });

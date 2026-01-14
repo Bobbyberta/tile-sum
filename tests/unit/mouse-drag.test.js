@@ -617,8 +617,118 @@ describe('mouse-drag.js', () => {
       };
       
       const result = handleTilesContainerDrop(event, {});
+
+      expect(result).toBe(false);
+    });
+
+    it('should handle error recovery when tile exists', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
+      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
+      const tile = createMockTile('A', 0);
+      const slot = slots1Container.children[0];
+      slot.appendChild(tile);
+      
+      const returnTileToContainer = vi.fn();
+      getDraggedTile.mockReturnValue(tile);
+      validateTileExists.mockReturnValue(true);
+      
+      // Mock an error by making returnTileToContainer throw
+      returnTileToContainer.mockImplementation(() => {
+        throw new Error('Test error');
+      });
+      
+      const event = {
+        currentTarget: tilesContainer,
+        stopPropagation: vi.fn()
+      };
+      
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+      
+      const result = handleTilesContainerDrop(event, {
+        returnTileToContainer,
+        prefix: ''
+      });
       
       expect(result).toBe(false);
+      expect(consoleError).toHaveBeenCalled();
+      
+      consoleError.mockRestore();
+    });
+
+    it('should use dynamic import when returnTileToContainer not in context', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
+      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
+      const tile = createMockTile('A', 0);
+      const slot = slots1Container.children[0];
+      slot.appendChild(tile);
+      
+      getDraggedTile.mockReturnValue(tile);
+      validateTileExists.mockReturnValue(true);
+      
+      const event = {
+        currentTarget: tilesContainer,
+        stopPropagation: vi.fn()
+      };
+      
+      // Context without returnTileToContainer - should use dynamic import
+      const result = handleTilesContainerDrop(event, {
+        prefix: ''
+      });
+      
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      expect(result).toBe(false);
+      // Tile should have been removed from slot
+      expect(slot.querySelector('.tile')).toBeFalsy();
+    });
+
+    it('should handle error recovery for archive puzzle', async () => {
+      const { getDraggedTile } = await import('../../js/puzzle-state.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
+      const archiveContainer = document.createElement('div');
+      archiveContainer.id = 'archive-tiles-container';
+      document.body.appendChild(archiveContainer);
+      
+      const archiveSlots = document.createElement('div');
+      archiveSlots.id = 'archive-word-slots';
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      archiveSlots.appendChild(slot);
+      document.body.appendChild(archiveSlots);
+      
+      const tile = createMockTile('A', 0);
+      slot.appendChild(tile);
+      
+      const returnArchiveTileToContainer = vi.fn();
+      getDraggedTile.mockReturnValue(tile);
+      validateTileExists.mockReturnValue(true);
+      
+      // Mock an error
+      returnArchiveTileToContainer.mockImplementation(() => {
+        throw new Error('Test error');
+      });
+      
+      const event = {
+        currentTarget: archiveContainer,
+        stopPropagation: vi.fn()
+      };
+      
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+      
+      const result = handleTilesContainerDrop(event, {
+        returnArchiveTileToContainer,
+        isArchive: true,
+        prefix: 'archive-'
+      });
+      
+      expect(result).toBe(false);
+      expect(consoleError).toHaveBeenCalled();
+      
+      consoleError.mockRestore();
+      archiveContainer.remove();
+      archiveSlots.remove();
     });
   });
 
