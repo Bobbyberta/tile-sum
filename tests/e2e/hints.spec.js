@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Hints System', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/puzzle.html?day=1&test=archive');
+    await page.goto('/puzzle.html?day=1&test=archive', { waitUntil: 'networkidle' });
     await page.waitForSelector('.tile', { timeout: 5000 });
   });
 
