@@ -146,3 +146,86 @@ export function updatePlaceholderTile(containerId = 'tiles-container') {
     }
 }
 
+// Create puzzle DOM structure dynamically
+// Returns object with references to created elements
+export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
+    // Clear previous puzzle content
+    containerElement.innerHTML = '';
+    
+    // Create header matching puzzle.html structure
+    const header = document.createElement('header');
+    header.className = 'mb-8';
+    
+    const titleContainer = document.createElement('div');
+    titleContainer.className = 'flex items-center justify-between mb-2';
+    
+    const puzzleTitle = document.createElement('h1');
+    puzzleTitle.className = 'text-3xl md:text-4xl font-bold text-indigo-900';
+    puzzleTitle.id = `${prefix}puzzle-title`;
+    puzzleTitle.textContent = titleText;
+    titleContainer.appendChild(puzzleTitle);
+    
+    header.appendChild(titleContainer);
+    containerElement.appendChild(header);
+    
+    // Create tiles container wrapper matching puzzle.html structure
+    const tilesWrapper = document.createElement('div');
+    tilesWrapper.className = 'mb-8';
+    
+    const tilesHeading = document.createElement('h2');
+    tilesHeading.className = 'sr-only';
+    tilesHeading.textContent = 'Available Tiles';
+    tilesWrapper.appendChild(tilesHeading);
+    
+    const tilesContainer = document.createElement('div');
+    tilesContainer.id = `${prefix}tiles-container`;
+    tilesContainer.className = 'flex flex-wrap gap-2 p-4 bg-white rounded-lg shadow-md min-h-[100px]';
+    tilesWrapper.appendChild(tilesContainer);
+    
+    containerElement.appendChild(tilesWrapper);
+    
+    // Create word slots wrapper matching puzzle.html structure
+    const slotsWrapper = document.createElement('div');
+    slotsWrapper.className = 'mb-8';
+    
+    const slotsHeading = document.createElement('h2');
+    slotsHeading.className = 'sr-only';
+    slotsHeading.textContent = 'Word Slots';
+    slotsWrapper.appendChild(slotsHeading);
+    
+    const wordSlotsContainer = document.createElement('div');
+    wordSlotsContainer.id = `${prefix}word-slots`;
+    wordSlotsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-6';
+    slotsWrapper.appendChild(wordSlotsContainer);
+    
+    containerElement.appendChild(slotsWrapper);
+    
+    // Create buttons container matching puzzle.html structure
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'mb-8 flex flex-col sm:flex-row gap-4';
+    
+    const hintBtn = document.createElement('button');
+    hintBtn.id = `${prefix}hint-btn`;
+    hintBtn.className = 'w-full md:w-auto px-8 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors';
+    hintBtn.textContent = 'Get Hint';
+    buttonsContainer.appendChild(hintBtn);
+    
+    const submitBtn = document.createElement('button');
+    submitBtn.id = `${prefix}submit-btn`;
+    submitBtn.className = 'w-full md:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors';
+    submitBtn.textContent = 'Submit Solution';
+    buttonsContainer.appendChild(submitBtn);
+    
+    containerElement.appendChild(buttonsContainer);
+    
+    // Return references to created elements
+    return {
+        header,
+        puzzleTitle,
+        tilesContainer,
+        wordSlotsContainer,
+        hintBtn,
+        submitBtn
+    };
+}
+

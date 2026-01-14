@@ -46,14 +46,18 @@ import { showFeedback, triggerSnowflakeConfetti } from './js/feedback.js';
 import { showSuccessModal, showErrorModal, closeErrorModal, closeSuccessModal, showHelpModal, closeHelpModal } from './js/modals.js';
 import { updateSocialMetaTags } from './js/seo.js';
 import { getDaySuffix, debugLog } from './js/utils.js';
-import { setHintsRemaining, getHintsRemaining, getSolutionShown, setSolutionShown } from './js/puzzle-state.js';
+import { setHintsRemaining, getHintsRemaining, getSolutionShown, setSolutionShown, createStateManager } from './js/puzzle-state.js';
 import { initArchivePage } from './js/archive.js';
 import { isPuzzleCompletedToday, isPuzzleCompletedForDate } from './js/completion.js';
 import { initAutoComplete } from './js/auto-complete.js';
 import { displayStreak } from './js/streak.js';
 
 // Shared puzzle initialization function that works with different prefixes
-function initPuzzleWithPrefix(day, prefix = '') {
+function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
+    // Create state manager if not provided
+    if (!stateManager) {
+        stateManager = createStateManager(prefix);
+    }
     // Get date for this puzzle number
     const puzzleDate = getDateForPuzzleNumber(day);
     
@@ -254,14 +258,15 @@ function initPuzzleWithPrefix(day, prefix = '') {
         hintBtn.parentNode.replaceChild(newHintBtn, hintBtn);
         
         newHintBtn.addEventListener('click', () => {
-            const hintsRemaining = getHintsRemaining();
+            const hintsRemaining = stateManager.getHintsRemaining();
             // Pass full dragDropContext to ensure handlers are properly attached to returned tiles
             // Include keyboard context properties for keyboard input system
             const hintContext = {
                 ...dragDropContext,
                 placeTileCallback,
                 removeTileCallback,
-                prefix // Ensure prefix is included for keyboard input system
+                prefix, // Ensure prefix is included for keyboard input system
+                stateManager // Include state manager in context
             };
             if (hintsRemaining <= 0) {
                 showSolution(day, hintContext);

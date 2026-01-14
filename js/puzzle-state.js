@@ -88,3 +88,25 @@ export function setArchiveSolutionShown(value) {
     archiveSolutionShown = value;
 }
 
+// State manager factory - returns appropriate getters/setters based on prefix
+export function createStateManager(prefix = '') {
+    if (prefix === 'archive-') {
+        return {
+            getHintsRemaining: getArchiveHintsRemaining,
+            setHintsRemaining: setArchiveHintsRemaining,
+            decrementHintsRemaining: decrementArchiveHintsRemaining,
+            getSolutionShown: getArchiveSolutionShown,
+            setSolutionShown: setArchiveSolutionShown
+        };
+    }
+    
+    // Return regular state functions for non-archive puzzles
+    return {
+        getHintsRemaining: getHintsRemaining,
+        setHintsRemaining: setHintsRemaining,
+        decrementHintsRemaining: decrementHintsRemaining,
+        getSolutionShown: getSolutionShown,
+        setSolutionShown: setSolutionShown
+    };
+}
+

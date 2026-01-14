@@ -30,13 +30,14 @@ export function updateHintButtonText(buttonId = 'hint-btn', hintsRemaining) {
 
 // Provide hint - places 1 tile in correct position and locks it
 export function provideHint(day, context = {}) {
-    const isArchive = context.isArchive || false;
     const prefix = context.prefix || '';
-    const hintsRemaining = isArchive ? getArchiveHintsRemaining() : getHintsRemaining();
-    const tilesContainerId = isArchive ? 'archive-tiles-container' : (prefix ? `${prefix}tiles-container` : 'tiles-container');
-    const returnTileCallback = isArchive ? context.returnArchiveTileToContainer : returnTileToContainer;
-    const updateScoreCallback = isArchive ? context.updateArchiveScoreDisplay : updateScoreDisplay;
-    const updateSubmitCallback = isArchive ? context.updateArchiveSubmitButton : updateSubmitButton;
+    const stateManager = context.stateManager || createStateManager(prefix);
+    const isArchive = prefix === 'archive-';
+    const hintsRemaining = stateManager.getHintsRemaining();
+    const tilesContainerId = prefix ? `${prefix}tiles-container` : 'tiles-container';
+    const returnTileCallback = isArchive && context.returnArchiveTileToContainer ? context.returnArchiveTileToContainer : returnTileToContainer;
+    const updateScoreCallback = updateScoreDisplay;
+    const updateSubmitCallback = updateSubmitButton;
     
     // Check if hints are available
     if (hintsRemaining <= 0) {
@@ -113,9 +114,12 @@ export function provideHint(day, context = {}) {
             if (isArchive && context.returnArchiveTileToContainer) {
                 // Archive uses its own return function
                 returnTileCallback(letter, index);
-            } else {
+            } else if (context.handlers) {
                 // Regular puzzles: pass handlers, isKeyboardNavigation (false), prefix, and full context
-                returnTileCallback(letter, index, context.handlers || {}, false, prefix, context);
+                returnTileCallback(letter, index, context.handlers, false, prefix, context);
+            } else {
+                // Fallback: use default returnTileToContainer signature
+                returnTileCallback(letter, index);
             }
         }
     }
@@ -172,14 +176,9 @@ export function provideHint(day, context = {}) {
     }
     
     // Decrement hint counter and update button
-    if (isArchive) {
-        decrementArchiveHintsRemaining();
-        updateHintButtonText('archive-hint-btn', getArchiveHintsRemaining());
-    } else {
-        decrementHintsRemaining();
-        const hintBtnId = prefix ? `${prefix}hint-btn` : 'hint-btn';
-        updateHintButtonText(hintBtnId, getHintsRemaining());
-    }
+    stateManager.decrementHintsRemaining();
+    const hintBtnId = prefix ? `${prefix}hint-btn` : 'hint-btn';
+    updateHintButtonText(hintBtnId, stateManager.getHintsRemaining());
     
     // Update score display - ensure DOM is fully updated before calculating score
     if (updateScoreCallback) {
@@ -187,11 +186,7 @@ export function provideHint(day, context = {}) {
         requestAnimationFrame(() => {
             // Double-check that the tile is in the DOM
             if (targetSlot && targetSlot.querySelector('.tile')) {
-                if (isArchive) {
-                    updateScoreCallback();
-                } else {
-                    updateScoreCallback(prefix);
-                }
+                updateScoreCallback(prefix);
             }
         });
     }
@@ -199,16 +194,13 @@ export function provideHint(day, context = {}) {
         updateSubmitCallback();
     }
     
-    // Check if solution is automatically complete (only for regular puzzles, not archive)
-    // Only check if all slots are filled (optimization)
-    if (!isArchive) {
-        // Use requestAnimationFrame to ensure DOM is fully updated
-        requestAnimationFrame(() => {
-            if (areAllSlotsFilled()) {
-                checkAutoComplete(day, prefix);
-            }
-        });
-    }
+    // Check if solution is automatically complete
+    // Use requestAnimationFrame to ensure DOM is fully updated
+    requestAnimationFrame(() => {
+        if (areAllSlotsFilled()) {
+            checkAutoComplete(day, prefix);
+        }
+    });
 }
 
 // Show solution - places ALL remaining tiles in correct positions and locks them
@@ -266,7 +258,7 @@ export function showSolution(day, context = {}) {
     });
     
     if (tilesToPlace.length === 0) {
-        const feedbackId = isArchive ? 'archive-feedback' : (prefix ? `${prefix}feedback` : 'feedback');
+        const feedbackId = prefix ? `${prefix}feedback` : 'feedback';
         showFeedback('All tiles are already correct!', 'success', feedbackId);
         return;
     }
@@ -288,9 +280,12 @@ export function showSolution(day, context = {}) {
                 if (isArchive && context.returnArchiveTileToContainer) {
                     // Archive uses its own return function
                     returnTileCallback(letter, index);
-                } else {
+                } else if (context.handlers) {
                     // Regular puzzles: pass handlers, isKeyboardNavigation (false), prefix, and full context
-                    returnTileCallback(letter, index, context.handlers || {}, false, prefix, context);
+                    returnTileCallback(letter, index, context.handlers, false, prefix, context);
+                } else {
+                    // Fallback: use default returnTileToContainer signature
+                    returnTileCallback(letter, index);
                 }
             }
         }
@@ -348,32 +343,22 @@ export function showSolution(day, context = {}) {
     });
     
     // Mark solution as shown
-    if (isArchive) {
-        setArchiveSolutionShown(true);
-    } else {
-        setSolutionShown(true);
-    }
+    stateManager.setSolutionShown(true);
     
     // Update score display
     if (updateScoreCallback) {
-        if (isArchive) {
-            updateScoreCallback();
-        } else {
-            updateScoreCallback(prefix);
-        }
+        updateScoreCallback(prefix);
     }
     if (updateSubmitCallback) {
         updateSubmitCallback();
     }
     
-    // Check if solution is automatically complete (only for regular puzzles, not archive)
-    if (!isArchive) {
-        // Use requestAnimationFrame to ensure DOM is fully updated
-        requestAnimationFrame(() => {
-            if (areAllSlotsFilled()) {
-                checkAutoComplete(day, prefix);
-            }
-        });
-    }
+    // Check if solution is automatically complete
+    // Use requestAnimationFrame to ensure DOM is fully updated
+    requestAnimationFrame(() => {
+        if (areAllSlotsFilled()) {
+            checkAutoComplete(day, prefix);
+        }
+    });
 }
 
