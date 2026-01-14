@@ -8,28 +8,13 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { PUZZLE_DATA, SCRABBLE_SCORES } from '../../puzzle-data.js';
+import { PUZZLE_DATA } from '../../puzzle-data.js';
+import { calculateScore } from './utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PUZZLE_DATA_PATH = path.join(__dirname, '../../puzzle-data.js');
 const REPLACEMENTS_PATH = path.join(__dirname, 'score-replacements.json');
-
-/**
- * Calculate Scrabble score for a word
- * @param {string} word - The word to score
- * @returns {number} - The Scrabble score
- */
-function calculateWordScore(word) {
-    if (!word) return 0;
-    
-    return word
-        .toUpperCase()
-        .split('')
-        .reduce((score, letter) => {
-            return score + (SCRABBLE_SCORES[letter] || 0);
-        }, 0);
-}
 
 /**
  * Load replacements from JSON file

@@ -8,6 +8,7 @@ Validation scripts are located in `scripts/validation/` and are used to:
 - Validate puzzle data integrity
 - Check anagram validity
 - Verify Scrabble scores
+- Check for alternative solutions
 - Fix duplicate scores
 - Apply score replacements
 
@@ -23,7 +24,7 @@ npm run validate:anagrams
 ```
 
 **What it does:**
-1. Loads word dictionary (from local file or GitHub)
+1. Loads word dictionary from local file (`validation-words.txt`)
 2. For each puzzle, checks if words are valid anagrams
 3. Verifies words use only provided letters
 4. Reports any issues found
@@ -34,9 +35,9 @@ npm run validate:anagrams
 - Suggests fixes if possible
 
 **Dictionary:**
-- Uses five-letter word dictionary from GitHub
-- Cached locally in `scripts/validation/sgb-words.txt`
-- Automatically downloads if not present
+- Uses local word dictionary file `scripts/validation/validation-words.txt`
+- Contains words of length 3-8 letters
+- Must exist locally (no automatic download)
 
 **Example Output:**
 ```
@@ -73,6 +74,60 @@ Checking scores for all puzzles...
 Puzzle 1: ✓ Scores correct
 Puzzle 2: ✗ Score mismatch - expected 10, got 12
 ```
+
+---
+
+### `check-alternative-solutions.js`
+
+Checks if any puzzles have alternative solutions - i.e., different word pairs that use the same letters, have the same Scrabble scores, and same number of letters. Currently checks only puzzles where both words are 5 letters (matching the available dictionary).
+
+**Usage:**
+```bash
+npm run validate:alternatives
+```
+
+**What it does:**
+1. Loads word dictionary (from local file or GitHub)
+2. Filters puzzles where both words are 5 letters
+3. Groups dictionary words by Scrabble score for efficient lookup
+4. For each puzzle, finds alternative word pairs that:
+   - Use the same letters (anagram of combined letters)
+   - Have the same Scrabble scores
+   - Have the same word lengths
+5. Exports results to `alternative-solutions.json`
+
+**Output:**
+- Console output showing puzzles with alternative solutions
+- JSON file (`alternative-solutions.json`) with detailed results including:
+  - Timestamp
+  - Total puzzles checked
+  - Count of puzzles with alternatives
+  - Detailed results for each puzzle with alternatives
+
+**Note:**
+This script checks if the **combined letters** from both words can form different word pairs. This is different from `check-anagrams.js`, which checks if individual words have anagrams. A puzzle may have no individual word anagrams but still have alternative solutions when letters are combined.
+
+**Example Output:**
+```
+Checking for alternative solutions (3-8 letter words)...
+
+Loading dictionary...
+Loaded words from validation-words.txt.
+
+Found puzzles with words in validation dictionary range (3-8 letters).
+
+✗ Found puzzle(s) with alternative solutions:
+
+Puzzle 29:
+  Original: [PULSE, LOADS] (scores: 7, 6)
+  Alternatives (13):
+    - [POLES, LAUDS] (scores: 7, 6)
+    - [SLOPE, DUALS] (scores: 7, 6)
+    ...
+```
+
+**Output File:**
+Results are saved to `scripts/validation/alternative-solutions.json` with structured data for programmatic analysis.
 
 ---
 
@@ -117,65 +172,26 @@ npm run apply:scores
 
 **What it does:**
 1. Reads `score-replacements.json`
-2. Applies replacements to puzzle data
+2. Applies word replacements to puzzle data (replaces old words with new words)
 3. Updates `puzzle-data.js`
 
 **Replacement File Format:**
+The file contains a mapping of old words to new words (both must be anagrams with different scores):
 ```json
 {
-  "puzzleNumber": {
-    "wordIndex": newScore
-  }
+  "OLDWORD": "NEWWORD"
 }
 ```
 
 **Example:**
 ```json
 {
-  "5": {
-    "1": 12
-  }
+  "HELLO": "HOLLE",
+  "WORLD": "WROLD"
 }
 ```
 
-This replaces score for word 1 in puzzle 5 with 12.
-
----
-
-### `find-replacements.js`
-
-Finds potential score replacements needed.
-
-**Usage:**
-```bash
-node scripts/validation/find-replacements.js
-```
-
-**What it does:**
-1. Analyzes puzzle data
-2. Identifies score issues
-3. Generates replacement suggestions
-4. Outputs to `replacements.json`
-
-**Output:**
-- Creates `replacements.json` with suggested fixes
-- Can be reviewed before applying
-
----
-
-### `apply-replacements.js`
-
-Applies replacements from `replacements.json`.
-
-**Usage:**
-```bash
-node scripts/validation/apply-replacements.js
-```
-
-**What it does:**
-1. Reads `replacements.json`
-2. Applies replacements to puzzle data
-3. Updates `puzzle-data.js`
+This replaces all instances of "HELLO" with "HOLLE" and "WORLD" with "WROLD" throughout the puzzle data. The replacement words must be anagrams of the original words but have different Scrabble scores to fix duplicate score issues.
 
 ## Validation Workflow
 
@@ -187,6 +203,9 @@ npm run validate:anagrams
 
 # Check scores
 npm run validate:scores
+
+# Check for alternative solutions
+npm run validate:alternatives
 ```
 
 ### Fixing Issues
@@ -205,6 +224,7 @@ npm run apply:scores
 # Run all validations
 npm run validate:anagrams
 npm run validate:scores
+npm run validate:alternatives
 
 # Fix any issues
 npm run fix:scores
@@ -219,13 +239,16 @@ npm run build:data
 scripts/validation/
 ├── check-anagrams.js          # Anagram validation
 ├── check-scores.js            # Score validation
+├── check-alternative-solutions.js # Check for alternative solutions
 ├── fix-duplicate-scores.js    # Fix duplicate scores
-├── find-replacements.js       # Find replacements
-├── apply-replacements.js      # Apply replacements
 ├── apply-score-replacements.js # Apply score replacements
-├── replacements.json          # Replacement data
-├── score-replacements.json     # Score replacement data
-└── sgb-words.txt              # Word dictionary (cached)
+├── generate-puzzles.js        # Generate new puzzles
+├── remove-alternative-puzzles.js # Remove puzzles with alternatives
+├── utils.js                   # Shared utility functions
+├── score-replacements.json     # Score replacement data (generated by fix-duplicate-scores.js)
+├── alternative-solutions.json  # Alternative solutions results (generated by check-alternative-solutions.js)
+├── validation-words.txt       # Word dictionary (3-8 letter words)
+└── puzzle-safe-words.txt      # Safe words list for puzzle generation
 ```
 
 ## Dictionary
@@ -267,23 +290,16 @@ npm run build:data
 
 ### 3. Review Replacements
 
-```bash
-# Generate replacements
-node scripts/validation/find-replacements.js
-
-# Review replacements.json
-# Then apply
-node scripts/validation/apply-replacements.js
-```
+Before applying score replacements, review the generated `score-replacements.json` file to ensure the suggested fixes are correct.
 
 ## Troubleshooting
 
 ### Dictionary Not Found
 
 If dictionary file is missing:
-- Script will attempt to download from GitHub
-- Check internet connection
-- Verify GitHub URL is accessible
+- Ensure `validation-words.txt` exists in `scripts/validation/` directory
+- The file should contain one word per line (uppercase, 3-8 letters)
+- Scripts will fail with an error if the file is not found
 
 ### Validation Errors
 

@@ -5,23 +5,8 @@
  * Reports any puzzles where both words have the same score.
  */
 
-import { PUZZLE_DATA, SCRABBLE_SCORES } from '../../puzzle-data.js';
-
-/**
- * Calculate Scrabble score for a word
- * @param {string} word - The word to score
- * @returns {number} - The Scrabble score
- */
-function calculateWordScore(word) {
-    if (!word) return 0;
-    
-    return word
-        .toUpperCase()
-        .split('')
-        .reduce((score, letter) => {
-            return score + (SCRABBLE_SCORES[letter] || 0);
-        }, 0);
-}
+import { PUZZLE_DATA } from '../../puzzle-data.js';
+import { calculateScore } from './utils.js';
 
 /**
  * Check all puzzles for duplicate scores
@@ -38,8 +23,8 @@ function checkPuzzleScores() {
         }
         
         const [word1, word2] = puzzle.words;
-        const score1 = calculateWordScore(word1);
-        const score2 = calculateWordScore(word2);
+        const score1 = calculateScore(word1);
+        const score2 = calculateScore(word2);
         
         if (score1 === score2) {
             issues.push({

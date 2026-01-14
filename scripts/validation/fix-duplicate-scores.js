@@ -3,55 +3,18 @@
 /**
  * Script to find replacement words for puzzles where both words have the same Scrabble score.
  * Finds replacement words that have different scores and no anagram alternatives.
+ * Uses validation-words.txt dictionary.
  */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { PUZZLE_DATA, SCRABBLE_SCORES } from '../../puzzle-data.js';
+import { PUZZLE_DATA } from '../../puzzle-data.js';
 import { loadWordList, normalizeWordForAnagram, buildAnagramMap } from './check-anagrams.js';
+import { calculateScore, getUsedWords } from './utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-/**
- * Calculate Scrabble score for a word
- * @param {string} word - The word to score
- * @returns {number} - The Scrabble score
- */
-function calculateWordScore(word) {
-    if (!word) return 0;
-    
-    return word
-        .toUpperCase()
-        .split('')
-        .reduce((score, letter) => {
-            return score + (SCRABBLE_SCORES[letter] || 0);
-        }, 0);
-}
-
-/**
- * Get all currently used words from puzzle data
- * @returns {Set<string>} - Set of all words used in puzzles (uppercase)
- */
-function getUsedWords() {
-    const usedWords = new Set();
-    
-    for (const puzzle of Object.values(PUZZLE_DATA)) {
-        if (puzzle.words && Array.isArray(puzzle.words)) {
-            puzzle.words.forEach(word => {
-                usedWords.add(word.toUpperCase());
-            });
-        }
-        if (puzzle.solution && Array.isArray(puzzle.solution)) {
-            puzzle.solution.forEach(word => {
-                usedWords.add(word.toUpperCase());
-            });
-        }
-    }
-    
-    return usedWords;
-}
 
 /**
  * Find puzzles with duplicate scores
@@ -68,8 +31,8 @@ function findPuzzlesWithDuplicateScores() {
         }
         
         const [word1, word2] = puzzle.words;
-        const score1 = calculateWordScore(word1);
-        const score2 = calculateWordScore(word2);
+        const score1 = calculateScore(word1);
+        const score2 = calculateScore(word2);
         
         if (score1 === score2) {
             issues.push({
@@ -148,7 +111,7 @@ function findReplacements(dictionaryWords, anagramMap, usedWords, issues) {
         // If same length, replace word1
         const wordToReplace = word1.length <= word2.length ? word1 : word2;
         const otherWord = wordToReplace === word1 ? word2 : word1;
-        const otherScore = calculateWordScore(otherWord);
+        const otherScore = calculateScore(otherWord);
         
         const replacement = findReplacementWord(
             wordToReplace,
@@ -190,9 +153,9 @@ function generateReport(issues, replacements) {
         const replacement = replacements.get(wordToReplace);
         
         if (replacement) {
-            const newScore = calculateWordScore(replacement);
+            const newScore = calculateScore(replacement);
             const otherWord = wordToReplace === word1 ? word2 : word1;
-            const otherScore = calculateWordScore(otherWord);
+            const otherScore = calculateScore(otherWord);
             
             replaced.push({
                 puzzleNum,

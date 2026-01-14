@@ -2,21 +2,18 @@
 
 /**
  * Validation script to check if any words in puzzle-data.js can be rearranged
- * to form other valid English words (anagrams). Uses the five-letter word
- * dictionary from GitHub.
+ * to form other valid English words (anagrams). Uses validation-words.txt dictionary.
  */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import https from 'https';
 import { PUZZLE_DATA } from '../../puzzle-data.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DICTIONARY_URL = 'https://raw.githubusercontent.com/charlesreid1/five-letter-words/main/sgb-words.txt';
-const LOCAL_DICTIONARY_PATH = path.join(__dirname, 'sgb-words.txt');
+const VALIDATION_DICTIONARY_PATH = path.join(__dirname, 'validation-words.txt');
 
 /**
  * Normalize a word for anagram comparison by sorting its letters alphabetically
@@ -28,14 +25,19 @@ export function normalizeWordForAnagram(word) {
 }
 
 /**
- * Load word list from local file
+ * Load word list from validation-words.txt
  * @returns {Promise<string[]>} - Array of words from the dictionary
  */
-function loadWordListFromFile() {
+export async function loadWordList() {
     return new Promise((resolve, reject) => {
-        console.log('Loading word list from local file...');
+        console.log('Loading word list from validation-words.txt...');
         
-        fs.readFile(LOCAL_DICTIONARY_PATH, 'utf8', (err, data) => {
+        if (!fs.existsSync(VALIDATION_DICTIONARY_PATH)) {
+            reject(new Error(`Validation dictionary not found: ${VALIDATION_DICTIONARY_PATH}`));
+            return;
+        }
+        
+        fs.readFile(VALIDATION_DICTIONARY_PATH, 'utf8', (err, data) => {
             if (err) {
                 reject(err);
                 return;
@@ -44,75 +46,12 @@ function loadWordListFromFile() {
             const words = data
                 .split('\n')
                 .map(line => line.trim().toUpperCase())
-                .filter(word => word.length === 5 && /^[A-Z]+$/.test(word));
+                .filter(word => word.length >= 3 && word.length <= 8 && /^[A-Z]+$/.test(word));
             
-            console.log(`Loaded ${words.length} five-letter words from local dictionary.`);
+            console.log(`Loaded ${words.length} words from validation dictionary.`);
             resolve(words);
         });
     });
-}
-
-/**
- * Fetch word list from GitHub URL
- * @returns {Promise<string[]>} - Array of words from the dictionary
- */
-function fetchWordListFromGitHub() {
-    return new Promise((resolve, reject) => {
-        console.log('Fetching word list from GitHub...');
-        
-        https.get(DICTIONARY_URL, (res) => {
-            if (res.statusCode !== 200) {
-                reject(new Error(`Failed to fetch dictionary: HTTP ${res.statusCode}`));
-                return;
-            }
-
-            let data = '';
-            res.on('data', (chunk) => {
-                data += chunk;
-            });
-
-            res.on('end', () => {
-                const words = data
-                    .split('\n')
-                    .map(line => line.trim().toUpperCase())
-                    .filter(word => word.length === 5 && /^[A-Z]+$/.test(word));
-                
-                console.log(`Loaded ${words.length} five-letter words from dictionary.`);
-                resolve(words);
-            });
-        }).on('error', (err) => {
-            reject(new Error(`Network error fetching dictionary: ${err.message}`));
-        });
-    });
-}
-
-/**
- * Load word list, preferring local file, falling back to GitHub
- * @returns {Promise<string[]>} - Array of words from the dictionary
- */
-export async function loadWordList() {
-    // Check if local file exists
-    if (fs.existsSync(LOCAL_DICTIONARY_PATH)) {
-        try {
-            return await loadWordListFromFile();
-        } catch (error) {
-            console.warn(`Warning: Could not read local dictionary file: ${error.message}`);
-            console.warn('Falling back to GitHub...\n');
-        }
-    }
-    
-    // Fall back to GitHub
-    try {
-        return await fetchWordListFromGitHub();
-    } catch (error) {
-        throw new Error(
-            `Failed to load dictionary from GitHub: ${error.message}\n\n` +
-            `To use a local dictionary file instead:\n` +
-            `1. Download sgb-words.txt from:\n` +
-            `   ${DICTIONARY_URL}\n` +
-            `2. Save it as: ${LOCAL_DICTIONARY_PATH}`
-        );
-    }
 }
 
 /**
@@ -199,8 +138,8 @@ function checkPuzzleWords(puzzleWords, anagramMap) {
     for (let i = 0; i < puzzleWords.length; i++) {
         const { word, puzzleNum, position } = puzzleWords[i];
         
-        // Skip words that aren't 5 letters
-        if (word.length !== 5) {
+        // Skip words that aren't between 3-8 letters (validation dictionary range)
+        if (word.length < 3 || word.length > 8) {
             skipped.push(word);
             continue;
         }
@@ -254,7 +193,7 @@ function reportResults(results, skipped, totalWords) {
     
     if (skipped.length > 0) {
         const uniqueSkipped = [...new Set(skipped)];
-        console.log(`\nSkipped (not 5 letters): ${uniqueSkipped.slice(0, 20).join(', ')}${uniqueSkipped.length > 20 ? '...' : ''}`);
+        console.log(`\nSkipped (not 3-8 letters): ${uniqueSkipped.slice(0, 20).join(', ')}${uniqueSkipped.length > 20 ? '...' : ''}`);
     }
     
     console.log('\nSummary:');
@@ -268,7 +207,7 @@ function reportResults(results, skipped, totalWords) {
  */
 async function main() {
     try {
-        // Load dictionary (prefer local, fallback to GitHub)
+        // Load dictionary from validation-words.txt
         const dictionaryWords = await loadWordList();
         
         // Build anagram map

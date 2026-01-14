@@ -2,7 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Hints System', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/puzzle.html?day=1&test=archive', { waitUntil: 'networkidle' });
+    await page.goto('/puzzle.html?day=1&test=archive', { waitUntil: 'load' });
+    // Wait for tiles container to exist first, then wait for tiles to be created
+    await page.waitForSelector('#tiles-container', { timeout: 5000 });
     await page.waitForSelector('.tile', { timeout: 5000 });
   });
 
