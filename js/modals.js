@@ -406,3 +406,14 @@ export function closeSuccessModal(prefix = '') {
     unlockBodyScroll();
 }
 
+// Reset modal state for testing purposes
+export function resetModalCount() {
+    modalCount = 0;
+    savedScrollPosition = 0;
+    triggeringElement = null;
+    if (touchMoveHandler) {
+        document.removeEventListener('touchmove', touchMoveHandler);
+        touchMoveHandler = null;
+    }
+}
+

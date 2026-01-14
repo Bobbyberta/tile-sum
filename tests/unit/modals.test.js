@@ -6,7 +6,8 @@ import {
   showHelpModal,
   closeHelpModal,
   closeSuccessModal,
-  copyShareMessage
+  copyShareMessage,
+  resetModalCount
 } from '../../js/modals.js';
 import { cleanupDOM } from '../helpers/dom-setup.js';
 
@@ -44,6 +45,9 @@ describe('modals.js', () => {
     global.requestAnimationFrame = vi.fn((cb) => setTimeout(cb, 0));
     global.window.scrollTo = vi.fn();
     
+    // Reset modal state
+    resetModalCount();
+    
     // Reset body styles
     document.body.style.position = '';
     document.body.style.top = '';
@@ -52,28 +56,6 @@ describe('modals.js', () => {
   });
 
   afterEach(async () => {
-    // Close all modals to reset modalCount
-    // Create modals if they don't exist so close functions can properly decrement modalCount
-    // We need to ensure modalCount is reset to 0, so we close modals multiple times
-    // to handle cases where modalCount might be > number of actual modals
-    if (!document.getElementById('error-modal')) {
-      createErrorModal();
-    }
-    if (!document.getElementById('success-modal')) {
-      createSuccessModal();
-    }
-    if (!document.getElementById('help-modal')) {
-      createHelpModal();
-    }
-    
-    // Close all modals multiple times to ensure modalCount reaches 0
-    // (in case modalCount was > number of modals due to test failures)
-    for (let i = 0; i < 5; i++) {
-      closeErrorModal();
-      closeSuccessModal();
-      closeHelpModal();
-    }
-    
     // Wait for any pending timeouts to complete
     await new Promise(resolve => setTimeout(resolve, 150));
     
@@ -504,27 +486,6 @@ describe('modals.js', () => {
   });
 
   describe('scroll lock management', () => {
-    beforeEach(() => {
-      // Ensure modalCount is 0 before scroll lock tests
-      // Create all modals and close them to reset modalCount
-      if (!document.getElementById('error-modal')) {
-        createErrorModal();
-      }
-      if (!document.getElementById('success-modal')) {
-        createSuccessModal();
-      }
-      if (!document.getElementById('help-modal')) {
-        createHelpModal();
-      }
-      
-      // Close all modals multiple times to ensure modalCount is 0
-      for (let i = 0; i < 5; i++) {
-        closeErrorModal();
-        closeSuccessModal();
-        closeHelpModal();
-      }
-    });
-
     it('should handle multiple modals', () => {
       const { modal: errorModal } = createErrorModal();
       const { modal: helpModal } = createHelpModal();
