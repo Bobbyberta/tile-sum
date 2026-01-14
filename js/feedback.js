@@ -1,6 +1,18 @@
 // User feedback and animations
 
-// Show feedback message
+/**
+ * Shows a feedback message to the user.
+ * Displays success or error messages with appropriate styling and accessibility attributes.
+ * 
+ * @param {string} message - The feedback message to display
+ * @param {string} type - The type of feedback: 'success' or 'error'
+ * @param {string} [feedbackElementId='feedback'] - ID of the feedback element
+ * @returns {void}
+ * 
+ * @example
+ * showFeedback('Puzzle completed!', 'success');
+ * showFeedback('Incorrect solution', 'error', 'archive-feedback');
+ */
 export function showFeedback(message, type, feedbackElementId = 'feedback') {
     const feedback = document.getElementById(feedbackElementId);
     if (!feedback) return;
@@ -27,7 +39,17 @@ export function showFeedback(message, type, feedbackElementId = 'feedback') {
     feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// Trigger snowflake confetti animation
+/**
+ * Triggers a snowflake confetti animation using the canvas-confetti library.
+ * Creates a winter-themed celebration effect when puzzles are solved.
+ * Only works if the confetti library is loaded (via CDN in puzzle.html).
+ * 
+ * @returns {void}
+ * 
+ * @example
+ * // Called after puzzle is solved
+ * triggerSnowflakeConfetti();
+ */
 export function triggerSnowflakeConfetti() {
     // Check if confetti library is available
     if (typeof confetti === 'undefined') {

@@ -18,7 +18,18 @@ let autoCompleteTriggered = false;
 let currentDay = null;
 let currentPrefix = '';
 
-// Initialize auto-complete for a puzzle (call when initializing a new puzzle)
+/**
+ * Initializes auto-complete for a puzzle.
+ * Resets tracking state and stores puzzle information.
+ * Should be called when initializing a new puzzle.
+ * 
+ * @param {number} day - The puzzle number/day
+ * @param {string} [prefix=''] - Prefix for element IDs
+ * @returns {void}
+ * 
+ * @example
+ * initAutoComplete(1, 'daily-');
+ */
 export function initAutoComplete(day, prefix = '') {
     autoCompleteTriggered = false;
     currentDay = day;
@@ -26,14 +37,33 @@ export function initAutoComplete(day, prefix = '') {
     debugLog('[AutoComplete] Initialized', { day, prefix });
 }
 
-// Reset auto-complete tracking (call when initializing a new puzzle)
+/**
+ * Resets auto-complete tracking state.
+ * Clears the triggered flag and stored puzzle information.
+ * Should be called when initializing a new puzzle.
+ * 
+ * @returns {void}
+ * 
+ * @example
+ * resetAutoComplete();
+ */
 export function resetAutoComplete() {
     autoCompleteTriggered = false;
     currentDay = null;
     currentPrefix = '';
 }
 
-// Helper function to check if all slots are filled (optimization to avoid unnecessary checks)
+/**
+ * Checks if all puzzle slots are filled with tiles.
+ * Helper function to optimize auto-complete checks by avoiding unnecessary validation.
+ * 
+ * @returns {boolean} True if all slots are filled, false otherwise
+ * 
+ * @example
+ * if (areAllSlotsFilled()) {
+ *   checkAutoComplete();
+ * }
+ */
 export function areAllSlotsFilled() {
     const word1Slots = document.querySelectorAll(`[data-word-slots="0"] .slot`);
     const word2Slots = document.querySelectorAll(`[data-word-slots="1"] .slot`);
@@ -58,9 +88,24 @@ export function areAllSlotsFilled() {
     return word1Complete && word2Complete;
 }
 
-// Check if solution is correct and automatically show success modal
-// Can be called without parameters if initAutoComplete was called first
-// Note: This function assumes all slots are filled (use areAllSlotsFilled() before calling)
+/**
+ * Checks if the puzzle solution is correct and automatically shows success modal.
+ * Can be called without parameters if `initAutoComplete()` was called first.
+ * Prevents duplicate triggers with internal tracking flag.
+ * 
+ * **Note**: This function assumes all slots are filled. Use `areAllSlotsFilled()` before calling for optimization.
+ * 
+ * @param {number} [day=null] - Puzzle number/day (uses stored value if not provided)
+ * @param {string} [prefix=null] - Element ID prefix (uses stored value if not provided)
+ * @returns {void}
+ * 
+ * @example
+ * // After initAutoComplete(1, '')
+ * checkAutoComplete();
+ * 
+ * // Or with explicit parameters
+ * checkAutoComplete(1, 'daily-');
+ */
 export function checkAutoComplete(day = null, prefix = null) {
     debugLog('[AutoComplete] checkAutoComplete called', { day, prefix, currentDay, currentPrefix, autoCompleteTriggered });
     

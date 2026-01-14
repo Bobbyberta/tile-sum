@@ -4,7 +4,17 @@ import { getSelectedTile, setSelectedTile, clearSelectedTile } from './puzzle-st
 import { SCRABBLE_SCORES } from '../puzzle-data-encoded.js';
 import { handleTileKeyDown as handleTileKeyDownInput, handleSlotKeyDown as handleSlotKeyDownInput, getKeyboardContext } from './keyboard-input.js';
 
-// Keyboard handler for tiles - delegates to keyboard-input module
+/**
+ * Keyboard handler for tiles - delegates to keyboard-input module.
+ * Handles keyboard events on tile elements for accessibility.
+ * 
+ * @param {KeyboardEvent} e - Keyboard event
+ * @param {Object} [context] - Optional context object with callbacks and prefix
+ * @returns {void}
+ * 
+ * @example
+ * tile.addEventListener('keydown', (e) => handleTileKeyDown(e, keyboardContext));
+ */
 export function handleTileKeyDown(e, context) {
     // Use provided context or fall back to stored context
     const activeContext = context || getKeyboardContext();

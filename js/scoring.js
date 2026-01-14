@@ -2,7 +2,18 @@
 
 import { calculateWordScore, validateSolution } from '../puzzle-data-encoded.js';
 
-// Update score display
+/**
+ * Updates the score display for both words in the puzzle.
+ * Calculates current scores based on tiles in slots and displays them
+ * alongside the maximum possible scores.
+ * 
+ * @param {string} [prefix=''] - Prefix for element IDs ('daily-', 'archive-', or '')
+ * @returns {void}
+ * 
+ * @example
+ * updateScoreDisplay(); // Updates scores for regular puzzle
+ * updateScoreDisplay('daily-'); // Updates scores for daily puzzle
+ */
 export function updateScoreDisplay(prefix = '') {
     // Determine the correct word-slots container ID based on prefix
     // Archive puzzles use 'archive-word-slots' (prefix would be 'archive-' but container doesn't use prefix)
@@ -58,13 +69,35 @@ export function updateScoreDisplay(prefix = '') {
     }
 }
 
-// Update submit button state (no longer disables button, kept for potential future use)
+/**
+ * Updates submit button state.
+ * Note: Currently the button is always enabled. This function is kept
+ * for consistency and potential future use.
+ * 
+ * @returns {void}
+ */
 export function updateSubmitButton() {
     // Button is always enabled now
     // This function is kept for consistency but doesn't disable the button
 }
 
-// Check solution
+/**
+ * Checks if the current puzzle solution is correct.
+ * Validates that all slots are filled and the words match the solution.
+ * 
+ * @param {number} day - The puzzle number/day to validate
+ * @param {Function} [showErrorModalCallback] - Callback to show error modal if solution is incorrect or incomplete
+ * @param {Function} [showSuccessModalCallback] - Callback to show success modal with scores if solution is correct
+ * @param {Function} [triggerConfettiCallback] - Callback to trigger celebration animation
+ * @returns {void}
+ * 
+ * @example
+ * checkSolution(1, 
+ *   () => showErrorModal('Incorrect solution'),
+ *   (day, score1, score2, max1, max2) => showSuccessModal(day, score1, score2),
+ *   () => triggerSnowflakeConfetti()
+ * );
+ */
 export function checkSolution(day, showErrorModalCallback, showSuccessModalCallback, triggerConfettiCallback) {
     const word1Slots = document.querySelectorAll('[data-word-slots="0"] .slot');
     const word2Slots = document.querySelectorAll('[data-word-slots="1"] .slot');

@@ -13,8 +13,17 @@ import { createPuzzleDOMStructure } from './puzzle-core.js';
 import { initPuzzleWithPrefix } from '../script.js';
 import { createStateManager } from './puzzle-state.js';
 
-
-// Initialize archive page
+/**
+ * Initializes the archive page functionality.
+ * Sets up date picker, navigation buttons, and puzzle loading for archive puzzles.
+ * Handles date selection and puzzle initialization for archive mode.
+ * 
+ * @returns {void}
+ * 
+ * @example
+ * // Called when archive.html loads
+ * initArchivePage();
+ */
 export function initArchivePage() {
     const datePicker = document.getElementById('date-picker');
     const datePrevBtn = document.getElementById('date-prev-btn');

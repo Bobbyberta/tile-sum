@@ -3,7 +3,29 @@
 import { SCRABBLE_SCORES } from '../puzzle-data-encoded.js';
 import { handleTileKeyDown } from './keyboard.js';
 
-// Create a tile element
+/**
+ * Creates a draggable tile element with letter and Scrabble score display.
+ * 
+ * @param {string} letter - The letter to display on the tile (case-insensitive)
+ * @param {number} index - Unique index for the tile (used for data-tile-index attribute)
+ * @param {boolean} [isLocked=false] - If true, tile cannot be dragged or interacted with
+ * @param {Object} [handlers={}] - Event handler functions to attach to the tile
+ * @param {Function} [handlers.onDragStart] - Handler for dragstart event
+ * @param {Function} [handlers.onDragEnd] - Handler for dragend event
+ * @param {Function} [handlers.onClick] - Handler for click event
+ * @param {Function} [handlers.onTouchStart] - Handler for touchstart event
+ * @param {Function} [handlers.onTouchMove] - Handler for touchmove event
+ * @param {Function} [handlers.onTouchEnd] - Handler for touchend event
+ * @param {Function} [handlers.onTouchCancel] - Handler for touchcancel event
+ * @param {Function} [handlers.onKeyDown] - Handler for keydown event (defaults to handleTileKeyDown)
+ * @returns {HTMLElement} The created tile element with appropriate classes, attributes, and event listeners
+ * 
+ * @example
+ * const tile = createTile('A', 0, false, {
+ *   onDragStart: (e) => console.log('Dragging'),
+ *   onClick: (e) => console.log('Clicked')
+ * });
+ */
 export function createTile(letter, index, isLocked = false, handlers = {}) {
     const tile = document.createElement('div');
     tile.className = `tile bg-indigo-600 text-white rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center shadow-md transition-shadow ${isLocked ? 'locked' : 'hover:shadow-lg'}`;
@@ -63,7 +85,28 @@ export function createTile(letter, index, isLocked = false, handlers = {}) {
     return tile;
 }
 
-// Create a slot element
+/**
+ * Creates a droppable slot element where tiles can be placed to form words.
+ * 
+ * @param {number} wordIndex - Index of the word this slot belongs to (0 or 1)
+ * @param {number} slotIndex - Index of the slot within the word (0-based)
+ * @param {boolean} [isLocked=false] - If true, slot cannot accept tiles
+ * @param {Object} [handlers={}] - Event handler functions to attach to the slot
+ * @param {Function} [handlers.onDragOver] - Handler for dragover event
+ * @param {Function} [handlers.onDrop] - Handler for drop event
+ * @param {Function} [handlers.onDragLeave] - Handler for dragleave event
+ * @param {Function} [handlers.onClick] - Handler for click event
+ * @param {Function} [handlers.onKeyDown] - Handler for keydown event
+ * @param {Function} [handlers.onFocus] - Handler for focus event
+ * @param {Function} [handlers.onBlur] - Handler for blur event
+ * @returns {HTMLElement} The created slot element with appropriate classes, attributes, and event listeners
+ * 
+ * @example
+ * const slot = createSlot(0, 0, false, {
+ *   onDrop: (e) => handleDrop(e),
+ *   onKeyDown: (e) => handleSlotKeyDown(e)
+ * });
+ */
 export function createSlot(wordIndex, slotIndex, isLocked = false, handlers = {}) {
     const slot = document.createElement('div');
     slot.className = `slot w-12 h-14 rounded-lg flex items-center justify-center ${isLocked ? 'locked' : ''}`;
@@ -146,8 +189,26 @@ export function updatePlaceholderTile(containerId = 'tiles-container') {
     }
 }
 
-// Create puzzle DOM structure dynamically
-// Returns object with references to created elements
+/**
+ * Creates the complete DOM structure for a puzzle game dynamically.
+ * This includes header, tiles container, word slots, and action buttons.
+ * 
+ * @param {HTMLElement} containerElement - The parent container element to populate
+ * @param {string} prefix - Prefix for element IDs (e.g., 'daily-', 'archive-', or '')
+ * @param {string} titleText - Text to display in the puzzle title
+ * @returns {Object} Object containing references to created elements:
+ *   - header: The header element
+ *   - puzzleTitle: The h1 title element
+ *   - tilesContainer: The container for draggable tiles
+ *   - wordSlotsContainer: The container for word slots
+ *   - hintBtn: The hint button element
+ *   - submitBtn: The submit button element
+ * 
+ * @example
+ * const container = document.getElementById('puzzle-container');
+ * const elements = createPuzzleDOMStructure(container, 'daily-', 'Daily Puzzle');
+ * // elements.tilesContainer, elements.hintBtn, etc. are now available
+ */
 export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     // Clear previous puzzle content
     containerElement.innerHTML = '';

@@ -5,7 +5,15 @@ import { formatDateString, parseDateString } from '../puzzle-data-encoded.js';
 const STREAK_STORAGE_KEY = 'puzzle-streak';
 const LAST_VISIT_STORAGE_KEY = 'puzzle-last-visit';
 
-// Get current streak count
+/**
+ * Gets the current streak count from localStorage.
+ * 
+ * @returns {number} Current streak count (0 if no streak)
+ * 
+ * @example
+ * const streak = getStreak();
+ * console.log(`Current streak: ${streak} days`);
+ */
 export function getStreak() {
     try {
         const streak = localStorage.getItem(STREAK_STORAGE_KEY);
@@ -26,7 +34,17 @@ function getLastVisitDateString() {
     }
 }
 
-// Update streak based on current visit
+/**
+ * Updates the streak based on the current visit date.
+ * Increments streak if visiting on consecutive days, resets if there's a gap.
+ * 
+ * @param {Date} [testDate=null] - Optional test date (for testing purposes)
+ * @returns {number} Updated streak count
+ * 
+ * @example
+ * const newStreak = updateStreak();
+ * console.log(`Updated streak: ${newStreak}`);
+ */
 export function updateStreak(testDate = null) {
     const today = testDate || new Date();
     const todayString = formatDateString(today);
@@ -84,7 +102,15 @@ function setStreak(count, dateString) {
     }
 }
 
-// Reset streak (for testing)
+/**
+ * Resets the streak to 0 (for testing purposes).
+ * Removes streak data from localStorage.
+ * 
+ * @returns {void}
+ * 
+ * @example
+ * resetStreak();
+ */
 export function resetStreak() {
     try {
         localStorage.removeItem(STREAK_STORAGE_KEY);
@@ -94,12 +120,32 @@ export function resetStreak() {
     }
 }
 
-// Set streak to a specific value (for testing)
+/**
+ * Sets streak to a specific value (for testing purposes).
+ * 
+ * @param {number} count - Streak count to set
+ * @param {string} dateString - Date string for last visit
+ * @returns {void}
+ * 
+ * @example
+ * setStreakForTesting(5, '2024-12-05');
+ */
 export function setStreakForTesting(count, dateString) {
     setStreak(count, dateString);
 }
 
-// Display streak counter in the UI
+/**
+ * Displays the streak counter in the UI.
+ * Updates streak based on current visit and shows/hides streak display.
+ * Only shows streak if it's greater than 0 (requires at least 2 consecutive visits).
+ * 
+ * @param {Date} [testDate=null] - Optional test date (for testing purposes)
+ * @returns {void}
+ * 
+ * @example
+ * // Called on page load
+ * displayStreak();
+ */
 export function displayStreak(testDate = null) {
     const streakContainer = document.getElementById('streak-container');
     const streakDisplay = document.getElementById('streak-display');

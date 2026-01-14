@@ -9,7 +9,17 @@ import { initPuzzleWithPrefix } from '../script.js';
 import { isPuzzleCompletedToday, isPuzzleCompletedForDate } from './completion.js';
 import { createTile, createSlot } from './puzzle-core.js';
 
-// Update countdown overlay (hidden in standard format - only shown in advent test mode)
+/**
+ * Updates the countdown overlay for the advent calendar.
+ * Hidden in standard format, only shown in advent test mode.
+ * Calculates days remaining until December 1st and displays countdown.
+ * 
+ * @returns {void}
+ * 
+ * @example
+ * // Called on page load
+ * updateCountdown();
+ */
 export function updateCountdown() {
     const countdownOverlay = document.getElementById('countdown-overlay');
     const countdownDays = document.getElementById('countdown-days');
@@ -77,7 +87,17 @@ export function updateCountdown() {
     }
 }
 
-// Initialize daily puzzle on homepage
+/**
+ * Initializes the daily puzzle on the homepage.
+ * Shows the daily puzzle view and hides the calendar view.
+ * Updates header subtitle with puzzle number.
+ * 
+ * @returns {void}
+ * 
+ * @example
+ * // Called when homepage loads
+ * initDailyPuzzle();
+ */
 export function initDailyPuzzle() {
     const dailyPuzzleContainer = document.getElementById('daily-puzzle-container');
     const calendarContainer = document.getElementById('calendar-container');

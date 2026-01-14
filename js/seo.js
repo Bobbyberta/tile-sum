@@ -3,7 +3,18 @@
 import { PUZZLE_DATA, formatDateString, getDateForPuzzleNumber } from '../puzzle-data-encoded.js';
 import { getDaySuffix } from './utils.js';
 
-// Update social sharing meta tags for puzzle pages
+/**
+ * Updates social sharing meta tags for puzzle pages.
+ * Updates Open Graph, Twitter Card, and structured data tags.
+ * Generates appropriate title, description, and URL based on puzzle date.
+ * 
+ * @param {number} day - The puzzle number/day
+ * @returns {void}
+ * 
+ * @example
+ * // Called when puzzle page loads
+ * updateSocialMetaTags(1);
+ */
 export function updateSocialMetaTags(day) {
     if (!PUZZLE_DATA[day]) return;
     

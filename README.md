@@ -4,6 +4,23 @@ A daily puzzle site hosted on GitHub Pages featuring a new word puzzle challenge
 
 **Live Site**: [https://sum-tile.uk](https://sum-tile.uk)
 
+## 🚀 Quick Start
+
+**New to the project?** Start here:
+1. **[Getting Started Guide](./docs/development/getting-started.md)** - Set up your development environment
+2. **[Architecture Overview](./docs/architecture/overview.md)** - Understand the system design
+3. **[Documentation Index](./docs/README.md)** - Complete documentation navigation
+
+**Want to contribute?** See:
+- **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute
+- **[Development Workflow](./docs/development/workflow.md)** - Development practices
+- **[Code Style Guide](./docs/development/code-style.md)** - Coding standards
+
+**Looking for API docs?** See:
+- **[API Documentation](./docs/api/)** - Module reference
+- **[Module Interactions](./docs/architecture/module-interactions.md)** - How modules work together
+- **[Data Structures](./docs/architecture/data-structures.md)** - Data format specifications
+
 ## Quick Start
 
 - **Edit puzzle data**: Edit `puzzle-data.js`, then run `npm run build:data`
@@ -88,43 +105,101 @@ tile-sum/
 ├── index.html              # Home page with daily puzzle
 ├── puzzle.html             # Puzzle page
 ├── archive.html            # Archive page for accessing past puzzles
-├── puzzle-data.js          # Puzzle definitions and Scrabble scores
+├── puzzle-data.js          # Puzzle definitions and Scrabble scores (source)
+├── puzzle-data-encoded.js  # Encoded puzzle data (generated)
 ├── script.js               # Main entry point - imports and wires together all modules
 ├── styles.css              # Compiled Tailwind CSS (generated from src/styles.css)
+│
 ├── js/                     # Modular JavaScript files
 │   ├── archive.js          # Archive page functionality
+│   ├── auto-complete.js    # Auto-complete feature
 │   ├── completion.js       # Puzzle completion tracking
-│   ├── drag-drop.js        # Drag and drop tile handling
+│   ├── drag-drop.js        # Drag and drop (re-exports)
 │   ├── feedback.js         # User feedback and animations
 │   ├── hints.js            # Hint system
+│   ├── interaction-state.js # Interaction state management
 │   ├── keyboard.js         # Keyboard navigation
+│   ├── keyboard-input.js   # Keyboard input handling
 │   ├── modals.js           # Modal dialogs (help, success, error)
+│   ├── mouse-drag.js       # Mouse drag handlers
 │   ├── puzzle-core.js      # Core puzzle logic (tiles, slots)
 │   ├── puzzle-state.js     # Puzzle state management
 │   ├── scoring.js          # Score calculation and validation
 │   ├── seo.js              # SEO meta tag updates
+│   ├── streak.js           # Streak calculation
+│   ├── tile-interactions.js # Tile interaction handlers
+│   ├── tile-operations.js  # Tile placement/removal operations
+│   ├── tile-validation.js  # Tile validation logic
+│   ├── touch-drag.js       # Touch drag handlers
 │   ├── ui.js               # UI initialization and updates
 │   └── utils.js            # Utility functions
+│
 ├── src/
 │   └── styles.css          # Source CSS with Tailwind directives
+│
 ├── scripts/
 │   ├── encode-puzzle-data.js   # Script to encode/obfuscate puzzle data
-│   └── update-cursor-rules.js  # Script to generate Cursor rules
+│   ├── update-cursor-rules.js  # Script to generate Cursor rules
+│   └── validation/             # Puzzle data validation scripts
+│       ├── check-anagrams.js
+│       ├── check-scores.js
+│       └── ...
+│
+├── tests/                   # Test files
+│   ├── unit/               # Unit tests
+│   ├── integration/        # Integration tests
+│   ├── e2e/                # End-to-end tests
+│   └── helpers/            # Test utilities
+│
+├── docs/                    # Documentation
+│   ├── api/                # API documentation
+│   ├── architecture/       # Architecture docs
+│   ├── development/       # Development guides
+│   ├── testing/            # Testing guides
+│   ├── deployment/         # Deployment docs
+│   └── ...
+│
 ├── .cursor/
-│   └── rules/              # Cursor AI rules (generated from CURSOR_RULES_SOURCE.md)
-│       ├── global/         # Global project rules
-│       └── frontend/       # Frontend-specific rules
-├── CURSOR_RULES_SOURCE.md  # Source file for Cursor rules (edit this to update rules)
+│   └── rules/              # Cursor AI rules (generated)
+│
+├── CURSOR_RULES_SOURCE.md  # Source file for Cursor rules
+├── CONTRIBUTING.md         # Contributing guidelines
 ├── package.json            # npm dependencies and build scripts
 ├── tailwind.config.js      # Tailwind CSS configuration
 ├── postcss.config.js       # PostCSS configuration
-├── CNAME                   # Custom domain configuration for GitHub Pages
-├── .nojekyll               # Prevents Jekyll processing on GitHub Pages
+├── vitest.config.js        # Vitest configuration
+├── playwright.config.js    # Playwright configuration
+├── CNAME                   # Custom domain configuration
+├── .nojekyll               # Prevents Jekyll processing
 ├── favicon.svg             # Site favicon
-├── og-image.svg            # Open Graph image for social sharing
-├── robots.txt              # Search engine crawler instructions
-├── sitemap.xml             # XML sitemap for search engines
+├── og-image.svg            # Open Graph image
+├── robots.txt              # Search engine instructions
+├── sitemap.xml             # XML sitemap
 └── README.md               # This file
+```
+
+### Visual Project Structure
+
+```mermaid
+graph TB
+    Root[tile-sum/] --> HTML[HTML Files<br/>index.html, puzzle.html, archive.html]
+    Root --> JS[js/<br/>22 Modules]
+    Root --> Docs[docs/<br/>Documentation]
+    Root --> Tests[tests/<br/>Test Files]
+    Root --> Scripts[scripts/<br/>Build & Validation]
+    Root --> Config[Config Files<br/>package.json, tailwind.config.js, etc.]
+    
+    JS --> Core[puzzle-core.js<br/>puzzle-state.js]
+    JS --> Interactions[drag-drop.js<br/>keyboard.js<br/>tile-interactions.js]
+    JS --> Logic[scoring.js<br/>hints.js<br/>completion.js]
+    JS --> UI[ui.js<br/>modals.js<br/>feedback.js]
+    
+    Docs --> API[api/<br/>API Documentation]
+    Docs --> Arch[architecture/<br/>System Design]
+    Docs --> Dev[development/<br/>Guides]
+    
+    Tests --> Unit[unit/<br/>Unit Tests]
+    Tests --> E2E[e2e/<br/>E2E Tests]
 ```
 
 ## Development
@@ -381,6 +456,20 @@ Tests cover:
 - Firefox (latest)
 - Safari (latest)
 - Edge (latest)
+
+## Documentation
+
+Comprehensive documentation is available in the [`docs/`](./docs/) directory:
+
+- **[Documentation Index](./docs/README.md)** - Overview and navigation with learning paths
+- **[Quick Reference](./docs/QUICK_REFERENCE.md)** - Common commands and tasks
+- **[Troubleshooting](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
+- **[Getting Started](./docs/development/getting-started.md)** - Setup guide
+- **[API Documentation](./docs/api/)** - Module reference
+- **[Architecture](./docs/architecture/)** - System design
+- **[Contributing](./CONTRIBUTING.md)** - How to contribute
+
+**New to the project?** Start with the [Getting Started Guide](./docs/development/getting-started.md) and [Architecture Overview](./docs/architecture/overview.md).
 
 ## License
 

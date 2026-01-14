@@ -1,6 +1,18 @@
 // Utility functions
 
-// Get day suffix (1st, 2nd, 3rd, etc.)
+/**
+ * Gets the ordinal suffix for a day number (st, nd, rd, th).
+ * 
+ * @param {number} day - The day number (1-31)
+ * @returns {string} The suffix ('st', 'nd', 'rd', or 'th')
+ * 
+ * @example
+ * getDaySuffix(1);  // 'st'
+ * getDaySuffix(2);  // 'nd'
+ * getDaySuffix(3);  // 'rd'
+ * getDaySuffix(11); // 'th' (special case)
+ * getDaySuffix(21); // 'st'
+ */
 export function getDaySuffix(day) {
     if (day >= 11 && day <= 13) {
         return 'th';
@@ -13,7 +25,16 @@ export function getDaySuffix(day) {
     }
 }
 
-// Check if any test mode is enabled via URL parameter
+/**
+ * Checks if any test mode is enabled via URL parameter.
+ * Test modes: 'archive' or 'advent'
+ * 
+ * @returns {boolean} True if test mode is enabled, false otherwise
+ * 
+ * @example
+ * // URL: ?test=archive
+ * isTestMode(); // true
+ */
 export function isTestMode() {
     const urlParams = new URLSearchParams(window.location.search);
     const testValue = urlParams.get('test');
@@ -26,7 +47,15 @@ export function isArchiveTestMode() {
     return urlParams.get('test') === 'archive';
 }
 
-// Check if advent test mode is enabled
+/**
+ * Checks if advent test mode is enabled via URL parameter.
+ * 
+ * @returns {boolean} True if advent test mode is enabled, false otherwise
+ * 
+ * @example
+ * // URL: ?test=advent
+ * isAdventTestMode(); // true
+ */
 export function isAdventTestMode() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('test') === 'advent';
@@ -61,7 +90,17 @@ function isDebugMode() {
            isTestMode();
 }
 
-// Debug logging function - only logs in development/debug mode
+/**
+ * Debug logging function that only logs in development/debug mode.
+ * Logs when running on localhost, 127.0.0.1, or when test mode is enabled.
+ * 
+ * @param {...any} args - Arguments to log (same as console.log)
+ * @returns {void}
+ * 
+ * @example
+ * debugLog('Puzzle loaded:', puzzleNumber);
+ * debugLog('State:', { hints: 3, completed: false });
+ */
 export function debugLog(...args) {
     if (isDebugMode()) {
         console.log(...args);

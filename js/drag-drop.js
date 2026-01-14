@@ -1,6 +1,25 @@
 // Drag & drop system for puzzle tiles
 // This file re-exports all functions from the refactored modules for backward compatibility
 
+/**
+ * @module drag-drop
+ * @description
+ * Central export point for drag-and-drop functionality.
+ * Re-exports handlers from specialized modules:
+ * - Mouse drag handlers from `mouse-drag.js`
+ * - Touch drag handlers from `touch-drag.js`
+ * - Tile interaction handlers from `tile-interactions.js`
+ * - Tile operations from `tile-operations.js`
+ * 
+ * This module provides a unified API for drag-and-drop functionality
+ * while keeping implementation separated by interaction type.
+ * 
+ * @see {@link module:mouse-drag} Mouse drag handlers
+ * @see {@link module:touch-drag} Touch drag handlers
+ * @see {@link module:tile-interactions} Click handlers
+ * @see {@link module:tile-operations} Core tile operations
+ */
+
 // Re-export mouse drag handlers
 export {
     handleDragStart,
