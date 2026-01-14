@@ -7,7 +7,8 @@ import {
     getArchiveHintsRemaining,
     decrementArchiveHintsRemaining,
     setSolutionShown,
-    setArchiveSolutionShown
+    setArchiveSolutionShown,
+    createStateManager
 } from './puzzle-state.js';
 import { createTile, updatePlaceholderTile } from './puzzle-core.js';
 import { updateScoreDisplay, updateSubmitButton } from './scoring.js';
@@ -205,8 +206,9 @@ export function provideHint(day, context = {}) {
 
 // Show solution - places ALL remaining tiles in correct positions and locks them
 export function showSolution(day, context = {}) {
-    const isArchive = context.isArchive || false;
     const prefix = context.prefix || '';
+    const stateManager = context.stateManager || createStateManager(prefix);
+    const isArchive = prefix === 'archive-';
     const tilesContainerId = isArchive ? 'archive-tiles-container' : (prefix ? `${prefix}tiles-container` : 'tiles-container');
     const returnTileCallback = isArchive ? context.returnArchiveTileToContainer : returnTileToContainer;
     const updateScoreCallback = isArchive ? context.updateArchiveScoreDisplay : updateScoreDisplay;

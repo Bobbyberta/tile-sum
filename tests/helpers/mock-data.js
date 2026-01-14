@@ -41,8 +41,6 @@ export function validateMockSolution(day, word1, word2) {
   const solution = puzzle.solution.map(w => w.toUpperCase());
   const words = [word1.toUpperCase(), word2.toUpperCase()];
   
-  return (
-    (words[0] === solution[0] && words[1] === solution[1]) ||
-    (words[0] === solution[1] && words[1] === solution[0])
-  );
+  // Words must be in the correct order - word1 must match solution[0] and word2 must match solution[1]
+  return words[0] === solution[0] && words[1] === solution[1];
 }

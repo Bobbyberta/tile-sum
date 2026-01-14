@@ -12,14 +12,41 @@ vi.mock('../../puzzle-data-encoded.js', () => ({
   }
 }));
 
-vi.mock('../../js/puzzle-state.js', () => ({
-  getHintsRemaining: vi.fn(() => 3),
-  decrementHintsRemaining: vi.fn(),
-  getArchiveHintsRemaining: vi.fn(() => 3),
-  decrementArchiveHintsRemaining: vi.fn(),
-  setSolutionShown: vi.fn(),
-  setArchiveSolutionShown: vi.fn()
-}));
+vi.mock('../../js/puzzle-state.js', () => {
+  const getHintsRemaining = vi.fn(() => 3);
+  const decrementHintsRemaining = vi.fn();
+  const getArchiveHintsRemaining = vi.fn(() => 3);
+  const decrementArchiveHintsRemaining = vi.fn();
+  const setSolutionShown = vi.fn();
+  const setArchiveSolutionShown = vi.fn();
+  
+  return {
+    getHintsRemaining,
+    decrementHintsRemaining,
+    getArchiveHintsRemaining,
+    decrementArchiveHintsRemaining,
+    setSolutionShown,
+    setArchiveSolutionShown,
+    createStateManager: vi.fn((prefix = '') => {
+      if (prefix === 'archive-') {
+        return {
+          getHintsRemaining: getArchiveHintsRemaining,
+          setHintsRemaining: vi.fn(),
+          decrementHintsRemaining: decrementArchiveHintsRemaining,
+          getSolutionShown: vi.fn(() => false),
+          setSolutionShown: setArchiveSolutionShown
+        };
+      }
+      return {
+        getHintsRemaining,
+        setHintsRemaining: vi.fn(),
+        decrementHintsRemaining,
+        getSolutionShown: vi.fn(() => false),
+        setSolutionShown
+      };
+    })
+  };
+});
 
 vi.mock('../../js/puzzle-core.js', () => ({
   createTile: vi.fn((letter, index, isLocked) => {
@@ -288,7 +315,7 @@ describe('hints.js', () => {
       const updateArchiveSubmitButton = vi.fn();
       
       provideHint(1, {
-        isArchive: true,
+        prefix: 'archive-',
         returnArchiveTileToContainer,
         updateArchiveScoreDisplay,
         updateArchiveSubmitButton
@@ -524,7 +551,7 @@ describe('hints.js', () => {
       const updateArchiveSubmitButton = vi.fn();
       
       showSolution(1, {
-        isArchive: true,
+        prefix: 'archive-',
         returnArchiveTileToContainer,
         updateArchiveScoreDisplay,
         updateArchiveSubmitButton

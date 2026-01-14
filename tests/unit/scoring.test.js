@@ -18,10 +18,8 @@ vi.mock('../../puzzle-data-encoded.js', () => ({
       1: { solution: ['SNOW', 'FLAKE'] }
     };
     const solution = solutions[day]?.solution || [];
-    return (
-      (word1 === solution[0] && word2 === solution[1]) ||
-      (word1 === solution[1] && word2 === solution[0])
-    );
+    // Words must be in the correct order - word1 must match solution[0] and word2 must match solution[1]
+    return word1 === solution[0] && word2 === solution[1];
   }
 }));
 

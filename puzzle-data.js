@@ -1742,15 +1742,14 @@ export function calculateWordScore(word) {
 }
 
 // Validate solution
+// Words must be in the correct positions (word1 in slot 0, word2 in slot 1)
 export function validateSolution(day, word1, word2) {
     const puzzle = PUZZLE_DATA[day];
     if (!puzzle) return false;
     
     const solution = puzzle.solution;
-    return (
-        (word1 === solution[0] && word2 === solution[1]) ||
-        (word1 === solution[1] && word2 === solution[0])
-    );
+    // Words must be in the correct order - word1 must match solution[0] and word2 must match solution[1]
+    return word1 === solution[0] && word2 === solution[1];
 }
 
 // Date and Puzzle Mapping System
