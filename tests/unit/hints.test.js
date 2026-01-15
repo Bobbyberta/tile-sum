@@ -364,6 +364,38 @@ describe('hints.js', () => {
       expect(slots2Container.children[0].querySelector('.tile')).toBeFalsy();
     });
 
+    it('should lock correctly placed high-value tile even if already in correct spot', async () => {
+      await setupCreateTileMock();
+      const { tilesContainer, slots2Container } = createMockPuzzleDOM();
+
+      // Place K (highest value: 5) correctly but unlocked in word2 slot 3
+      const kSlot = slots2Container.children[3];
+      const tileK = createMockTile('K', 7, false); // Not locked
+      tileK.setAttribute('data-letter', 'K');
+      tileK.className = 'tile';
+      kSlot.appendChild(tileK);
+      kSlot.classList.add('filled');
+
+      // Add other lower-value tiles to container (A=1, E=1, L=1)
+      ['A', 'E', 'L'].forEach((letter, index) => {
+        const tile = createMockTile(letter, index);
+        tile.setAttribute('data-letter', letter);
+        tile.className = 'tile';
+        tilesContainer.appendChild(tile);
+      });
+
+      provideHint(1, {
+        placeTileCallback: vi.fn(),
+        removeTileCallback: vi.fn()
+      });
+
+      // K should be locked in place (highest value) even though it was already correct
+      const lockedK = kSlot.querySelector('.tile[data-locked="true"]');
+      expect(lockedK).toBeTruthy();
+      expect(lockedK.getAttribute('data-letter')).toBe('K');
+      expect(kSlot.getAttribute('data-locked')).toBe('true');
+    });
+
     it('should choose earliest jumble letter when scores tie', async () => {
       await setupCreateTileMock();
       const { tilesContainer, slots2Container } = createMockPuzzleDOM();

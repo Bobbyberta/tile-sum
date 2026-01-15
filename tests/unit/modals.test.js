@@ -193,21 +193,6 @@ describe('modals.js', () => {
       expect(shareMessage.textContent).toContain('can you beat my score?');
     });
 
-    it('should display hints used message', () => {
-      const { hintsUsedMessage } = createSuccessModal();
-      
-      showSuccessModal(1, 7, 12, 10, 12, '', 2);
-      
-      expect(hintsUsedMessage.textContent).toContain('2 hints');
-    });
-
-    it('should display solution shown message', () => {
-      const { hintsUsedMessage } = createSuccessModal();
-      
-      showSuccessModal(1, 7, 12, 10, 12, '', 1, true);
-      
-      expect(hintsUsedMessage.textContent).toContain('shown the solution');
-    });
 
     it('should handle prefix', () => {
       const { modal } = createSuccessModal('daily-');
@@ -325,14 +310,36 @@ describe('modals.js', () => {
       expect(content).toContain('can you beat my score?');
     });
 
-    it('should include puzzle URL in share text', () => {
+    it('should include puzzle URL in share text for regular puzzle', () => {
       const { shareMessage } = createSuccessModal();
       setupWordSlotsForEmojiGrid('', { word1: [], word2: [] });
       
       showSuccessModal(1, 7, 12, 10, 12, '', 0);
       
       const content = shareMessage.textContent;
-      expect(content).toContain('https://sum-tile.uk');
+      expect(content).toContain('https://sum-tile.uk/puzzle.html');
+    });
+
+    it('should link to home screen for daily puzzle', () => {
+      const { shareMessage } = createSuccessModal('daily-');
+      setupWordSlotsForEmojiGrid('daily-', { word1: [], word2: [] });
+      
+      showSuccessModal(1, 7, 12, 10, 12, 'daily-', 0);
+      
+      const content = shareMessage.textContent;
+      expect(content).toContain('https://sum-tile.uk/index.html');
+      expect(content).not.toContain('puzzle.html');
+    });
+
+    it('should link to archive page for archive puzzle', () => {
+      const { shareMessage } = createSuccessModal('archive-');
+      setupWordSlotsForEmojiGrid('archive-', { word1: [], word2: [] });
+      
+      showSuccessModal(1, 7, 12, 10, 12, 'archive-', 0);
+      
+      const content = shareMessage.textContent;
+      expect(content).toContain('https://sum-tile.uk/archive.html');
+      expect(content).toContain('date=');
     });
   });
 

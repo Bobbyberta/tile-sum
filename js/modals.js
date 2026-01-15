@@ -139,17 +139,38 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
     const baseUrl = 'https://sum-tile.uk';
     const testParam = getTestModeParamWithAmpersand();
     
-    // Use date parameter if available, otherwise use day parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const dateParam = urlParams.get('date');
+    // Determine puzzle URL based on prefix (archive, daily, or regular)
+    const isArchive = prefix === 'archive-';
+    const isDaily = prefix === 'daily-';
     const puzzleDate = getDateForPuzzleNumber(day);
     let puzzleUrl;
-    if (dateParam && puzzleDate) {
-        puzzleUrl = `${baseUrl}/puzzle.html?date=${dateParam}${testParam}`;
-    } else if (puzzleDate) {
-        puzzleUrl = `${baseUrl}/puzzle.html?date=${formatDateString(puzzleDate)}${testParam}`;
+    
+    if (isArchive) {
+        // Archive puzzle: link to archive.html with date parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const dateParam = urlParams.get('date');
+        if (dateParam && puzzleDate) {
+            puzzleUrl = `${baseUrl}/archive.html?date=${dateParam}${testParam}`;
+        } else if (puzzleDate) {
+            puzzleUrl = `${baseUrl}/archive.html?date=${formatDateString(puzzleDate)}${testParam}`;
+        } else {
+            // Fallback: use day number (shouldn't happen, but just in case)
+            puzzleUrl = `${baseUrl}/archive.html?day=${day}${testParam}`;
+        }
+    } else if (isDaily) {
+        // Daily puzzle: link to home screen (index.html)
+        puzzleUrl = `${baseUrl}/index.html${testParam}`;
     } else {
-        puzzleUrl = `${baseUrl}/puzzle.html?day=${day}${testParam}`;
+        // Regular puzzle: link to puzzle.html
+        const urlParams = new URLSearchParams(window.location.search);
+        const dateParam = urlParams.get('date');
+        if (dateParam && puzzleDate) {
+            puzzleUrl = `${baseUrl}/puzzle.html?date=${dateParam}${testParam}`;
+        } else if (puzzleDate) {
+            puzzleUrl = `${baseUrl}/puzzle.html?date=${formatDateString(puzzleDate)}${testParam}`;
+        } else {
+            puzzleUrl = `${baseUrl}/puzzle.html?day=${day}${testParam}`;
+        }
     }
     
     // Generate emoji grid for hint usage and count actual hints from locked slots
@@ -208,18 +229,6 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
     }
     
     shareText = messageParts.join('\n');
-    
-    // Display hints used message (for modal display, not share text)
-    const hintsUsedMessage = document.getElementById(`${prefix}hints-used-message`);
-    if (hintsUsedMessage) {
-        if (solutionShown) {
-            hintsUsedMessage.textContent = `You used ${displayHintsUsed} hint${displayHintsUsed !== 1 ? 's' : ''} and were shown the solution.`;
-        } else if (displayHintsUsed > 0) {
-            hintsUsedMessage.textContent = `You used ${displayHintsUsed} hint${displayHintsUsed !== 1 ? 's' : ''}.`;
-        } else {
-            hintsUsedMessage.textContent = '';
-        }
-    }
     
     // Display share message in modal
     const shareMessage = document.getElementById(`${prefix}share-message`);
