@@ -71,7 +71,10 @@ provideHint(1, {
 **Behavior:**
 1. Checks if hints are available
 2. Finds slots that need correct tiles
-3. Randomly selects one slot to fill
+3. Selects the best slot to fill deterministically:
+   - Highest Scrabble letter value first
+   - If tied, the letter that appears earliest in the initial jumble (lowest `data-tile-index`)
+   - If still tied, earliest slot (Word 1 left-to-right, then Word 2)
 4. Finds the correct tile in the tiles container
 5. Places tile in correct position
 6. Locks the tile and slot
@@ -82,7 +85,7 @@ provideHint(1, {
 **Hint Selection:**
 - Only places hints for slots that are empty or have wrong tiles
 - Skips already locked slots
-- Randomly selects from available hint positions
+- Deterministically selects the highest-value letter first (with jumble-order and slot-order tie-breaks)
 
 ---
 
@@ -228,7 +231,7 @@ Hints trigger auto-complete check:
 ## Notes
 
 - Hints lock tiles and slots (cannot be moved)
-- Hints are randomly selected from available positions
+- Hints are selected deterministically to be consistent across players
 - Solution showing locks all tiles permanently
 - Hint count is tracked per puzzle instance (prefix-based)
 - Hints decrement automatically when provided

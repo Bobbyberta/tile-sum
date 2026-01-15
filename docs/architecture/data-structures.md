@@ -299,8 +299,13 @@ const puzzle = PUZZLE_DATA[day];
 import { getPuzzleLetters } from './puzzle-data-encoded.js';
 
 const letters = getPuzzleLetters(day);
-// ['A', 'B', 'C', 'D', ...] - shuffled letters
+// ['A', 'B', 'C', 'D', ...] - deterministically shuffled letters
 ```
+
+**Deterministic jumble (seeded shuffle):**
+- The “random” jumble is the same for every player for a given puzzle.
+- Seed is derived from puzzle contents: `day` plus the combined letters (`puzzle.words.join('')`).
+- This means calling `getPuzzleLetters(day)` multiple times returns the same ordering.
 
 ### Calculating Scores
 

@@ -1,6 +1,6 @@
 // Hints system
 
-import { PUZZLE_DATA } from '../puzzle-data-encoded.js';
+import { PUZZLE_DATA, SCRABBLE_SCORES } from '../puzzle-data-encoded.js';
 import { 
     getHintsRemaining, 
     decrementHintsRemaining,
@@ -15,6 +15,62 @@ import { updateScoreDisplay, updateSubmitButton } from './scoring.js';
 import { checkAutoComplete, areAllSlotsFilled } from './auto-complete.js';
 import { showFeedback } from './feedback.js';
 import { returnTileToContainer } from './drag-drop.js';
+
+function getWordSlotsContainerId(prefix, isArchive) {
+    return isArchive ? 'archive-word-slots' : (prefix ? `${prefix}word-slots` : 'word-slots');
+}
+
+function getTilesContainerId(prefix, isArchive) {
+    if (isArchive) return 'archive-tiles-container';
+    return prefix ? `${prefix}tiles-container` : 'tiles-container';
+}
+
+function getMinTileIndexByLetter(tilesContainer, wordSlotsContainer) {
+    const minIndexByLetter = new Map();
+    const tileElements = [];
+    
+    if (tilesContainer) {
+        tileElements.push(...tilesContainer.querySelectorAll('.tile:not([data-locked="true"])'));
+    }
+    if (wordSlotsContainer) {
+        tileElements.push(...wordSlotsContainer.querySelectorAll('.tile:not([data-locked="true"])'));
+    }
+    
+    tileElements.forEach(tile => {
+        const letter = tile.getAttribute('data-letter');
+        const indexRaw = tile.getAttribute('data-tile-index');
+        const index = indexRaw == null ? NaN : Number(indexRaw);
+        if (!letter || Number.isNaN(index)) return;
+        
+        const prev = minIndexByLetter.get(letter);
+        if (prev == null || index < prev) {
+            minIndexByLetter.set(letter, index);
+        }
+    });
+    
+    return minIndexByLetter;
+}
+
+function selectBestHint(hintsToPlace, minTileIndexByLetter) {
+    // Deterministic ordering:
+    // 1) higher Scrabble score
+    // 2) earlier in initial jumble (lowest data-tile-index for that letter)
+    // 3) earliest slot (word 1 left-to-right, then word 2)
+    const sorted = [...hintsToPlace].sort((a, b) => {
+        const scoreA = SCRABBLE_SCORES[a.letter?.toUpperCase?.()] || 0;
+        const scoreB = SCRABBLE_SCORES[b.letter?.toUpperCase?.()] || 0;
+        if (scoreA !== scoreB) return scoreB - scoreA;
+        
+        const idxA = minTileIndexByLetter.get(a.letter) ?? Number.POSITIVE_INFINITY;
+        const idxB = minTileIndexByLetter.get(b.letter) ?? Number.POSITIVE_INFINITY;
+        if (idxA !== idxB) return idxA - idxB;
+        
+        if (a.wordIndex !== b.wordIndex) return a.wordIndex - b.wordIndex;
+        return a.slotIndex - b.slotIndex;
+    });
+    
+    return sorted[0];
+}
 
 // Update hint button text based on remaining hints
 export function updateHintButtonText(buttonId = 'hint-btn', hintsRemaining) {
@@ -35,7 +91,7 @@ export function provideHint(day, context = {}) {
     const stateManager = context.stateManager || createStateManager(prefix);
     const isArchive = prefix === 'archive-';
     const hintsRemaining = stateManager.getHintsRemaining();
-    const tilesContainerId = prefix ? `${prefix}tiles-container` : 'tiles-container';
+    const tilesContainerId = getTilesContainerId(prefix, isArchive);
     const returnTileCallback = isArchive && context.returnArchiveTileToContainer ? context.returnArchiveTileToContainer : returnTileToContainer;
     const updateScoreCallback = updateScoreDisplay;
     const updateSubmitCallback = updateSubmitButton;
@@ -52,7 +108,7 @@ export function provideHint(day, context = {}) {
 
     const solution = puzzle.solution;
     // Scope slot queries to the prefix word-slots container
-    const wordSlotsContainerId = isArchive ? 'archive-word-slots' : (prefix ? `${prefix}word-slots` : 'word-slots');
+    const wordSlotsContainerId = getWordSlotsContainerId(prefix, isArchive);
     const wordSlotsContainer = document.getElementById(wordSlotsContainerId);
     const word1Slots = wordSlotsContainer ? wordSlotsContainer.querySelectorAll(`[data-word-slots="0"] .slot`) : [];
     const word2Slots = wordSlotsContainer ? wordSlotsContainer.querySelectorAll(`[data-word-slots="1"] .slot`) : [];
@@ -98,9 +154,11 @@ export function provideHint(day, context = {}) {
         return;
     }
     
-    // Randomly select 1 hint from available slots
-    const randomIndex = Math.floor(Math.random() * hintsToPlace.length);
-    const hint = hintsToPlace[randomIndex];
+    // Deterministically select the best hint:
+    // highest letter value first; tie-break uses initial jumble order.
+    const tilesContainer = document.getElementById(tilesContainerId);
+    const minTileIndexByLetter = getMinTileIndexByLetter(tilesContainer, wordSlotsContainer);
+    const hint = selectBestHint(hintsToPlace, minTileIndexByLetter);
     
     const slots = hint.wordIndex === 0 ? word1Slots : word2Slots;
     const targetSlot = slots[hint.slotIndex];
@@ -128,7 +186,6 @@ export function provideHint(day, context = {}) {
     }
     
     // Find the correct tile in the container or slots
-    const tilesContainer = document.getElementById(tilesContainerId);
     let sourceTile = null;
     
     // First check container
@@ -144,7 +201,7 @@ export function provideHint(day, context = {}) {
     
     // If not in container, check other slots
     if (!sourceTile) {
-        const allSlots = document.querySelectorAll('.slot:not([data-locked="true"])');
+        const allSlots = wordSlotsContainer ? wordSlotsContainer.querySelectorAll('.slot:not([data-locked="true"])') : [];
         for (let slot of allSlots) {
             const tile = slot.querySelector('.tile:not([data-locked="true"])');
             if (tile && tile.getAttribute('data-letter') === hint.letter) {
@@ -211,7 +268,7 @@ export function showSolution(day, context = {}) {
     const prefix = context.prefix || '';
     const stateManager = context.stateManager || createStateManager(prefix);
     const isArchive = prefix === 'archive-';
-    const tilesContainerId = isArchive ? 'archive-tiles-container' : (prefix ? `${prefix}tiles-container` : 'tiles-container');
+    const tilesContainerId = getTilesContainerId(prefix, isArchive);
     const returnTileCallback = isArchive ? context.returnArchiveTileToContainer : returnTileToContainer;
     const updateScoreCallback = isArchive ? context.updateArchiveScoreDisplay : updateScoreDisplay;
     const updateSubmitCallback = isArchive ? context.updateArchiveSubmitButton : updateSubmitButton;
@@ -221,7 +278,7 @@ export function showSolution(day, context = {}) {
 
     const solution = puzzle.solution;
     // Scope slot queries to the prefix word-slots container
-    const wordSlotsContainerId = isArchive ? 'archive-word-slots' : (prefix ? `${prefix}word-slots` : 'word-slots');
+    const wordSlotsContainerId = getWordSlotsContainerId(prefix, isArchive);
     const wordSlotsContainer = document.getElementById(wordSlotsContainerId);
     const word1Slots = wordSlotsContainer ? wordSlotsContainer.querySelectorAll(`[data-word-slots="0"] .slot`) : [];
     const word2Slots = wordSlotsContainer ? wordSlotsContainer.querySelectorAll(`[data-word-slots="1"] .slot`) : [];
@@ -327,7 +384,7 @@ export function showSolution(day, context = {}) {
             
             // If not in container, check other slots
             if (!sourceTile) {
-                const allSlots = document.querySelectorAll('.slot:not([data-locked="true"])');
+                const allSlots = wordSlotsContainer ? wordSlotsContainer.querySelectorAll('.slot:not([data-locked="true"])') : [];
                 for (let slot of allSlots) {
                     const tile = slot.querySelector('.tile:not([data-locked="true"])');
                     if (tile && tile.getAttribute('data-letter') === hint.letter) {

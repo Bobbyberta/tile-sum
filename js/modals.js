@@ -1,6 +1,6 @@
 // Modal management
 
-import { formatDateString, getDateForPuzzleNumber, isAdventMode } from '../puzzle-data-encoded.js';
+import { formatDateString, getDateForPuzzleNumber, isAdventMode, PUZZLE_DATA } from '../puzzle-data-encoded.js';
 import { getTestModeParamWithAmpersand } from './utils.js';
 import { handleModalKeyDown } from './keyboard.js';
 import { savePuzzleCompletion, markHelpAsSeen } from './completion.js';
@@ -72,6 +72,64 @@ function unlockBodyScroll() {
     }
 }
 
+// Generate Wordle-style emoji grid showing hint usage and count locked slots
+function generateHintEmojiGrid(day, prefix = '') {
+    const puzzle = PUZZLE_DATA[day];
+    if (!puzzle || !puzzle.solution) {
+        return { emojiGrid: '', hintsCount: 0 };
+    }
+    
+    const solution = puzzle.solution;
+    const word1 = solution[0];
+    const word2 = solution[1];
+    
+    // Determine word slots container ID
+    const isArchive = prefix === 'archive-';
+    const wordSlotsContainerId = isArchive ? 'archive-word-slots' : (prefix ? `${prefix}word-slots` : 'word-slots');
+    const wordSlotsContainer = document.getElementById(wordSlotsContainerId);
+    
+    if (!wordSlotsContainer) {
+        return { emojiGrid: '', hintsCount: 0 };
+    }
+    
+    // Get slots for each word
+    const word1Slots = wordSlotsContainer.querySelectorAll(`[data-word-slots="0"] .slot`);
+    const word2Slots = wordSlotsContainer.querySelectorAll(`[data-word-slots="1"] .slot`);
+    
+    let hintsCount = 0;
+    
+    // Generate emoji row for word 1
+    let word1Row = '';
+    for (let i = 0; i < word1.length; i++) {
+        const slot = word1Slots[i];
+        const isLocked = slot && slot.getAttribute('data-locked') === 'true';
+        if (isLocked) {
+            hintsCount++;
+            word1Row += '🟧';
+        } else {
+            word1Row += '🟩';
+        }
+    }
+    
+    // Generate emoji row for word 2
+    let word2Row = '';
+    for (let i = 0; i < word2.length; i++) {
+        const slot = word2Slots[i];
+        const isLocked = slot && slot.getAttribute('data-locked') === 'true';
+        if (isLocked) {
+            hintsCount++;
+            word2Row += '🟧';
+        } else {
+            word2Row += '🟩';
+        }
+    }
+    
+    return { 
+        emojiGrid: `${word1Row}\n${word2Row}`,
+        hintsCount 
+    };
+}
+
 // Show success modal
 export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, word2MaxScore, prefix = '', hintsUsed = 0, solutionShown = false) {
     const modal = document.getElementById(`${prefix}success-modal`);
@@ -94,10 +152,35 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
         puzzleUrl = `${baseUrl}/puzzle.html?day=${day}${testParam}`;
     }
     
-    // Format the share message (standard daily format)
+    // Generate emoji grid for hint usage and count actual hints from locked slots
+    const { emojiGrid, hintsCount: actualHintsUsed } = generateHintEmojiGrid(day, prefix);
+    
+    // Use the actual count from locked slots instead of the passed parameter
+    // This ensures the count matches what's shown in the emoji grid
+    const displayHintsUsed = actualHintsUsed > 0 ? actualHintsUsed : hintsUsed;
+    
+    // Format the share message with emoji grid
     let shareText;
     const isAdvent = isAdventMode();
     
+    // Build the share message with emoji grid
+    let messageParts = [];
+    
+    if (emojiGrid) {
+        messageParts.push(emojiGrid);
+        messageParts.push(''); // Empty line
+    }
+    
+    // Add hints used message (only if hints were used)
+    if (displayHintsUsed > 0 || solutionShown) {
+        messageParts.push(`I used ${displayHintsUsed} hint${displayHintsUsed !== 1 ? 's' : ''} on todays puzzle`);
+    }
+    
+    // Add challenge message (always shown)
+    messageParts.push('can you beat my score?');
+    messageParts.push(''); // Empty line
+    
+    // Add puzzle URL
     if (isAdvent) {
         // Advent test mode: Calculate days until Christmas (for testing calendar view)
         const today = new Date();
@@ -118,20 +201,21 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
         const timeDiff = christmas.getTime() - today.getTime();
         const daysTillChristmas = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
         
-        // Format advent test mode message
-        shareText = `${daysTillChristmas} Days till Christmas!\n\n${puzzleUrl}`;
+        messageParts.push(`${daysTillChristmas} Days till Christmas!`);
+        messageParts.push(puzzleUrl);
     } else {
-        // Standard format: daily puzzle message
-        shareText = `Play Sum Tile #${day}\n\n${puzzleUrl}`;
+        messageParts.push(puzzleUrl);
     }
     
-    // Display hints used message
+    shareText = messageParts.join('\n');
+    
+    // Display hints used message (for modal display, not share text)
     const hintsUsedMessage = document.getElementById(`${prefix}hints-used-message`);
     if (hintsUsedMessage) {
         if (solutionShown) {
-            hintsUsedMessage.textContent = `You used ${hintsUsed} hint${hintsUsed !== 1 ? 's' : ''} and were shown the solution.`;
-        } else if (hintsUsed > 0) {
-            hintsUsedMessage.textContent = `You used ${hintsUsed} hint${hintsUsed !== 1 ? 's' : ''}.`;
+            hintsUsedMessage.textContent = `You used ${displayHintsUsed} hint${displayHintsUsed !== 1 ? 's' : ''} and were shown the solution.`;
+        } else if (displayHintsUsed > 0) {
+            hintsUsedMessage.textContent = `You used ${displayHintsUsed} hint${displayHintsUsed !== 1 ? 's' : ''}.`;
         } else {
             hintsUsedMessage.textContent = '';
         }

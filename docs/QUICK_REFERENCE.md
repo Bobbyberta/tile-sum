@@ -32,6 +32,8 @@ npm run build:data
 # Navigate to puzzle.html?day=X
 ```
 
+Note: The initial tile jumble is **deterministic per puzzle** (seeded from puzzle contents). If you change puzzle words/letters, the jumble order will change after `npm run build:data`.
+
 ### Fix CSS Issues
 
 ```bash

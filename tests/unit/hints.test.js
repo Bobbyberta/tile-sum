@@ -9,6 +9,17 @@ vi.mock('../../puzzle-data-encoded.js', () => ({
       words: ['SNOW', 'FLAKE'],
       solution: ['SNOW', 'FLAKE']
     }
+  },
+  SCRABBLE_SCORES: {
+    A: 1,
+    E: 1,
+    F: 4,
+    K: 5,
+    L: 1,
+    N: 1,
+    O: 1,
+    S: 1,
+    W: 4
   }
 }));
 
@@ -330,39 +341,64 @@ describe('hints.js', () => {
     it('should handle tile from slot', async () => {
       await setupCreateTileMock();
       const { tilesContainer, slots1Container } = createMockPuzzleDOM();
-      
-      // Mock Math.random to always select the first hint (slot 0)
-      const originalRandom = Math.random;
-      Math.random = vi.fn(() => 0);
-      
-      // Place 'S' tile in slot 1 (wrong position - should be in slot 0)
-      const tileS = createMockTile('S', 0);
-      tileS.setAttribute('data-letter', 'S');
-      tileS.className = 'tile';
-      slots1Container.children[1].appendChild(tileS);
-      slots1Container.children[1].classList.add('filled');
-      
-      // Add other tiles to container
-      ['N', 'O', 'W'].forEach((letter, index) => {
-        const t = createMockTile(letter, index + 1);
-        t.setAttribute('data-letter', letter.toUpperCase());
-        t.className = 'tile';
-        tilesContainer.appendChild(t);
-      });
-      
+      const { slots2Container } = createMockPuzzleDOM();
+
+      // Deterministic hint selection chooses the highest-value letter first.
+      // In SNOW/FLAKE the highest is K (5). Put K in the wrong slot so it must be found in a slot.
+      const tileK = createMockTile('K', 7);
+      tileK.setAttribute('data-letter', 'K');
+      tileK.className = 'tile';
+      // Put K in the first slot of word 2 (wrong - K belongs at index 3)
+      slots2Container.children[0].appendChild(tileK);
+      slots2Container.children[0].classList.add('filled');
+
       provideHint(1, {
         placeTileCallback: vi.fn(),
         removeTileCallback: vi.fn()
       });
       
-      // provideHint should move 'S' from slot 1 to slot 0 and lock it
-      // Check that slot 0 now has a locked tile
-      const lockedTile = slots1Container.children[0].querySelector('.tile[data-locked="true"]');
+      // provideHint should move K from word2 slot 0 to word2 slot 3 and lock it
+      const lockedTile = slots2Container.children[3].querySelector('.tile[data-locked="true"]');
       expect(lockedTile).toBeTruthy();
-      expect(lockedTile.getAttribute('data-letter')).toBe('S');
-      
-      // Restore Math.random
-      Math.random = originalRandom;
+      expect(lockedTile.getAttribute('data-letter')).toBe('K');
+      expect(slots2Container.children[0].querySelector('.tile')).toBeFalsy();
+    });
+
+    it('should choose earliest jumble letter when scores tie', async () => {
+      await setupCreateTileMock();
+      const { tilesContainer, slots2Container } = createMockPuzzleDOM();
+
+      // Exclude K from being a candidate by marking its correct slot as already locked.
+      // (In real gameplay, hinting locks the slot via data-locked="true".)
+      const kSlot = slots2Container.children[3];
+      kSlot.setAttribute('data-locked', 'true');
+      const lockedK = createMockTile('K', 9, true);
+      lockedK.setAttribute('data-letter', 'K');
+      lockedK.className = 'tile';
+      kSlot.appendChild(lockedK);
+
+      // Next highest candidates are F and W (both score 4).
+      // Tie-break should pick the one that appears earlier in the jumble (lower data-tile-index).
+      const tileF = createMockTile('F', 0);
+      tileF.setAttribute('data-letter', 'F');
+      tileF.className = 'tile';
+      tilesContainer.appendChild(tileF);
+
+      const tileW = createMockTile('W', 1);
+      tileW.setAttribute('data-letter', 'W');
+      tileW.className = 'tile';
+      tilesContainer.appendChild(tileW);
+
+      provideHint(1, {
+        placeTileCallback: vi.fn(),
+        removeTileCallback: vi.fn()
+      });
+
+      // F should be selected over W due to earlier tile index in the jumble.
+      const fTargetSlot = slots2Container.children[0]; // F is word2 slot 0 in FLAKE
+      const lockedF = fTargetSlot.querySelector('.tile[data-locked="true"]');
+      expect(lockedF).toBeTruthy();
+      expect(lockedF.getAttribute('data-letter')).toBe('F');
     });
 
     it('should show feedback when all tiles correct', async () => {

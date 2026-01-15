@@ -1092,15 +1092,44 @@ export function getPuzzleLetters(day) {
     if (!puzzle) return [];
     
     const combined = puzzle.words.join('');
-    // Shuffle the letters for the puzzle
-    return shuffleArray(combined.split(''));
+    // Shuffle the letters for the puzzle deterministically so all players see
+    // the same "random" jumble for a given puzzle.
+    const seed = hashStringToUint32(`day:${day}|${combined}`);
+    return seededShuffleArray(combined.split(''), seed);
 }
 
-// Shuffle array (Fisher-Yates algorithm)
-function shuffleArray(array) {
+// Deterministic shuffle helpers
+// - hashStringToUint32: stable string -> 32-bit seed
+// - mulberry32: simple deterministic PRNG
+// - seededShuffleArray: Fisher–Yates using seeded PRNG (returns a new array)
+
+function hashStringToUint32(input) {
+    // FNV-1a 32-bit hash
+    let hash = 0x811c9dc5;
+    for (let i = 0; i < input.length; i++) {
+        hash ^= input.charCodeAt(i);
+        // hash *= 16777619 (mod 2^32) using shifts for speed/portability
+        hash = (hash + (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24)) >>> 0;
+    }
+    return hash >>> 0;
+}
+
+function mulberry32(seed) {
+    let t = seed >>> 0;
+    return function next() {
+        t += 0x6D2B79F5;
+        let x = t;
+        x = Math.imul(x ^ (x >>> 15), x | 1);
+        x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+        return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+    };
+}
+
+function seededShuffleArray(array, seed) {
     const shuffled = [...array];
+    const rand = mulberry32(seed);
     for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(rand() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;

@@ -797,6 +797,10 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(245 158 11 / var(--tw-bg-opacity, 1));
 }
+.bg-amber-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(217 119 6 / var(--tw-bg-opacity, 1));
+}
 .bg-black {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity, 1));
@@ -1041,9 +1045,9 @@ video {
   }
 }
 
-.hover\:bg-amber-600:hover {
+.hover\:bg-amber-700:hover {
   --tw-bg-opacity: 1;
-  background-color: rgb(217 119 6 / var(--tw-bg-opacity, 1));
+  background-color: rgb(180 83 9 / var(--tw-bg-opacity, 1));
 }
 
 .hover\:bg-indigo-50:hover {

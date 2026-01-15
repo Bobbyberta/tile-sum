@@ -9,14 +9,20 @@ import {
   copyShareMessage,
   resetModalCount
 } from '../../js/modals.js';
-import { cleanupDOM } from '../helpers/dom-setup.js';
+import { cleanupDOM, createMockPuzzleDOM, createMockSlot } from '../helpers/dom-setup.js';
 
 // Mock dependencies
 const mockIsAdventMode = vi.fn(() => false);
 vi.mock('../../puzzle-data-encoded.js', () => ({
   formatDateString: vi.fn((date) => '2024-12-01'),
   getDateForPuzzleNumber: vi.fn((day) => new Date(2024, 11, day)),
-  isAdventMode: () => mockIsAdventMode()
+  isAdventMode: () => mockIsAdventMode(),
+  PUZZLE_DATA: {
+    1: {
+      words: ['SNOW', 'FLAKE'],
+      solution: ['SNOW', 'FLAKE']
+    }
+  }
 }));
 
 vi.mock('../../js/utils.js', () => ({
@@ -98,6 +104,37 @@ describe('modals.js', () => {
     return { modal, shareMessage, hintsUsedMessage, closeBtn, shareBtn };
   }
 
+  // Helper to set up word slots with locked attributes for emoji grid testing
+  function setupWordSlotsForEmojiGrid(prefix = '', lockedIndices = { word1: [], word2: [] }) {
+    const { wordSlots } = createMockPuzzleDOM(prefix);
+    
+    // Get slot containers
+    const slots1Container = wordSlots.querySelector('[data-word-slots="0"]');
+    const slots2Container = wordSlots.querySelector('[data-word-slots="1"]');
+    
+    // Set locked attributes for word 1
+    if (slots1Container) {
+      const slots = slots1Container.querySelectorAll('.slot');
+      lockedIndices.word1.forEach(index => {
+        if (slots[index]) {
+          slots[index].setAttribute('data-locked', 'true');
+        }
+      });
+    }
+    
+    // Set locked attributes for word 2
+    if (slots2Container) {
+      const slots = slots2Container.querySelectorAll('.slot');
+      lockedIndices.word2.forEach(index => {
+        if (slots[index]) {
+          slots[index].setAttribute('data-locked', 'true');
+        }
+      });
+    }
+    
+    return { wordSlots, slots1Container, slots2Container };
+  }
+
   function createErrorModal(prefix = '') {
     const modal = createModal('error-modal', prefix);
     
@@ -145,12 +182,15 @@ describe('modals.js', () => {
       expect(document.body.classList.contains('overflow-hidden')).toBe(true);
     });
 
-    it('should display share message', () => {
+    it('should display share message with emoji grid', () => {
       const { shareMessage } = createSuccessModal();
+      setupWordSlotsForEmojiGrid('', { word1: [], word2: [] }); // No hints
       
       showSuccessModal(1, 7, 12, 10, 12);
       
-      expect(shareMessage.textContent).toContain('Play Sum Tile #1');
+      // Should contain emoji grid (all green boxes for no hints)
+      expect(shareMessage.textContent).toContain('🟩');
+      expect(shareMessage.textContent).toContain('can you beat my score?');
     });
 
     it('should display hints used message', () => {
@@ -194,6 +234,7 @@ describe('modals.js', () => {
 
     it('should setup share button click handler', () => {
       const { shareBtn } = createSuccessModal();
+      setupWordSlotsForEmojiGrid('', { word1: [], word2: [] });
       
       showSuccessModal(1, 7, 12, 10, 12);
       
@@ -202,6 +243,96 @@ describe('modals.js', () => {
       
       // Should have called copyShareMessage (tested separately)
       expect(shareBtn).toBeTruthy();
+    });
+
+    it('should display emoji grid with no hints (all green)', () => {
+      const { shareMessage } = createSuccessModal();
+      setupWordSlotsForEmojiGrid('', { word1: [], word2: [] });
+      
+      showSuccessModal(1, 7, 12, 10, 12, '', 0);
+      
+      const content = shareMessage.textContent;
+      // Word 1 (SNOW = 4 letters) should be all green
+      expect(content).toContain('🟩🟩🟩🟩');
+      // Word 2 (FLAKE = 5 letters) should be all green
+      expect(content).toContain('🟩🟩🟩🟩🟩');
+      // Should not contain orange boxes
+      expect(content).not.toContain('🟧');
+    });
+
+    it('should display emoji grid with hints (orange boxes)', () => {
+      const { shareMessage } = createSuccessModal();
+      // Lock first slot of word 1 and second slot of word 2
+      setupWordSlotsForEmojiGrid('', { word1: [0], word2: [1] });
+      
+      showSuccessModal(1, 7, 12, 10, 12, '', 2);
+      
+      const content = shareMessage.textContent;
+      // Word 1 should have orange at position 0
+      expect(content).toContain('🟧');
+      // Should contain both green and orange
+      expect(content).toContain('🟩');
+      expect(content).toContain('🟧');
+      // Should contain hints message
+      expect(content).toContain('I used 2 hints on todays puzzle');
+    });
+
+    it('should display emoji grid with all hints used (all orange)', () => {
+      const { shareMessage } = createSuccessModal();
+      // Lock all slots
+      setupWordSlotsForEmojiGrid('', { word1: [0, 1, 2, 3], word2: [0, 1, 2, 3, 4] });
+      
+      showSuccessModal(1, 7, 12, 10, 12, '', 9);
+      
+      const content = shareMessage.textContent;
+      // Word 1 should be all orange
+      expect(content).toContain('🟧🟧🟧🟧');
+      // Word 2 should be all orange
+      expect(content).toContain('🟧🟧🟧🟧🟧');
+      // Should not contain green boxes
+      expect(content).not.toContain('🟩');
+    });
+
+    it('should display emoji grid for archive puzzles', () => {
+      const { shareMessage } = createSuccessModal('archive-');
+      setupWordSlotsForEmojiGrid('archive-', { word1: [1], word2: [2] });
+      
+      showSuccessModal(1, 7, 12, 10, 12, 'archive-', 2);
+      
+      const content = shareMessage.textContent;
+      expect(content).toContain('🟧');
+      expect(content).toContain('I used 2 hints on todays puzzle');
+    });
+
+    it('should display emoji grid for daily puzzles', () => {
+      const { shareMessage } = createSuccessModal('daily-');
+      setupWordSlotsForEmojiGrid('daily-', { word1: [0, 2], word2: [] });
+      
+      showSuccessModal(1, 7, 12, 10, 12, 'daily-', 2);
+      
+      const content = shareMessage.textContent;
+      expect(content).toContain('🟧');
+      expect(content).toContain('I used 2 hints on todays puzzle');
+    });
+
+    it('should include challenge message in share text', () => {
+      const { shareMessage } = createSuccessModal();
+      setupWordSlotsForEmojiGrid('', { word1: [], word2: [] });
+      
+      showSuccessModal(1, 7, 12, 10, 12, '', 0);
+      
+      const content = shareMessage.textContent;
+      expect(content).toContain('can you beat my score?');
+    });
+
+    it('should include puzzle URL in share text', () => {
+      const { shareMessage } = createSuccessModal();
+      setupWordSlotsForEmojiGrid('', { word1: [], word2: [] });
+      
+      showSuccessModal(1, 7, 12, 10, 12, '', 0);
+      
+      const content = shareMessage.textContent;
+      expect(content).toContain('https://sum-tile.uk');
     });
   });
 
