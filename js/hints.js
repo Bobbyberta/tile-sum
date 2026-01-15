@@ -22,8 +22,8 @@ export function updateHintButtonText(buttonId = 'hint-btn', hintsRemaining) {
     if (!hintBtn) return;
     
     if (hintsRemaining <= 0) {
-        hintBtn.disabled = false;
-        hintBtn.textContent = 'Show Solution?';
+        hintBtn.disabled = true;
+        hintBtn.textContent = 'Get Hint (0 left)';
     } else {
         hintBtn.textContent = `Get Hint (${hintsRemaining} left)`;
     }
@@ -42,6 +42,8 @@ export function provideHint(day, context = {}) {
     
     // Check if hints are available
     if (hintsRemaining <= 0) {
+        const feedbackId = isArchive ? 'archive-feedback' : (prefix ? `${prefix}feedback` : 'feedback');
+        showFeedback('All hints have been used', 'error', feedbackId);
         return;
     }
     

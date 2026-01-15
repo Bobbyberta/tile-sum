@@ -41,7 +41,7 @@ import {
 } from './js/keyboard.js';
 import { initKeyboardInput } from './js/keyboard-input.js';
 import { updateScoreDisplay, updateSubmitButton, checkSolution } from './js/scoring.js';
-import { provideHint, updateHintButtonText, showSolution } from './js/hints.js';
+import { provideHint, updateHintButtonText } from './js/hints.js';
 import { showFeedback, triggerSnowflakeConfetti } from './js/feedback.js';
 import { showSuccessModal, showErrorModal, closeErrorModal, closeSuccessModal, showHelpModal, closeHelpModal } from './js/modals.js';
 import { updateSocialMetaTags } from './js/seo.js';
@@ -235,7 +235,8 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
                 day,
                 () => showErrorModal(prefix),
                 (day, word1Score, word2Score, word1MaxScore, word2MaxScore) => {
-                    const hintsUsed = 3 - stateManager.getHintsRemaining();
+                    const totalLetters = puzzle.solution[0].length + puzzle.solution[1].length;
+                    const hintsUsed = totalLetters - stateManager.getHintsRemaining();
                     const solutionShown = stateManager.getSolutionShown();
                     showSuccessModal(day, word1Score, word2Score, word1MaxScore, word2MaxScore, prefix, hintsUsed, solutionShown);
                 },
@@ -245,7 +246,8 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
     }
 
     // Initialize hint counter and reset solution shown state
-    stateManager.setHintsRemaining(3);
+    const totalLetters = puzzle.solution[0].length + puzzle.solution[1].length;
+    stateManager.setHintsRemaining(totalLetters);
     stateManager.setSolutionShown(false);
     
     // Setup hint button
@@ -258,7 +260,6 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
         hintBtn.parentNode.replaceChild(newHintBtn, hintBtn);
         
         newHintBtn.addEventListener('click', () => {
-            const hintsRemaining = stateManager.getHintsRemaining();
             // Pass full dragDropContext to ensure handlers are properly attached to returned tiles
             // Include keyboard context properties for keyboard input system
             const hintContext = {
@@ -268,11 +269,7 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
                 prefix, // Ensure prefix is included for keyboard input system
                 stateManager // Include state manager in context
             };
-            if (hintsRemaining <= 0) {
-                showSolution(day, hintContext);
-            } else {
-                provideHint(day, hintContext);
-            }
+            provideHint(day, hintContext);
         });
     }
 

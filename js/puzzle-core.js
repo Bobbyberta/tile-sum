@@ -267,7 +267,7 @@ export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     
     const hintBtn = document.createElement('button');
     hintBtn.id = `${prefix}hint-btn`;
-    hintBtn.className = 'w-full md:w-auto px-8 py-3 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors';
+    hintBtn.className = 'w-full md:w-auto px-8 py-3 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors';
     hintBtn.textContent = 'Get Hint';
     buttonsContainer.appendChild(hintBtn);
     

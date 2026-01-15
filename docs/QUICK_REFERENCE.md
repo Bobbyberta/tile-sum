@@ -158,7 +158,7 @@ npm install
    npm run build:data # Data changes
    ↓
 3. Test locally
-   python3 -m http.server 8000
+   python3 -m http.server 8001
    ↓
 4. Run tests
    npm test

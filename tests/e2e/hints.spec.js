@@ -13,7 +13,7 @@ test.describe('Hints System', () => {
     await expect(hintButton).toBeVisible();
     const text = await hintButton.textContent();
     expect(text).toContain('Get Hint');
-    expect(text).toContain('3 left');
+    expect(text).toContain('9 left'); // SNOW (4) + FLAKE (5) = 9
   });
 
   test('should place a tile when hint is requested', async ({ page }) => {
@@ -41,43 +41,32 @@ test.describe('Hints System', () => {
     
     // Button text should update
     const newText = await hintButton.textContent();
-    expect(newText).toContain('2 left');
+    expect(newText).toContain('8 left'); // 9 - 1 = 8
     expect(newText).not.toBe(initialText);
   });
 
-  test('should show "Show Solution?" when hints are exhausted', async ({ page }) => {
-    // Use all 3 hints
-    for (let i = 0; i < 3; i++) {
+  test('should show "All hints have been used" message when hint button clicked with no hints remaining', async ({ page }) => {
+    // Use all 9 hints (SNOW + FLAKE = 9 letters)
+    for (let i = 0; i < 9; i++) {
       await page.click('#hint-btn');
       await page.waitForTimeout(500);
     }
     
-    // Button should show "Show Solution?"
+    // Button should show "Get Hint (0 left)" and be disabled
     const hintButton = page.locator('#hint-btn');
     const text = await hintButton.textContent();
-    expect(text).toContain('Show Solution');
-  });
-
-  test('should show solution when clicked after hints exhausted', async ({ page }) => {
-    // Use all hints
-    for (let i = 0; i < 3; i++) {
-      await page.click('#hint-btn');
-      await page.waitForTimeout(500);
-    }
+    expect(text).toContain('Get Hint (0 left)');
+    await expect(hintButton).toBeDisabled();
     
-    // Click to show solution
+    // Click hint button again (should show feedback)
     await page.click('#hint-btn');
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(500);
     
-    // All slots should be filled with locked tiles
-    const slots = page.locator('.slot');
-    const slotCount = await slots.count();
-    
-    for (let i = 0; i < slotCount; i++) {
-      const slot = slots.nth(i);
-      const tile = slot.locator('.tile[data-locked="true"]');
-      await expect(tile).toBeVisible();
-    }
+    // Check for feedback message
+    const feedback = page.locator('#feedback');
+    await expect(feedback).toBeVisible();
+    const feedbackText = await feedback.textContent();
+    expect(feedbackText).toContain('All hints have been used');
   });
 
   test('should update score after hint is placed', async ({ page }) => {

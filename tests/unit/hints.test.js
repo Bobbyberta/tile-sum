@@ -13,9 +13,9 @@ vi.mock('../../puzzle-data-encoded.js', () => ({
 }));
 
 vi.mock('../../js/puzzle-state.js', () => {
-  const getHintsRemaining = vi.fn(() => 3);
+  const getHintsRemaining = vi.fn(() => 9); // SNOW (4) + FLAKE (5) = 9
   const decrementHintsRemaining = vi.fn();
-  const getArchiveHintsRemaining = vi.fn(() => 3);
+  const getArchiveHintsRemaining = vi.fn(() => 9); // SNOW (4) + FLAKE (5) = 9
   const decrementArchiveHintsRemaining = vi.fn();
   const setSolutionShown = vi.fn();
   const setArchiveSolutionShown = vi.fn();
@@ -90,18 +90,18 @@ describe('hints.js', () => {
     it('should update button text with hints remaining', () => {
       const { hintBtn } = createMockPuzzleDOM();
       
-      updateHintButtonText('hint-btn', 3);
+      updateHintButtonText('hint-btn', 9);
       
-      expect(hintBtn.textContent).toBe('Get Hint (3 left)');
+      expect(hintBtn.textContent).toBe('Get Hint (9 left)');
     });
 
-    it('should show "Show Solution?" when no hints remaining', () => {
+    it('should show "Get Hint (0 left)" and disable button when no hints remaining', () => {
       const { hintBtn } = createMockPuzzleDOM();
       
       updateHintButtonText('hint-btn', 0);
       
-      expect(hintBtn.textContent).toBe('Show Solution?');
-      expect(hintBtn.disabled).toBe(false);
+      expect(hintBtn.textContent).toBe('Get Hint (0 left)');
+      expect(hintBtn.disabled).toBe(true);
     });
 
     it('should handle missing button gracefully', () => {
@@ -122,8 +122,8 @@ describe('hints.js', () => {
     beforeEach(async () => {
       const puzzleState = await import('../../js/puzzle-state.js');
       // Reset mock return values to ensure they work after clearAllMocks
-      puzzleState.getHintsRemaining.mockReturnValue(3);
-      puzzleState.getArchiveHintsRemaining.mockReturnValue(3);
+      puzzleState.getHintsRemaining.mockReturnValue(9); // SNOW (4) + FLAKE (5) = 9
+      puzzleState.getArchiveHintsRemaining.mockReturnValue(9); // SNOW (4) + FLAKE (5) = 9
     });
 
     // Setup createTile mock implementation that will be used by all tests
@@ -141,7 +141,7 @@ describe('hints.js', () => {
       });
     };
 
-    it('should not provide hint when hints remaining is 0', async () => {
+    it('should show "All hints have been used" feedback when hints remaining is 0', async () => {
       const puzzleState = await import('../../js/puzzle-state.js');
       puzzleState.getHintsRemaining.mockReturnValue(0);
       
@@ -150,7 +150,7 @@ describe('hints.js', () => {
       
       provideHint(1, {});
       
-      expect(feedback.showFeedback).not.toHaveBeenCalled();
+      expect(feedback.showFeedback).toHaveBeenCalledWith('All hints have been used', 'error', 'feedback');
     });
 
     it('should not provide hint when puzzle does not exist', () => {

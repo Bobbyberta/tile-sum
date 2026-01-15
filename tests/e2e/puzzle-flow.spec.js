@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 test.describe('Puzzle Flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -16,6 +17,12 @@ test.describe('Puzzle Flow', () => {
     // Check that slots are displayed
     const slots = await page.locator('.slot').count();
     expect(slots).toBeGreaterThan(0);
+    
+    // Quick accessibility check
+    const accessibilityScanResults = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
+    expect(accessibilityScanResults.violations).toEqual([]);
   });
 
   test('should place tile in slot via drag and drop', async ({ page }) => {
