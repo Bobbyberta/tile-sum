@@ -44,11 +44,12 @@ vi.mock('../../js/tile-validation.js', () => ({
 describe('tile-interactions.js', () => {
   beforeEach(() => {
     cleanupDOM();
-    vi.clearAllMocks();
+    vi.resetAllMocks();
+    vi.useRealTimers();
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    vi.useRealTimers();
   });
 
   describe('handleDoubleClickOrTap', () => {
@@ -192,6 +193,7 @@ describe('tile-interactions.js', () => {
     it('should swap when selected tile in slot and clicked tile in container', async () => {
       const { getSelectedTile } = await import('../../js/puzzle-state.js');
       const { deselectTile } = await import('../../js/keyboard.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
       const { tilesContainer, slots1Container } = createMockPuzzleDOM();
       const selectedTile = createMockTile('A', 0);
       const clickedTile = createMockTile('B', 1);
@@ -200,12 +202,15 @@ describe('tile-interactions.js', () => {
       tilesContainer.appendChild(clickedTile);
       
       getSelectedTile.mockReturnValue(selectedTile);
+      // Ensure validateTileExists returns true for the selected tile
+      validateTileExists.mockImplementation((tile) => tile && document.contains(tile));
       
       const placeTileCallback = vi.fn();
       
       const result = handleTileSelection(clickedTile, placeTileCallback, {});
       
       expect(result).toBe(true);
+      // The code places the clicked tile in the selected tile's slot
       expect(placeTileCallback).toHaveBeenCalledWith(clickedTile, slot);
       expect(deselectTile).toHaveBeenCalled();
     });
@@ -236,14 +241,25 @@ describe('tile-interactions.js', () => {
     });
 
     it('should prevent click if recent touch interaction', async () => {
-      const { getTouchInteractionActive, getLastTouchTime, getInteractionState } = await import('../../js/interaction-state.js');
+      const { getTouchInteractionActive, getLastTouchTime, getInteractionState, getLastClickedTile, getLastClickTime } = await import('../../js/interaction-state.js');
       const { tilesContainer } = createMockPuzzleDOM();
       const tile = createMockTile('A', 0);
       tilesContainer.appendChild(tile);
       
+      // Set up mocks for touch interaction check
+      // Use a fixed base time to ensure calculation works correctly
+      const baseTime = 1000000;
+      const recentTouchTime = baseTime - 100; // Recent touch (100ms before base time)
+      vi.useFakeTimers();
+      vi.setSystemTime(baseTime);
+      
       getTouchInteractionActive.mockReturnValue(true);
-      getLastTouchTime.mockReturnValue(Date.now() - 100); // Recent touch
-      getInteractionState.mockReturnValue({ CLICK_DELAY_AFTER_TOUCH: 300 });
+      getLastTouchTime.mockReturnValue(recentTouchTime);
+      getInteractionState.mockReturnValue({ CLICK_DELAY_AFTER_TOUCH: 300, DOUBLE_CLICK_THRESHOLD: 300 });
+      
+      // Ensure it's not a double-click
+      getLastClickedTile.mockReturnValue(null);
+      getLastClickTime.mockReturnValue(0);
       
       const event = {
         type: 'click',
@@ -258,15 +274,27 @@ describe('tile-interactions.js', () => {
     });
 
     it('should handle double-click', async () => {
-      const { getLastClickedTile, getLastClickTime, getInteractionState } = await import('../../js/interaction-state.js');
+      const { getLastClickedTile, getLastClickTime, getInteractionState, getTouchInteractionActive, getLastTouchTime } = await import('../../js/interaction-state.js');
       const { tilesContainer, slots1Container } = createMockPuzzleDOM();
       const tile = createMockTile('A', 0);
       const slot = slots1Container.children[0];
       slot.appendChild(tile);
       
-      getLastClickedTile.mockReturnValue(tile);
-      getLastClickTime.mockReturnValue(Date.now() - 100); // Recent click
-      getInteractionState.mockReturnValue({ DOUBLE_CLICK_THRESHOLD: 300 });
+      // Simulate first click by setting state - this represents the state BEFORE the second click
+      // Use a fixed base time to ensure calculation works correctly
+      const baseTime = 1000000;
+      const firstClickTime = baseTime - 100; // 100ms before base time
+      vi.useFakeTimers();
+      vi.setSystemTime(baseTime);
+      
+      // Mock the getters to return the state from the first click
+      getLastClickedTile.mockReturnValue(tile); // Same tile was clicked before
+      getLastClickTime.mockReturnValue(firstClickTime); // Recent click
+      getInteractionState.mockReturnValue({ DOUBLE_CLICK_THRESHOLD: 300, CLICK_DELAY_AFTER_TOUCH: 300 });
+      
+      // Ensure no touch interaction
+      getTouchInteractionActive.mockReturnValue(false);
+      getLastTouchTime.mockReturnValue(0);
       
       const removeTileCallback = vi.fn();
       
@@ -277,22 +305,51 @@ describe('tile-interactions.js', () => {
 
     it('should handle single click', async () => {
       const { selectTile } = await import('../../js/keyboard.js');
+      const { getLastClickedTile, getLastClickTime, getInteractionState, getTouchInteractionActive, getLastTouchTime } = await import('../../js/interaction-state.js');
       const { tilesContainer } = createMockPuzzleDOM();
       const tile = createMockTile('A', 0);
       tilesContainer.appendChild(tile);
+      
+      // Use a fixed base time
+      const baseTime = 1000000;
+      vi.useFakeTimers();
+      vi.setSystemTime(baseTime);
+      
+      // Ensure it's not a double-click by setting last clicked tile to null or different tile
+      getLastClickedTile.mockReturnValue(null);
+      getLastClickTime.mockReturnValue(0);
+      getInteractionState.mockReturnValue({ DOUBLE_CLICK_THRESHOLD: 300, CLICK_DELAY_AFTER_TOUCH: 300 });
+      
+      // Ensure no touch interaction
+      getTouchInteractionActive.mockReturnValue(false);
+      getLastTouchTime.mockReturnValue(0);
       
       handleTileInteraction(tile, vi.fn(), vi.fn(), {});
       
       expect(selectTile).toHaveBeenCalledWith(tile);
     });
 
-    it('should stop propagation for tile in container', () => {
+    it('should stop propagation for tile in container', async () => {
+      const { getLastClickedTile, getLastClickTime, getInteractionState, getTouchInteractionActive, getLastTouchTime } = await import('../../js/interaction-state.js');
       const { tilesContainer } = createMockPuzzleDOM();
       const tile = createMockTile('A', 0);
       tilesContainer.appendChild(tile);
       
+      // Use a fixed base time
+      const baseTime = 1000000;
+      vi.useFakeTimers();
+      vi.setSystemTime(baseTime);
+      
+      // Ensure it's not a double-click and no recent touch
+      getLastClickedTile.mockReturnValue(null);
+      getLastClickTime.mockReturnValue(0);
+      getInteractionState.mockReturnValue({ DOUBLE_CLICK_THRESHOLD: 300, CLICK_DELAY_AFTER_TOUCH: 300 });
+      getTouchInteractionActive.mockReturnValue(false);
+      getLastTouchTime.mockReturnValue(0);
+      
       const event = {
         type: 'click',
+        preventDefault: vi.fn(),
         stopPropagation: vi.fn()
       };
       
@@ -321,13 +378,28 @@ describe('tile-interactions.js', () => {
   describe('handleTileClick', () => {
     it('should call handleTileInteraction', async () => {
       const { selectTile } = await import('../../js/keyboard.js');
+      const { getLastClickedTile, getLastClickTime, getInteractionState, getTouchInteractionActive, getLastTouchTime } = await import('../../js/interaction-state.js');
       const { tilesContainer } = createMockPuzzleDOM();
       const tile = createMockTile('A', 0);
       tilesContainer.appendChild(tile);
       
+      // Use a fixed base time
+      const baseTime = 1000000;
+      vi.useFakeTimers();
+      vi.setSystemTime(baseTime);
+      
+      // Ensure it's not a double-click and no recent touch
+      getLastClickedTile.mockReturnValue(null);
+      getLastClickTime.mockReturnValue(0);
+      getInteractionState.mockReturnValue({ DOUBLE_CLICK_THRESHOLD: 300, CLICK_DELAY_AFTER_TOUCH: 300 });
+      getTouchInteractionActive.mockReturnValue(false);
+      getLastTouchTime.mockReturnValue(0);
+      
       const event = {
         currentTarget: tile,
-        type: 'click'
+        type: 'click',
+        preventDefault: vi.fn(),
+        stopPropagation: vi.fn()
       };
       
       handleTileClick(event, vi.fn(), vi.fn());
@@ -373,11 +445,15 @@ describe('tile-interactions.js', () => {
     });
 
     it('should remove tile from filled slot when no tile selected', async () => {
+      const { getSelectedTile } = await import('../../js/puzzle-state.js');
       const { slots1Container } = createMockPuzzleDOM();
       const slot = slots1Container.children[0];
       const tile = createMockTile('A', 0);
       slot.appendChild(tile);
       slot.classList.add('filled');
+      
+      // Ensure no tile is selected
+      getSelectedTile.mockReturnValue(null);
       
       const removeTileCallback = vi.fn();
       const event = {
@@ -406,9 +482,13 @@ describe('tile-interactions.js', () => {
       expect(removeTileCallback).not.toHaveBeenCalled();
     });
 
-    it('should do nothing if slot empty and no tile selected', () => {
+    it('should do nothing if slot empty and no tile selected', async () => {
+      const { getSelectedTile } = await import('../../js/puzzle-state.js');
       const { slots1Container } = createMockPuzzleDOM();
       const slot = slots1Container.children[0];
+      
+      // Ensure no tile is selected
+      getSelectedTile.mockReturnValue(null);
       
       const placeTileCallback = vi.fn();
       const removeTileCallback = vi.fn();

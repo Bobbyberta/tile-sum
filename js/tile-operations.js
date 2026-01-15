@@ -112,17 +112,17 @@ export function placeTileInSlot(tile, slot, context = {}) {
     
     const isKeyboardNavigation = context.isKeyboardNavigation || false;
     try {
+        // Validate inputs first before accessing attributes
+        if (!tile || !slot) {
+            console.error('placeTileInSlot: Invalid tile or slot');
+            return;
+        }
+        
         debugLog('placeTileInSlot: Starting', {
             tile: tile.getAttribute('data-letter'),
             slot: slot.getAttribute('data-slot-index'),
             word: slot.getAttribute('data-word-index')
         });
-        
-        // Validate inputs
-        if (!tile || !slot) {
-            console.error('placeTileInSlot: Invalid tile or slot');
-            return;
-        }
         
         // Don't allow placing tiles in locked slots
         if (slot.getAttribute('data-locked') === 'true') {

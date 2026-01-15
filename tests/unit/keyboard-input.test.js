@@ -178,9 +178,13 @@ describe('keyboard-input.js', () => {
       expect(deselectTile).toHaveBeenCalled();
     });
 
-    it('should handle Enter key without selected tile', () => {
+    it('should handle Enter key without selected tile', async () => {
+      const { getSelectedTile } = await import('../../js/puzzle-state.js');
       const { slots1Container } = createMockPuzzleDOM();
       const slot = slots1Container.children[0];
+      
+      // Ensure getSelectedTile returns null (no selected tile)
+      getSelectedTile.mockReturnValue(null);
       
       const placeTileCallback = vi.fn();
       const context = {

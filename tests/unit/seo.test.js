@@ -15,17 +15,17 @@ vi.mock('../../puzzle-data-encoded.js', () => ({
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   },
-  getDateForPuzzleNumber: vi.fn((puzzleNum) => {
+  getDateForPuzzleNumber: (puzzleNum) => {
     const startDate = new Date(2025, 11, 1); // Dec 1, 2025
     if (puzzleNum === 1) return startDate;
     const date = new Date(startDate);
     date.setDate(date.getDate() + (puzzleNum - 1));
     return date;
-  })
+  }
 }));
 
 vi.mock('../../js/utils.js', () => ({
-  getDaySuffix: vi.fn((day) => {
+  getDaySuffix: (day) => {
     if (day > 3 && day < 21) return 'th';
     switch (day % 10) {
       case 1: return 'st';
@@ -33,15 +33,15 @@ vi.mock('../../js/utils.js', () => ({
       case 3: return 'rd';
       default: return 'th';
     }
-  })
+  }
 }));
 
 describe('seo.js', () => {
   beforeEach(() => {
     cleanupDOM();
     
-    // Restore all mocks to ensure clean state
-    vi.restoreAllMocks();
+    // Clear all mocks to ensure clean state (but keep implementations)
+    vi.clearAllMocks();
     
     // Create base HTML structure
     const head = document.head;
@@ -148,7 +148,7 @@ describe('seo.js', () => {
     const canonicalUrl = document.getElementById('canonical-url');
     expect(canonicalUrl.getAttribute('href')).toBe('https://sum-tile.uk/puzzle.html?day=1');
     
-    // Restore the original mock
+    // Restore the spy to original implementation
     vi.restoreAllMocks();
   });
 

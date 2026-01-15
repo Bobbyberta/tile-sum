@@ -57,7 +57,10 @@ vi.mock('../../js/interaction-state.js', () => ({
 }));
 
 vi.mock('../../js/tile-validation.js', () => ({
-  validateTileExists: vi.fn((tile) => tile && document.contains(tile)),
+  validateTileExists: vi.fn((tile) => {
+    if (!tile) return false;
+    return tile.parentNode !== null && document.contains(tile);
+  }),
   findTileInContainer: vi.fn(() => null),
   ensureTilePreserved: vi.fn()
 }));
@@ -226,6 +229,8 @@ describe('tile-operations.js', () => {
     });
 
     it('should swap tiles when slot is occupied', async () => {
+      const { validateTileExists } = await import('../../js/tile-validation.js');
+      const { getIsProcessing } = await import('../../js/interaction-state.js');
       const { tilesContainer, slots1Container } = createMockPuzzleDOM();
       const existingTile = createMockTile('N', 1);
       const newTile = createMockTile('S', 0);
@@ -233,10 +238,24 @@ describe('tile-operations.js', () => {
       
       slot.appendChild(existingTile);
       tilesContainer.appendChild(newTile);
+      
+      // Reset mocks to ensure clean state
+      vi.clearAllMocks();
+      getIsProcessing.mockReturnValue(false);
+      // Ensure validateTileExists returns true for tiles in DOM
+      validateTileExists.mockImplementation((t) => {
+        if (!t) return false;
+        return t.parentNode !== null && document.contains(t);
+      });
 
       placeTileInSlot(newTile, slot, {});
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Wait for async operations including requestAnimationFrame
+      await new Promise(resolve => {
+        requestAnimationFrame(() => {
+          setTimeout(resolve, 50);
+        });
+      });
 
       const tileInSlot = slot.querySelector('.tile');
       expect(tileInSlot).toBeTruthy();
@@ -280,11 +299,20 @@ describe('tile-operations.js', () => {
 
     it('should handle invalid tile or slot', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const { setIsProcessing } = await import('../../js/interaction-state.js');
+      const { setIsProcessing, getIsProcessing } = await import('../../js/interaction-state.js');
+      
+      // Reset mocks
+      vi.clearAllMocks();
+      getIsProcessing.mockReturnValue(false);
 
       placeTileInSlot(null, null, {});
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Wait for finally block to execute - use requestAnimationFrame to ensure it runs
+      await new Promise(resolve => {
+        requestAnimationFrame(() => {
+          setTimeout(resolve, 10);
+        });
+      });
 
       expect(setIsProcessing).toHaveBeenCalledWith(false);
       consoleError.mockRestore();
@@ -294,17 +322,21 @@ describe('tile-operations.js', () => {
       const { findTileInContainer, validateTileExists } = await import('../../js/tile-validation.js');
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
       
-      const { slots1Container } = createMockPuzzleDOM();
+      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
       const tile = createMockTile('S', 0);
       const slot = slots1Container.children[0];
       
-      // Simulate tile not in DOM
-      validateTileExists.mockReturnValue(false);
+      // Add tile to container first so it exists in DOM initially
+      tilesContainer.appendChild(tile);
+      
+      // Now simulate tile not in DOM by making validateTileExists return false
+      // This simulates the tile being removed from DOM before the function checks
+      validateTileExists.mockReturnValueOnce(false);
       findTileInContainer.mockReturnValue(null);
 
       placeTileInSlot(tile, slot, {});
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       expect(validateTileExists).toHaveBeenCalled();
       consoleError.mockRestore();
@@ -312,43 +344,60 @@ describe('tile-operations.js', () => {
 
     it('should update placeholder when tile from container', async () => {
       const { updatePlaceholderTile } = await import('../../js/puzzle-core.js');
-      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
-      const tile = createMockTile('S', 0);
-      const slot = slots1Container.children[0];
-      tilesContainer.appendChild(tile);
-
-      placeTileInSlot(tile, slot, {});
-
-      await new Promise(resolve => setTimeout(resolve, 10));
-
-      expect(updatePlaceholderTile).toHaveBeenCalledWith('tiles-container');
-    });
-
-    it('should focus slot for keyboard navigation', async () => {
+      const { validateTileExists } = await import('../../js/tile-validation.js');
       const { tilesContainer, slots1Container } = createMockPuzzleDOM();
       const tile = createMockTile('S', 0);
       const slot = slots1Container.children[0];
       tilesContainer.appendChild(tile);
       
+      // Ensure validateTileExists returns true for tile in container
+      validateTileExists.mockImplementation((t) => t && document.contains(t));
+
+      placeTileInSlot(tile, slot, {});
+
+      // Wait for async operations
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      expect(updatePlaceholderTile).toHaveBeenCalledWith('tiles-container');
+    });
+
+    it('should focus slot for keyboard navigation', async () => {
+      const { validateTileExists } = await import('../../js/tile-validation.js');
+      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
+      const tile = createMockTile('S', 0);
+      const slot = slots1Container.children[0];
+      tilesContainer.appendChild(tile);
+      
+      // Make slot focusable
+      slot.setAttribute('tabindex', '0');
       const focusSpy = vi.spyOn(slot, 'focus');
+      
+      // Ensure validateTileExists returns true for tile in container
+      validateTileExists.mockImplementation((t) => t && document.contains(t));
 
       placeTileInSlot(tile, slot, { isKeyboardNavigation: true });
 
-      await new Promise(resolve => setTimeout(resolve, 20));
+      // Wait for setTimeout(0) to execute
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       expect(focusSpy).toHaveBeenCalled();
     });
 
     it('should work with prefix', async () => {
       const { updateScoreDisplay } = await import('../../js/scoring.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
       const { tilesContainer, slots1Container } = createMockPuzzleDOM('daily-');
       const tile = createMockTile('S', 0);
       const slot = slots1Container.children[0];
       tilesContainer.appendChild(tile);
+      
+      // Ensure validateTileExists returns true for tile in container
+      validateTileExists.mockImplementation((t) => t && document.contains(t));
 
       placeTileInSlot(tile, slot, { prefix: 'daily-' });
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Wait for async operations including requestAnimationFrame
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       expect(updateScoreDisplay).toHaveBeenCalledWith('daily-');
     });
@@ -356,14 +405,23 @@ describe('tile-operations.js', () => {
     it('should handle archive puzzle', async () => {
       const updateArchiveScoreDisplay = vi.fn();
       const updateArchiveSubmitButton = vi.fn();
+      const { validateTileExists } = await import('../../js/tile-validation.js');
+      
+      // Create archive word slots container
+      const archiveWordSlots = document.createElement('div');
+      archiveWordSlots.id = 'archive-word-slots';
+      document.body.appendChild(archiveWordSlots);
       
       const { tilesContainer, slots1Container } = createMockPuzzleDOM();
       const slot = slots1Container.children[0];
-      // Make slot part of archive
-      slot.closest = vi.fn(() => document.getElementById('archive-word-slots') || null);
+      // Make slot part of archive by moving it to archive container
+      archiveWordSlots.appendChild(slots1Container.parentElement);
       
       const tile = createMockTile('S', 0);
       tilesContainer.appendChild(tile);
+      
+      // Ensure validateTileExists returns true for tile in container
+      validateTileExists.mockImplementation((t) => t && document.contains(t));
 
       placeTileInSlot(tile, slot, {
         isArchive: true,
@@ -371,15 +429,20 @@ describe('tile-operations.js', () => {
         updateArchiveSubmitButton
       });
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Wait for async operations including requestAnimationFrame
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       expect(updateArchiveScoreDisplay).toHaveBeenCalled();
       expect(updateArchiveSubmitButton).toHaveBeenCalled();
+      
+      // Cleanup
+      archiveWordSlots.remove();
     });
 
     it('should clear selected tile if placing selected tile', async () => {
       const { getSelectedTile } = await import('../../js/puzzle-state.js');
       const { deselectTile } = await import('../../js/keyboard.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
       
       const { tilesContainer, slots1Container } = createMockPuzzleDOM();
       const tile = createMockTile('S', 0);
@@ -387,10 +450,13 @@ describe('tile-operations.js', () => {
       tilesContainer.appendChild(tile);
       
       getSelectedTile.mockReturnValue(tile);
+      // Ensure validateTileExists returns true for tile in container
+      validateTileExists.mockImplementation((t) => t && document.contains(t));
 
       placeTileInSlot(tile, slot, {});
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Wait for async operations
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       expect(deselectTile).toHaveBeenCalled();
     });
@@ -399,14 +465,19 @@ describe('tile-operations.js', () => {
   describe('removeTileFromSlot', () => {
     it('should remove tile from slot and return to container', async () => {
       const { updateScoreDisplay, updateSubmitButton } = await import('../../js/scoring.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
       const { tilesContainer, slots1Container } = createMockPuzzleDOM();
       const tile = createMockTile('S', 0);
       const slot = slots1Container.children[0];
       slot.appendChild(tile);
+      
+      // Ensure validateTileExists returns true for the tile in slot
+      validateTileExists.mockImplementation((t) => t && document.contains(t));
 
       removeTileFromSlot(slot, {});
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Wait for async operations
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       expect(slot.querySelector('.tile')).toBeFalsy();
       expect(slot.classList.contains('filled')).toBe(false);
@@ -441,16 +512,20 @@ describe('tile-operations.js', () => {
 
     it('should clear selected tile if removing selected tile', async () => {
       const { getSelectedTile, clearSelectedTile } = await import('../../js/puzzle-state.js');
+      const { validateTileExists } = await import('../../js/tile-validation.js');
       const { slots1Container } = createMockPuzzleDOM();
       const tile = createMockTile('S', 0);
       const slot = slots1Container.children[0];
       slot.appendChild(tile);
       
       getSelectedTile.mockReturnValue(tile);
+      // Ensure validateTileExists returns true for the tile in slot
+      validateTileExists.mockImplementation((t) => t && document.contains(t));
 
       removeTileFromSlot(slot, {});
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Wait for async operations
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       expect(clearSelectedTile).toHaveBeenCalled();
     });
@@ -459,14 +534,29 @@ describe('tile-operations.js', () => {
       const returnArchiveTileToContainer = vi.fn();
       const updateArchiveScoreDisplay = vi.fn();
       const updateArchiveSubmitButton = vi.fn();
+      const { validateTileExists } = await import('../../js/tile-validation.js');
       
+      // Create mock puzzle DOM first (this clears the body)
       const { slots1Container } = createMockPuzzleDOM();
+      
+      // Create archive word slots container AFTER createMockPuzzleDOM
+      const archiveWordSlots = document.createElement('div');
+      archiveWordSlots.id = 'archive-word-slots';
+      document.body.appendChild(archiveWordSlots);
+      
       const tile = createMockTile('S', 0);
       const slot = slots1Container.children[0];
       slot.appendChild(tile);
       
-      // Make slot part of archive
-      slot.closest = vi.fn(() => document.getElementById('archive-word-slots') || null);
+      // Make slot part of archive by moving the word container to archive
+      const wordContainer = slots1Container.parentElement;
+      archiveWordSlots.appendChild(wordContainer);
+      
+      // Ensure validateTileExists returns true for the tile in slot
+      validateTileExists.mockImplementation((t) => {
+        if (!t) return false;
+        return t.parentNode !== null && document.contains(t);
+      });
 
       removeTileFromSlot(slot, {
         isArchive: true,
@@ -475,11 +565,15 @@ describe('tile-operations.js', () => {
         updateArchiveSubmitButton
       });
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Wait for async operations
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       expect(returnArchiveTileToContainer).toHaveBeenCalled();
       expect(updateArchiveScoreDisplay).toHaveBeenCalled();
       expect(updateArchiveSubmitButton).toHaveBeenCalled();
+      
+      // Cleanup
+      archiveWordSlots.remove();
     });
 
     it('should handle tile without letter or index', async () => {
