@@ -183,8 +183,8 @@ describe('modals.js', () => {
     });
 
     it('should display share message with emoji grid', () => {
-      const { shareMessage } = createSuccessModal();
       setupWordSlotsForEmojiGrid('', { word1: [], word2: [] }); // No hints
+      const { shareMessage } = createSuccessModal();
       
       showSuccessModal(1, 7, 12, 10, 12);
       
@@ -218,8 +218,8 @@ describe('modals.js', () => {
     });
 
     it('should setup share button click handler', () => {
-      const { shareBtn } = createSuccessModal();
       setupWordSlotsForEmojiGrid('', { word1: [], word2: [] });
+      const { shareBtn } = createSuccessModal();
       
       showSuccessModal(1, 7, 12, 10, 12);
       
@@ -231,8 +231,8 @@ describe('modals.js', () => {
     });
 
     it('should display emoji grid with no hints (all green)', () => {
-      const { shareMessage } = createSuccessModal();
       setupWordSlotsForEmojiGrid('', { word1: [], word2: [] });
+      const { shareMessage } = createSuccessModal();
       
       showSuccessModal(1, 7, 12, 10, 12, '', 0);
       
@@ -246,9 +246,9 @@ describe('modals.js', () => {
     });
 
     it('should display emoji grid with hints (orange boxes)', () => {
-      const { shareMessage } = createSuccessModal();
       // Lock first slot of word 1 and second slot of word 2
       setupWordSlotsForEmojiGrid('', { word1: [0], word2: [1] });
+      const { shareMessage } = createSuccessModal();
       
       showSuccessModal(1, 7, 12, 10, 12, '', 2);
       
@@ -263,9 +263,9 @@ describe('modals.js', () => {
     });
 
     it('should display emoji grid with all hints used (all orange)', () => {
-      const { shareMessage } = createSuccessModal();
       // Lock all slots
       setupWordSlotsForEmojiGrid('', { word1: [0, 1, 2, 3], word2: [0, 1, 2, 3, 4] });
+      const { shareMessage } = createSuccessModal();
       
       showSuccessModal(1, 7, 12, 10, 12, '', 9);
       
@@ -279,8 +279,8 @@ describe('modals.js', () => {
     });
 
     it('should display emoji grid for archive puzzles', () => {
-      const { shareMessage } = createSuccessModal('archive-');
       setupWordSlotsForEmojiGrid('archive-', { word1: [1], word2: [2] });
+      const { shareMessage } = createSuccessModal('archive-');
       
       showSuccessModal(1, 7, 12, 10, 12, 'archive-', 2);
       
@@ -290,8 +290,8 @@ describe('modals.js', () => {
     });
 
     it('should display emoji grid for daily puzzles', () => {
-      const { shareMessage } = createSuccessModal('daily-');
       setupWordSlotsForEmojiGrid('daily-', { word1: [0, 2], word2: [] });
+      const { shareMessage } = createSuccessModal('daily-');
       
       showSuccessModal(1, 7, 12, 10, 12, 'daily-', 2);
       
@@ -301,8 +301,8 @@ describe('modals.js', () => {
     });
 
     it('should include challenge message in share text', () => {
-      const { shareMessage } = createSuccessModal();
       setupWordSlotsForEmojiGrid('', { word1: [], word2: [] });
+      const { shareMessage } = createSuccessModal();
       
       showSuccessModal(1, 7, 12, 10, 12, '', 0);
       
@@ -311,8 +311,8 @@ describe('modals.js', () => {
     });
 
     it('should include puzzle URL in share text for regular puzzle', () => {
-      const { shareMessage } = createSuccessModal();
       setupWordSlotsForEmojiGrid('', { word1: [], word2: [] });
+      const { shareMessage } = createSuccessModal();
       
       showSuccessModal(1, 7, 12, 10, 12, '', 0);
       
@@ -321,8 +321,8 @@ describe('modals.js', () => {
     });
 
     it('should link to home screen for daily puzzle', () => {
-      const { shareMessage } = createSuccessModal('daily-');
       setupWordSlotsForEmojiGrid('daily-', { word1: [], word2: [] });
+      const { shareMessage } = createSuccessModal('daily-');
       
       showSuccessModal(1, 7, 12, 10, 12, 'daily-', 0);
       
@@ -332,8 +332,8 @@ describe('modals.js', () => {
     });
 
     it('should link to archive page for archive puzzle', () => {
-      const { shareMessage } = createSuccessModal('archive-');
       setupWordSlotsForEmojiGrid('archive-', { word1: [], word2: [] });
+      const { shareMessage } = createSuccessModal('archive-');
       
       showSuccessModal(1, 7, 12, 10, 12, 'archive-', 0);
       

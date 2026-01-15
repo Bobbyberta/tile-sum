@@ -237,4 +237,82 @@ test.describe('Accessibility Tests', () => {
       expect(accessibilityScanResults.violations).toEqual([]);
     });
   });
+
+  test.describe('Footer', () => {
+    test('should have footer with portfolio link on index page', async ({ page }) => {
+      await page.goto('/index.html', { waitUntil: 'load' });
+      
+      const footer = page.locator('footer');
+      await expect(footer).toBeVisible();
+      
+      const footerLink = footer.locator('a[href="https://bobbieallsop.co.uk"]');
+      await expect(footerLink).toBeVisible();
+      expect(await footerLink.textContent()).toBe('Bobbie Allsop');
+      
+      // Check link has proper attributes
+      expect(await footerLink.getAttribute('target')).toBe('_blank');
+      expect(await footerLink.getAttribute('rel')).toBe('noopener noreferrer');
+      
+      // Check link has underline styling
+      const hasUnderline = await footerLink.evaluate((el) => {
+        const styles = window.getComputedStyle(el);
+        return styles.textDecoration.includes('underline') || 
+               styles.textDecorationLine.includes('underline') ||
+               el.classList.contains('underline');
+      });
+      expect(hasUnderline).toBeTruthy();
+    });
+
+    test('should have footer with portfolio link on puzzle page', async ({ page }) => {
+      await page.goto('/puzzle.html?day=1&test=archive', { waitUntil: 'load' });
+      await page.waitForSelector('.tile', { timeout: 5000 });
+      
+      const footer = page.locator('footer');
+      await expect(footer).toBeVisible();
+      
+      const footerLink = footer.locator('a[href="https://bobbieallsop.co.uk"]');
+      await expect(footerLink).toBeVisible();
+      expect(await footerLink.textContent()).toBe('Bobbie Allsop');
+      
+      // Check link has proper attributes
+      expect(await footerLink.getAttribute('target')).toBe('_blank');
+      expect(await footerLink.getAttribute('rel')).toBe('noopener noreferrer');
+    });
+
+    test('should have footer with portfolio link on archive page', async ({ page }) => {
+      await page.goto('/archive.html', { waitUntil: 'load' });
+      await page.waitForSelector('.calendar', { timeout: 5000 });
+      
+      const footer = page.locator('footer');
+      await expect(footer).toBeVisible();
+      
+      const footerLink = footer.locator('a[href="https://bobbieallsop.co.uk"]');
+      await expect(footerLink).toBeVisible();
+      expect(await footerLink.textContent()).toBe('Bobbie Allsop');
+      
+      // Check link has proper attributes
+      expect(await footerLink.getAttribute('target')).toBe('_blank');
+      expect(await footerLink.getAttribute('rel')).toBe('noopener noreferrer');
+    });
+
+    test('should be keyboard accessible', async ({ page }) => {
+      await page.goto('/index.html', { waitUntil: 'load' });
+      
+      const footerLink = page.locator('footer a[href="https://bobbieallsop.co.uk"]');
+      
+      // Focus the link via keyboard navigation
+      await footerLink.focus();
+      await expect(footerLink).toBeFocused();
+      
+      // Check that focus is visible
+      const hasFocusRing = await footerLink.evaluate((el) => {
+        const styles = window.getComputedStyle(el);
+        return styles.outline !== 'none' || 
+               styles.outlineWidth !== '0px' ||
+               el.classList.toString().includes('focus:') ||
+               el.classList.toString().includes('ring');
+      });
+      expect(hasFocusRing).toBeTruthy();
+    });
+  });
 });

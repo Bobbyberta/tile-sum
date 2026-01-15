@@ -24,19 +24,23 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:a11y": "lsof -ti:8000 | xargs kill -9 || true && playwright test tests/e2e/accessibility.spec.js",
-    "test:all": "npm run test && npm run test:e2e"
+    "test:all": "npm run test && npm run test:e2e",
+    "security:audit": "npm audit",
+    "security:fix": "npm audit fix",
+    "security:outdated": "npm outdated",
+    "security:check": "npm audit && npm outdated"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
     "@playwright/test": "^1.48.0",
     "@testing-library/dom": "^10.4.0",
-    "@vitest/coverage-v8": "^2.1.9",
-    "@vitest/ui": "^2.1.8",
+    "@vitest/coverage-v8": "^4.0.17",
+    "@vitest/ui": "^4.0.17",
     "autoprefixer": "^10.4.20",
     "jsdom": "^25.0.1",
     "postcss": "^8.4.47",
     "postcss-cli": "^11.0.0",
     "tailwindcss": "^3.4.13",
-    "vitest": "^2.1.8"
+    "vitest": "^4.0.17"
   }
 }

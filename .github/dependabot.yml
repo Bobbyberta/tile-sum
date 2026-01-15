@@ -1,0 +1,20 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "bobbieallsop"
+    labels:
+      - "dependencies"
+      - "security"
+    # Group security updates together for easier review
+    groups:
+      security-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "security"
