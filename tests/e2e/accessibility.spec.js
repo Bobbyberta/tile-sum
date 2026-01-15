@@ -152,7 +152,7 @@ test.describe('Accessibility Tests', () => {
   test.describe('Archive Page', () => {
     test('should have no accessibility violations on archive page', async ({ page, browserName }) => {
       await page.goto('/archive.html', { waitUntil: 'load' });
-      await page.waitForSelector('.calendar', { timeout: 5000 });
+      await page.waitForSelector('#date-picker', { timeout: 5000 });
       
       const accessibilityScanResults = await createAxeBuilder(page, browserName).analyze();
       
@@ -161,18 +161,15 @@ test.describe('Accessibility Tests', () => {
 
     test('should have no accessibility violations on archive puzzle', async ({ page, browserName }) => {
       await page.goto('/archive.html', { waitUntil: 'load' });
-      await page.waitForSelector('.calendar', { timeout: 5000 });
+      await page.waitForSelector('#date-picker', { timeout: 5000 });
       
-      // Click on a completed puzzle
-      const dayButton = page.locator('[data-day="1"]').first();
-      if (await dayButton.isVisible()) {
-        await dayButton.click();
-        await page.waitForSelector('.tile', { timeout: 5000 });
-        
-        const accessibilityScanResults = await createAxeBuilder(page, browserName).analyze();
-        
-        expect(accessibilityScanResults.violations).toEqual([]);
-      }
+      // Wait for puzzle content to load
+      await page.waitForSelector('#archive-puzzle-content', { timeout: 5000 });
+      await page.waitForSelector('.tile', { timeout: 5000 });
+      
+      const accessibilityScanResults = await createAxeBuilder(page, browserName).analyze();
+      
+      expect(accessibilityScanResults.violations).toEqual([]);
     });
   });
 
@@ -281,7 +278,7 @@ test.describe('Accessibility Tests', () => {
 
     test('should have footer with portfolio link on archive page', async ({ page }) => {
       await page.goto('/archive.html', { waitUntil: 'load' });
-      await page.waitForSelector('.calendar', { timeout: 5000 });
+      await page.waitForSelector('#date-picker', { timeout: 5000 });
       
       const footer = page.locator('footer');
       await expect(footer).toBeVisible();

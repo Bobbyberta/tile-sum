@@ -360,7 +360,7 @@ export function initCalendar() {
 
         if (isToday) {
             const todayBadge = document.createElement('div');
-            todayBadge.className = 'absolute top-1 right-1 w-3 h-3 bg-indigo-600 rounded-full';
+            todayBadge.className = 'absolute top-1 right-1 w-3 h-3 bg-indigo-700 rounded-full';
             todayBadge.setAttribute('aria-label', 'Today');
             dayElement.appendChild(todayBadge);
         }

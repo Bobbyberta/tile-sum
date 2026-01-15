@@ -242,6 +242,12 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
     modal.classList.remove('hidden');
     modal.setAttribute('aria-hidden', 'false');
     
+    // Ensure aria-describedby is set for accessibility
+    const shareContainer = document.getElementById(`${prefix}share-message-container`);
+    if (shareContainer && !modal.getAttribute('aria-describedby')) {
+        modal.setAttribute('aria-describedby', `${prefix}share-message-container`);
+    }
+    
     // Lock body scroll (mobile-compatible)
     lockBodyScroll();
     
@@ -297,8 +303,8 @@ export function copyShareMessage(shareText, buttonElement, originalText, origina
                     // Update button text and color - only change the background color classes
                     shareBtn.textContent = 'Copied!';
                     shareBtn.disabled = false;
-                    shareBtn.classList.remove('bg-amber-500', 'hover:bg-amber-600', 'focus:ring-amber-500');
-                    shareBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'focus:ring-green-500');
+                    shareBtn.classList.remove('bg-amber-700', 'hover:bg-amber-800', 'focus:ring-amber-600');
+                    shareBtn.classList.add('bg-green-600', 'hover:bg-green-800', 'focus:ring-green-600');
                     
                     // Restore after 2 seconds - restore all original classes to ensure nothing is missing
                     setTimeout(() => {
@@ -326,6 +332,12 @@ export function showErrorModal(prefix = '') {
 
     modal.classList.remove('hidden');
     modal.setAttribute('aria-hidden', 'false');
+    
+    // Ensure aria-describedby is set for accessibility
+    const errorMessage = document.getElementById(`${prefix}error-modal-message`);
+    if (errorMessage && !modal.getAttribute('aria-describedby')) {
+        modal.setAttribute('aria-describedby', `${prefix}error-modal-message`);
+    }
     
     // Lock body scroll (mobile-compatible)
     lockBodyScroll();
@@ -393,11 +405,16 @@ export function showHelpModal(e) {
     modal.classList.remove('hidden');
     modal.setAttribute('aria-hidden', 'false');
     
+    // Ensure aria-describedby is set for accessibility
+    const contentArea = document.getElementById('help-modal-content');
+    if (contentArea && !modal.getAttribute('aria-describedby')) {
+        modal.setAttribute('aria-describedby', 'help-modal-content');
+    }
+    
     // Lock body scroll (mobile-compatible)
     lockBodyScroll();
     
     // Reset scroll position to top - use requestAnimationFrame to ensure it happens after rendering
-    const contentArea = document.getElementById('help-modal-content');
     if (contentArea) {
         requestAnimationFrame(() => {
             contentArea.scrollTop = 0;

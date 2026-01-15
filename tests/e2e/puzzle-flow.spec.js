@@ -4,9 +4,12 @@ import AxeBuilder from '@axe-core/playwright';
 test.describe('Puzzle Flow', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to puzzle page with test puzzle
-    await page.goto('/puzzle.html?day=1&test=archive');
-    // Wait for puzzle to load
-    await page.waitForSelector('.tile', { timeout: 5000 });
+    await page.goto('/puzzle.html?day=1&test=archive', { waitUntil: 'load' });
+    // Wait for puzzle to load - wait for both tiles and slots
+    await page.waitForSelector('.tile', { timeout: 10000 });
+    await page.waitForSelector('.slot', { timeout: 10000 });
+    // Wait a bit more for any async operations to complete
+    await page.waitForLoadState('networkidle');
   });
 
   test('should load puzzle and display tiles', async ({ page }) => {

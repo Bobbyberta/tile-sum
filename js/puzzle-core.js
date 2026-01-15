@@ -28,7 +28,7 @@ import { handleTileKeyDown } from './keyboard.js';
  */
 export function createTile(letter, index, isLocked = false, handlers = {}) {
     const tile = document.createElement('div');
-    tile.className = `tile bg-indigo-600 text-white rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center shadow-md transition-shadow ${isLocked ? 'locked' : 'hover:shadow-lg'}`;
+    tile.className = `tile bg-indigo-700 text-white rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center shadow-md transition-shadow ${isLocked ? 'locked' : 'hover:shadow-lg'}`;
     tile.setAttribute('draggable', isLocked ? 'false' : 'true');
     tile.setAttribute('data-letter', letter);
     tile.setAttribute('data-tile-index', index);
@@ -267,13 +267,13 @@ export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     
     const hintBtn = document.createElement('button');
     hintBtn.id = `${prefix}hint-btn`;
-    hintBtn.className = 'w-full md:w-auto px-8 py-3 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors';
+    hintBtn.className = 'w-full md:w-auto px-8 py-3 bg-amber-700 text-white font-semibold rounded-lg hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors';
     hintBtn.textContent = 'Get Hint';
     buttonsContainer.appendChild(hintBtn);
     
     const submitBtn = document.createElement('button');
     submitBtn.id = `${prefix}submit-btn`;
-    submitBtn.className = 'w-full md:w-auto px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors';
+    submitBtn.className = 'w-full md:w-auto px-8 py-3 bg-indigo-700 text-white font-semibold rounded-lg hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-colors';
     submitBtn.textContent = 'Submit Solution';
     buttonsContainer.appendChild(submitBtn);
     

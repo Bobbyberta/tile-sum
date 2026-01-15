@@ -21,7 +21,7 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test",
+    "test:e2e": "lsof -ti:8000 | xargs kill -9 || true && playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:a11y": "lsof -ti:8000 | xargs kill -9 || true && playwright test tests/e2e/accessibility.spec.js",
     "test:all": "npm run test && npm run test:e2e",

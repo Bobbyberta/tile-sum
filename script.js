@@ -260,6 +260,15 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
         hintBtn.parentNode.replaceChild(newHintBtn, hintBtn);
         
         newHintBtn.addEventListener('click', () => {
+            // Check if button is disabled (no hints remaining)
+            // If disabled, show feedback and return early
+            if (newHintBtn.disabled) {
+                const isArchive = prefix === 'archive-';
+                const feedbackId = isArchive ? 'archive-feedback' : (prefix ? `${prefix}feedback` : 'feedback');
+                showFeedback('All hints have been used', 'error', feedbackId);
+                return;
+            }
+            
             // Pass full dragDropContext to ensure handlers are properly attached to returned tiles
             // Include keyboard context properties for keyboard input system
             const hintContext = {

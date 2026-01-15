@@ -59,7 +59,8 @@ test.describe('Hints System', () => {
     await expect(hintButton).toBeDisabled();
     
     // Click hint button again (should show feedback)
-    await page.click('#hint-btn');
+    // Use force: true to click disabled button - this simulates a user trying to click when disabled
+    await page.click('#hint-btn', { force: true });
     await page.waitForTimeout(500);
     
     // Check for feedback message
