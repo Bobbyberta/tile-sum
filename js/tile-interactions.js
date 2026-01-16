@@ -209,6 +209,14 @@ export function handleSlotClick(e, placeTileCallback, removeTileCallback) {
         return;
     }
     
+    // If click target is a tile (not the slot itself), let the tile handler deal with it
+    // This prevents the slot handler from interfering with tile selection
+    const clickedElement = e.target;
+    if (clickedElement && (clickedElement.classList?.contains('tile') || clickedElement.closest?.('.tile'))) {
+        // Tile click handler will handle this - don't interfere
+        return;
+    }
+    
     const selectedTile = getSelectedTile();
     
     // If a tile is selected, place it in this slot (or swap if slot is filled)
@@ -220,6 +228,7 @@ export function handleSlotClick(e, placeTileCallback, removeTileCallback) {
     }
     
     // No tile selected - if slot is filled, remove tile (existing behavior)
+    // Only remove if clicking on the slot itself, not on the tile
     if (slot.classList.contains('filled')) {
         const tile = slot.querySelector('.tile');
         if (tile && tile.getAttribute('data-locked') !== 'true' && removeTileCallback) {

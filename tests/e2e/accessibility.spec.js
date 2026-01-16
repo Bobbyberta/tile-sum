@@ -58,10 +58,12 @@ test.describe('Accessibility Tests', () => {
     });
 
     test('should have no accessibility violations after placing tiles', async ({ page, browserName }) => {
-      // Place a tile
+      // Place a tile using click-to-select and click-to-place
       const tile = page.locator('.tile').first();
+      await tile.click(); // Select tile
+      
       const slot = page.locator('[data-word-slots="0"] .slot').first();
-      await tile.dragTo(slot);
+      await slot.click(); // Place tile in slot
       
       // Wait for UI to update
       await page.waitForTimeout(200);

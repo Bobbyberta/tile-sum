@@ -71,8 +71,9 @@ test.describe('Keyboard Navigation', () => {
     // Verify tile is in slot
     await expect(slot.locator('.tile')).toBeVisible();
     
-    // Focus slot and press Backspace
-    await slot.focus();
+    // Focus the tile inside the slot (slot becomes non-interactive when filled)
+    const tileInSlot = slot.locator('.tile');
+    await tileInSlot.focus();
     await page.keyboard.press('Backspace');
     
     // Verify tile is removed

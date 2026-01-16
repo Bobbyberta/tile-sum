@@ -152,7 +152,7 @@ describe('hints.js', () => {
       });
     };
 
-    it('should show "All hints have been used" feedback when hints remaining is 0', async () => {
+    it('should not show feedback when hints remaining is 0', async () => {
       const puzzleState = await import('../../js/puzzle-state.js');
       puzzleState.getHintsRemaining.mockReturnValue(0);
       
@@ -161,7 +161,8 @@ describe('hints.js', () => {
       
       provideHint(1, {});
       
-      expect(feedback.showFeedback).toHaveBeenCalledWith('All hints have been used', 'error', 'feedback');
+      // No feedback should be shown - button is already disabled
+      expect(feedback.showFeedback).not.toHaveBeenCalled();
     });
 
     it('should not provide hint when puzzle does not exist', () => {

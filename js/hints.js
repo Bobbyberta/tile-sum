@@ -100,8 +100,7 @@ export function provideHint(day, context = {}) {
     
     // Check if hints are available
     if (hintsRemaining <= 0) {
-        const feedbackId = isArchive ? 'archive-feedback' : (prefix ? `${prefix}feedback` : 'feedback');
-        showFeedback('All hints have been used', 'error', feedbackId);
+        // Button is already disabled, so no feedback needed
         return;
     }
     

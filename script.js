@@ -259,15 +259,12 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
         const newHintBtn = hintBtn.cloneNode(true);
         hintBtn.parentNode.replaceChild(newHintBtn, hintBtn);
         
-        // Handler function to check hints and provide hint or show feedback
+        // Handler function to check hints and provide hint
         const handleHintRequest = () => {
-            // Check if hints are available - show feedback if not
-            // This handles the case when button is clicked while disabled (e.g., with force: true in tests)
+            // Check if hints are available - return early if not
+            // Button is already disabled, so no feedback needed
             const hintsRemaining = stateManager.getHintsRemaining();
             if (hintsRemaining <= 0) {
-                const isArchive = prefix === 'archive-';
-                const feedbackId = isArchive ? 'archive-feedback' : (prefix ? `${prefix}feedback` : 'feedback');
-                showFeedback('All hints have been used', 'error', feedbackId);
                 return;
             }
             

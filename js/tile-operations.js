@@ -26,6 +26,47 @@ function debugLog(...args) {
     debugLogUtil('[Input]', ...args);
 }
 
+// Helper functions to manage slot and tile interactivity for accessibility
+// Pattern: Only ONE element is interactive at a time to avoid nested interactive elements
+// - Empty slots: Slot is interactive (role="button", tabindex="0")
+// - Filled slots: Tile is interactive (role="button", tabindex="0"), slot is NON-interactive
+// - Tiles in containers: Always interactive (role="button", tabindex="0")
+
+function makeSlotNonInteractive(slot) {
+    // Remove interactive properties from slot when it's filled
+    // The tile inside will be interactive instead
+    // Note: Removing role/tabindex only affects keyboard navigation and screen readers
+    // Click event handlers remain attached and functional - slots are still clickable
+    slot.removeAttribute('role');
+    slot.removeAttribute('tabindex');
+}
+
+function makeSlotInteractive(slot) {
+    // Restore interactive properties to slot when it becomes empty
+    // Only restore if slot is not locked
+    const isLocked = slot.getAttribute('data-locked') === 'true';
+    if (!isLocked) {
+        slot.setAttribute('role', 'button');
+        slot.setAttribute('tabindex', '0');
+    }
+}
+
+function makeTileNonInteractive(tile) {
+    // Remove interactive properties to prevent nested interactive elements
+    // Note: This is kept for potential future use, but currently tiles remain interactive in slots
+    tile.removeAttribute('role');
+    tile.removeAttribute('tabindex');
+}
+
+function makeTileInteractive(tile) {
+    // Restore interactive properties only if tile is not locked
+    const isLocked = tile.getAttribute('data-locked') === 'true';
+    if (!isLocked) {
+        tile.setAttribute('role', 'button');
+        tile.setAttribute('tabindex', '0');
+    }
+}
+
 // Helper function to attach handlers to a tile
 export function attachTileHandlers(tile, context, isInSlot = false) {
     const isLocked = tile.getAttribute('data-locked') === 'true';
@@ -212,6 +253,9 @@ export function placeTileInSlot(tile, slot, context = {}) {
         slot.appendChild(clonedTile);
         slot.classList.add('filled');
         slot.classList.remove('drag-over');
+        // Make slot non-interactive to prevent nested interactive elements (accessibility)
+        // Tile remains interactive and handles clicks/keyboard navigation
+        makeSlotNonInteractive(slot);
 
         // SAFEGUARD: Only remove original tile AFTER successful placement
         // Validate tile still exists before removing
@@ -227,6 +271,7 @@ export function placeTileInSlot(tile, slot, context = {}) {
             }
             
             // If tile was in a slot, remove filled class
+            // Slot remains interactive (no change needed)
             if (isFromSlot) {
                 isFromSlot.classList.remove('filled');
             }
@@ -405,8 +450,18 @@ function swapTiles(draggedTile, existingTile, targetSlot, context = {}) {
             attachTileHandlers(clonedExistingTile, context, true);
             draggedSlot.appendChild(clonedExistingTile);
             draggedSlot.classList.add('filled');
+            // Make slot non-interactive to prevent nested interactive elements (accessibility)
+            // Tile remains interactive and handles clicks/keyboard navigation
+            makeSlotNonInteractive(draggedSlot);
         } else {
             // If dragged tile was from container, return existing tile to container
+            // First, restore interactivity of the slot that existing tile was in (if any)
+            const existingTileSlot = actualExistingTile.closest('.slot');
+            if (existingTileSlot) {
+                existingTileSlot.classList.remove('filled');
+                makeSlotInteractive(existingTileSlot);
+            }
+            
             // Check if archive mode: either target slot is in archive OR dragged tile is from archive container
             const shouldUseArchiveReturn = (isArchivePuzzle || isDraggedFromArchiveContainer) && context.returnArchiveTileToContainer;
             if (shouldUseArchiveReturn) {
@@ -420,6 +475,9 @@ function swapTiles(draggedTile, existingTile, targetSlot, context = {}) {
         targetSlot.appendChild(clonedDraggedTile);
         targetSlot.classList.add('filled');
         targetSlot.classList.remove('drag-over');
+        // Make slot non-interactive to prevent nested interactive elements (accessibility)
+        // Tile remains interactive and handles clicks/keyboard navigation
+        makeSlotNonInteractive(targetSlot);
         
         // SAFEGUARD: Only remove original tiles AFTER successful placement
         // Validate tiles still exist before removing
@@ -536,6 +594,8 @@ export function removeTileFromSlot(slot, context = {}) {
         // Remove from slot
         tile.remove();
         slot.classList.remove('filled');
+        // Restore slot interactivity when emptied (accessibility)
+        makeSlotInteractive(slot);
 
         debugLog('removeTileFromSlot: Successfully removed tile');
 

@@ -435,7 +435,8 @@ describe('tile-interactions.js', () => {
       
       const placeTileCallback = vi.fn();
       const event = {
-        currentTarget: slot
+        currentTarget: slot,
+        target: slot // Click target is the slot itself
       };
       
       handleSlotClick(event, placeTileCallback, vi.fn());
@@ -444,7 +445,7 @@ describe('tile-interactions.js', () => {
       expect(deselectTile).toHaveBeenCalled();
     });
 
-    it('should remove tile from filled slot when no tile selected', async () => {
+    it('should remove tile from filled slot when no tile selected and clicking slot (not tile)', async () => {
       const { getSelectedTile } = await import('../../js/puzzle-state.js');
       const { slots1Container } = createMockPuzzleDOM();
       const slot = slots1Container.children[0];
@@ -456,13 +457,39 @@ describe('tile-interactions.js', () => {
       getSelectedTile.mockReturnValue(null);
       
       const removeTileCallback = vi.fn();
+      // Click on the slot itself, not the tile
       const event = {
-        currentTarget: slot
+        currentTarget: slot,
+        target: slot // Click target is the slot, not the tile
       };
       
       handleSlotClick(event, vi.fn(), removeTileCallback);
       
       expect(removeTileCallback).toHaveBeenCalledWith(slot);
+    });
+
+    it('should not remove tile when clicking tile in filled slot (let tile handler select it)', async () => {
+      const { getSelectedTile } = await import('../../js/puzzle-state.js');
+      const { slots1Container } = createMockPuzzleDOM();
+      const slot = slots1Container.children[0];
+      const tile = createMockTile('A', 0);
+      slot.appendChild(tile);
+      slot.classList.add('filled');
+      
+      // Ensure no tile is selected
+      getSelectedTile.mockReturnValue(null);
+      
+      const removeTileCallback = vi.fn();
+      // Click on the tile, not the slot
+      const event = {
+        currentTarget: slot,
+        target: tile // Click target is the tile
+      };
+      
+      handleSlotClick(event, vi.fn(), removeTileCallback);
+      
+      // Should NOT remove tile - tile handler will handle selection
+      expect(removeTileCallback).not.toHaveBeenCalled();
     });
 
     it('should not remove locked tile from slot', () => {
@@ -474,7 +501,8 @@ describe('tile-interactions.js', () => {
       
       const removeTileCallback = vi.fn();
       const event = {
-        currentTarget: slot
+        currentTarget: slot,
+        target: slot // Click target is the slot itself
       };
       
       handleSlotClick(event, vi.fn(), removeTileCallback);
@@ -493,13 +521,123 @@ describe('tile-interactions.js', () => {
       const placeTileCallback = vi.fn();
       const removeTileCallback = vi.fn();
       const event = {
-        currentTarget: slot
+        currentTarget: slot,
+        target: slot // Click target is the slot itself
       };
       
       handleSlotClick(event, placeTileCallback, removeTileCallback);
       
       expect(placeTileCallback).not.toHaveBeenCalled();
       expect(removeTileCallback).not.toHaveBeenCalled();
+    });
+
+    it('should place selected tile in filled slot when clicking filled slot', async () => {
+      const { getSelectedTile } = await import('../../js/puzzle-state.js');
+      const { deselectTile } = await import('../../js/keyboard.js');
+      const { slots1Container } = createMockPuzzleDOM();
+      const slot = slots1Container.children[0];
+      const existingTile = createMockTile('A', 0);
+      slot.appendChild(existingTile);
+      slot.classList.add('filled');
+      
+      const selectedTile = createMockTile('B', 1);
+      getSelectedTile.mockReturnValue(selectedTile);
+      
+      const placeTileCallback = vi.fn();
+      const event = {
+        currentTarget: slot,
+        target: slot // Click target is the slot itself (not the tile)
+      };
+      
+      handleSlotClick(event, placeTileCallback, vi.fn());
+      
+      // Should place selected tile in slot (will swap with existing tile)
+      expect(placeTileCallback).toHaveBeenCalledWith(selectedTile, slot);
+      expect(deselectTile).toHaveBeenCalled();
+    });
+  });
+
+  describe('click-to-select and click-to-place with filled slots', () => {
+    it('should place selected tile when clicking tile in filled slot', async () => {
+      const { getSelectedTile } = await import('../../js/puzzle-state.js');
+      const { deselectTile } = await import('../../js/keyboard.js');
+      const { slots1Container, tilesContainer } = createMockPuzzleDOM();
+      
+      // Create a tile in a filled slot
+      const slot = slots1Container.children[0];
+      const tileInSlot = createMockTile('A', 0);
+      slot.appendChild(tileInSlot);
+      slot.classList.add('filled');
+      
+      // Create a selected tile in container
+      const selectedTile = createMockTile('B', 1);
+      tilesContainer.appendChild(selectedTile);
+      getSelectedTile.mockReturnValue(selectedTile);
+      
+      const placeTileCallback = vi.fn();
+      const event = {
+        currentTarget: tileInSlot,
+        type: 'click',
+        stopPropagation: vi.fn()
+      };
+      
+      handleTileClick(event, placeTileCallback, vi.fn());
+      
+      // Should place selected tile in the slot (swapping with tile in slot)
+      expect(placeTileCallback).toHaveBeenCalledWith(selectedTile, slot);
+      expect(deselectTile).toHaveBeenCalled();
+    });
+
+    it('should select tile when clicking tile in filled slot and no tile selected', async () => {
+      const { getSelectedTile } = await import('../../js/puzzle-state.js');
+      const { selectTile } = await import('../../js/keyboard.js');
+      const { slots1Container } = createMockPuzzleDOM();
+      
+      // Create a tile in a filled slot
+      const slot = slots1Container.children[0];
+      const tileInSlot = createMockTile('A', 0);
+      slot.appendChild(tileInSlot);
+      slot.classList.add('filled');
+      
+      // No tile selected
+      getSelectedTile.mockReturnValue(null);
+      
+      const event = {
+        currentTarget: tileInSlot,
+        type: 'click',
+        stopPropagation: vi.fn()
+      };
+      
+      handleTileClick(event, vi.fn(), vi.fn());
+      
+      // Should select the clicked tile
+      expect(selectTile).toHaveBeenCalledWith(tileInSlot);
+    });
+
+    it('should place selected tile when clicking empty slot', async () => {
+      const { getSelectedTile } = await import('../../js/puzzle-state.js');
+      const { deselectTile } = await import('../../js/keyboard.js');
+      const { slots1Container, tilesContainer } = createMockPuzzleDOM();
+      
+      // Empty slot
+      const slot = slots1Container.children[0];
+      
+      // Create a selected tile in container
+      const selectedTile = createMockTile('A', 0);
+      tilesContainer.appendChild(selectedTile);
+      getSelectedTile.mockReturnValue(selectedTile);
+      
+      const placeTileCallback = vi.fn();
+      const event = {
+        currentTarget: slot,
+        target: slot // Click target is the slot itself
+      };
+      
+      handleSlotClick(event, placeTileCallback, vi.fn());
+      
+      // Should place selected tile in empty slot
+      expect(placeTileCallback).toHaveBeenCalledWith(selectedTile, slot);
+      expect(deselectTile).toHaveBeenCalled();
     });
   });
 });
