@@ -23,6 +23,7 @@ globs:
 - Group related functions together within modules
 - Each module in `js/` directory should have a single, focused responsibility
 - Main entry point is `script.js` which imports and wires together all modules
+- `drag-drop.js` is a re-export module that consolidates mouse-drag, touch-drag, tile-interactions, and tile-operations for backward compatibility
 - Add comments for complex logic or non-obvious behavior
 - Keep functions focused and single-purpose
 - Extract reusable logic into separate functions or utility modules

@@ -11,9 +11,9 @@ This file is the single source of truth for all Cursor rules. Edit this file, th
 **Always Apply:** true
 
 ### Project Overview
-- This is an Advent Puzzle Calendar web application - a daily word puzzle game
+- This is a daily word puzzle game - an anagram challenge where players arrange letter tiles
 - Players arrange letter tiles to form two words with Scrabble scoring
-- 25 puzzles unlock daily from December 1-25
+- 25 puzzles unlock daily from December 1-25 (Advent calendar format)
 - Hosted on GitHub Pages at https://sum-tile.uk
 
 ### Technology Stack
@@ -25,10 +25,11 @@ This file is the single source of truth for all Cursor rules. Edit this file, th
 
 ### Project Structure
 - Root files: `index.html`, `puzzle.html`, `archive.html`, `script.js`, `puzzle-data.js` (source), `puzzle-data-encoded.js` (generated)
-- JavaScript modules: `js/` directory containing modular files (archive.js, completion.js, drag-drop.js, feedback.js, hints.js, keyboard.js, modals.js, puzzle-core.js, puzzle-state.js, scoring.js, seo.js, ui.js, utils.js)
+- JavaScript modules (22 total in `js/`): Core (`puzzle-core.js`, `puzzle-state.js`), Interactions (`drag-drop.js` re-exports mouse/touch handlers, `tile-interactions.js`, `tile-operations.js`, `tile-validation.js`, `keyboard.js`, `keyboard-input.js`, `interaction-state.js`), Features (`scoring.js`, `hints.js`, `auto-complete.js`, `completion.js`, `streak.js`), UI (`ui.js`, `modals.js`, `feedback.js`, `archive.js`), Utilities (`utils.js`, `seo.js`)
 - CSS: Source in `src/styles.css`, compiled to `styles.css` in root
 - Build config: `tailwind.config.js`, `postcss.config.js`
-- Scripts: `scripts/encode-puzzle-data.js` for encoding puzzle data, `scripts/update-cursor-rules.js` for generating Cursor rules
+- Scripts: `scripts/encode-puzzle-data.js` for encoding puzzle data, `scripts/update-cursor-rules.js` for generating Cursor rules, `scripts/validation/` for puzzle data validation
+- Testing: Vitest for unit/integration tests, Playwright for E2E tests
 - Static assets: `favicon.svg`, `og-image.svg`, `CNAME`, `robots.txt`, `sitemap.xml`
 
 ### Deployment Requirements
@@ -49,6 +50,12 @@ This file is the single source of truth for all Cursor rules. Edit this file, th
 ### Browser Support
 - Target modern browsers: Chrome, Firefox, Safari, Edge (latest versions)
 - Use standard ES6+ features (no polyfills needed for target browsers)
+
+### Testing
+- Unit/Integration tests: Vitest with jsdom for DOM simulation
+- E2E tests: Playwright for browser testing
+- Run tests: `npm test` (unit), `npm run test:e2e` (E2E), `npm run test:all` (both)
+- Test helpers: `tests/helpers/` for utilities and fixtures
 
 ---
 
@@ -77,6 +84,7 @@ This file is the single source of truth for all Cursor rules. Edit this file, th
 - Group related functions together within modules
 - Each module in `js/` directory should have a single, focused responsibility
 - Main entry point is `script.js` which imports and wires together all modules
+- `drag-drop.js` is a re-export module that consolidates mouse-drag, touch-drag, tile-interactions, and tile-operations for backward compatibility
 - Add comments for complex logic or non-obvious behavior
 - Keep functions focused and single-purpose
 - Extract reusable logic into separate functions or utility modules

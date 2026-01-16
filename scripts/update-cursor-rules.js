@@ -4,12 +4,17 @@
  * Update Cursor Rules Script
  * 
  * Reads CURSOR_RULES_SOURCE.md and generates .mdc files in .cursor/rules/
+ * Also cleans up old rule files that no longer exist in the source.
  * 
  * Usage: node scripts/update-cursor-rules.js
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const SOURCE_FILE = path.join(__dirname, '..', 'CURSOR_RULES_SOURCE.md');
 const RULES_DIR = path.join(__dirname, '..', '.cursor', 'rules');
@@ -22,7 +27,7 @@ function ensureDirectories() {
     [RULES_DIR, globalDir, frontendDir].forEach(dir => {
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
-            console.log(`Created directory: ${dir}`);
+            console.log(`   Created directory: ${path.relative(process.cwd(), dir)}`);
         }
     });
 }
@@ -45,25 +50,30 @@ function parseSourceFile() {
         
         const [, category, title] = headerMatch;
         
-        // Extract metadata lines
-        const fileMatch = section.match(/\*\*File:\*\*\s*(.+?)$/m);
-        const descMatch = section.match(/\*\*Description:\*\*\s*(.+?)$/m);
-        const alwaysMatch = section.match(/\*\*Always Apply:\*\*\s*(.+?)$/m);
-        const globsMatch = section.match(/\*\*Globs:\*\*\s*(.+?)$/m);
+        // Extract metadata lines (more efficient: single regex pass)
+        const metadataPattern = /\*\*(File|Description|Always Apply|Globs):\*\*\s*(.+?)$/gm;
+        const metadata = {};
+        let match;
         
-        if (!fileMatch || !descMatch || !alwaysMatch) {
+        while ((match = metadataPattern.exec(section)) !== null) {
+            const key = match[1].toLowerCase().replace(/\s+/g, '');
+            metadata[key] = match[2].trim();
+        }
+        
+        // Validate required metadata
+        if (!metadata.file || !metadata.description || !metadata.alwaysapply) {
             console.warn(`⚠️  Skipping section "${title}" - missing required metadata`);
             continue;
         }
         
-        const file = fileMatch[1].trim().replace(/^`|`$/g, '');
-        const description = descMatch[1].trim();
-        const alwaysApply = alwaysMatch[1].trim().toLowerCase() === 'true';
+        const file = metadata.file.replace(/^`|`$/g, '');
+        const description = metadata.description;
+        const alwaysApply = metadata.alwaysapply.toLowerCase() === 'true';
         
         // Parse globs if present
         let parsedGlobs = null;
-        if (globsMatch) {
-            const globsStr = globsMatch[1].trim();
+        if (metadata.globs) {
+            const globsStr = metadata.globs;
             try {
                 parsedGlobs = JSON.parse(globsStr);
             } catch (e) {
@@ -72,12 +82,21 @@ function parseSourceFile() {
             }
         }
         
-        // Extract content (everything after the metadata lines)
-        // Find the last metadata line (either Globs or Always Apply)
-        const lastMetadataLine = globsMatch ? globsMatch[0] : alwaysMatch[0];
-        const lastMetadataIndex = section.indexOf(lastMetadataLine);
-        const contentStart = section.indexOf('\n\n', lastMetadataIndex);
-        const ruleContent = contentStart !== -1 ? section.substring(contentStart + 2).trim() : section.substring(lastMetadataIndex + lastMetadataLine.length).trim();
+        // Extract content (everything after the last metadata line)
+        // Find the last metadata match position
+        const lastMetadataMatch = [...section.matchAll(metadataPattern)].pop();
+        const contentStart = lastMetadataMatch 
+            ? section.indexOf('\n\n', lastMetadataMatch.index + lastMetadataMatch[0].length)
+            : -1;
+        
+        const ruleContent = contentStart !== -1 
+            ? section.substring(contentStart + 2).trim() 
+            : section.substring((lastMetadataMatch?.index || 0) + (lastMetadataMatch?.[0].length || 0)).trim();
+        
+        if (!ruleContent) {
+            console.warn(`⚠️  Skipping section "${title}" - no content found`);
+            continue;
+        }
         
         rules.push({
             category: category.toLowerCase(),
@@ -95,12 +114,13 @@ function parseSourceFile() {
 
 // Generate .mdc file content with frontmatter
 function generateMdcFile(rule) {
+    // Build YAML frontmatter
     const frontmatter = {
         description: rule.description,
         alwaysApply: rule.alwaysApply
     };
     
-    if (rule.globs) {
+    if (rule.globs && rule.globs.length > 0) {
         frontmatter.globs = rule.globs;
     }
     
@@ -108,7 +128,7 @@ function generateMdcFile(rule) {
     let yaml = '---\n';
     yaml += `description: ${JSON.stringify(rule.description)}\n`;
     yaml += `alwaysApply: ${rule.alwaysApply}\n`;
-    if (rule.globs) {
+    if (rule.globs && rule.globs.length > 0) {
         yaml += `globs:\n`;
         rule.globs.forEach(glob => {
             yaml += `  - ${JSON.stringify(glob)}\n`;
@@ -119,15 +139,41 @@ function generateMdcFile(rule) {
     return yaml + rule.content;
 }
 
-// Write .mdc files
+// Get all existing .mdc files in rules directory
+function getExistingRuleFiles() {
+    const existingFiles = new Set();
+    
+    if (!fs.existsSync(RULES_DIR)) {
+        return existingFiles;
+    }
+    
+    const categories = ['global', 'frontend'];
+    
+    for (const category of categories) {
+        const categoryDir = path.join(RULES_DIR, category);
+        if (fs.existsSync(categoryDir)) {
+            const files = fs.readdirSync(categoryDir);
+            files
+                .filter(file => file.endsWith('.mdc'))
+                .forEach(file => {
+                    existingFiles.add(path.join(category, file));
+                });
+        }
+    }
+    
+    return existingFiles;
+}
+
+// Write .mdc files and return set of written files
 function writeMdcFiles(rules) {
-    let writtenCount = 0;
+    const writtenFiles = new Set();
     
     rules.forEach(rule => {
         // Extract filename from file path
         const filename = path.basename(rule.file);
         const categoryDir = path.join(RULES_DIR, rule.category);
         const filePath = path.join(categoryDir, filename);
+        const relativePath = path.relative(process.cwd(), filePath);
         
         // Ensure category directory exists
         if (!fs.existsSync(categoryDir)) {
@@ -137,30 +183,66 @@ function writeMdcFiles(rules) {
         // Generate and write file
         const content = generateMdcFile(rule);
         fs.writeFileSync(filePath, content, 'utf-8');
-        console.log(`✓ Generated: ${filePath}`);
-        writtenCount++;
+        console.log(`   ✓ ${relativePath}`);
+        writtenFiles.add(path.join(rule.category, filename));
     });
     
-    return writtenCount;
+    return writtenFiles;
+}
+
+// Clean up old rule files that no longer exist in source
+function cleanupOldFiles(existingFiles, writtenFiles) {
+    const filesToDelete = [...existingFiles].filter(file => !writtenFiles.has(file));
+    
+    if (filesToDelete.length === 0) {
+        return 0;
+    }
+    
+    console.log(`\n🗑️  Cleaning up ${filesToDelete.length} old rule file(s)...`);
+    
+    let deletedCount = 0;
+    filesToDelete.forEach(file => {
+        const filePath = path.join(RULES_DIR, file);
+        try {
+            fs.unlinkSync(filePath);
+            console.log(`   ✗ Deleted: ${path.relative(process.cwd(), filePath)}`);
+            deletedCount++;
+        } catch (error) {
+            console.warn(`   ⚠️  Failed to delete ${filePath}: ${error.message}`);
+        }
+    });
+    
+    return deletedCount;
 }
 
 // Validate rule structure
 function validateRules(rules) {
     const errors = [];
+    const filePaths = new Set();
     
     rules.forEach((rule, index) => {
+        const ruleNum = index + 1;
+        
         if (!rule.category || !['global', 'frontend'].includes(rule.category)) {
-            errors.push(`Rule ${index + 1}: Invalid category "${rule.category}"`);
+            errors.push(`Rule ${ruleNum} ("${rule.title}"): Invalid category "${rule.category}"`);
         }
         if (!rule.file) {
-            errors.push(`Rule ${index + 1}: Missing file path`);
+            errors.push(`Rule ${ruleNum} ("${rule.title}"): Missing file path`);
         }
         if (!rule.description) {
-            errors.push(`Rule ${index + 1}: Missing description`);
+            errors.push(`Rule ${ruleNum} ("${rule.title}"): Missing description`);
         }
-        if (!rule.content) {
-            errors.push(`Rule ${index + 1}: Missing content`);
+        if (!rule.content || rule.content.trim().length === 0) {
+            errors.push(`Rule ${ruleNum} ("${rule.title}"): Missing or empty content`);
         }
+        
+        // Check for duplicate file paths
+        const filename = path.basename(rule.file);
+        const fileKey = `${rule.category}/${filename}`;
+        if (filePaths.has(fileKey)) {
+            errors.push(`Rule ${ruleNum} ("${rule.title}"): Duplicate file path "${fileKey}"`);
+        }
+        filePaths.add(fileKey);
     });
     
     return errors;
@@ -178,6 +260,9 @@ function main() {
     
     // Ensure directories exist
     ensureDirectories();
+    
+    // Get existing files before generating new ones
+    const existingFiles = getExistingRuleFiles();
     
     // Parse source file
     console.log('📖 Reading source file...');
@@ -202,16 +287,26 @@ function main() {
     
     // Generate .mdc files
     console.log('📝 Generating .mdc files...');
-    const writtenCount = writeMdcFiles(rules);
+    const writtenFiles = writeMdcFiles(rules);
     
-    console.log(`\n✅ Successfully generated ${writtenCount} rule file(s)`);
+    // Clean up old files
+    const deletedCount = cleanupOldFiles(existingFiles, writtenFiles);
+    
+    // Summary
+    console.log(`\n✅ Successfully generated ${writtenFiles.size} rule file(s)`);
+    if (deletedCount > 0) {
+        console.log(`   Deleted ${deletedCount} old rule file(s)`);
+    }
     console.log(`\n💡 Tip: Edit ${path.basename(SOURCE_FILE)} and run this script again to update rules.`);
 }
 
 // Run if executed directly
-if (require.main === module) {
+// In ES modules, we check if this file is the main module by comparing URLs
+const currentFileUrl = new URL(import.meta.url);
+const mainFileUrl = process.argv[1] ? new URL(process.argv[1], `file://`) : null;
+
+if (!mainFileUrl || currentFileUrl.pathname === mainFileUrl.pathname) {
     main();
 }
 
-module.exports = { parseSourceFile, generateMdcFile, validateRules };
-
+export { parseSourceFile, generateMdcFile, validateRules };
