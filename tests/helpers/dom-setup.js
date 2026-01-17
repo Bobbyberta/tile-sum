@@ -146,14 +146,14 @@ export function createMockTile(letter, index = 0, isLocked = false) {
   
   const letterDisplay = document.createElement('div');
   letterDisplay.className = 'font-bold font-inter';
-  letterDisplay.style.fontSize = '40px';
-  letterDisplay.style.lineHeight = '48px';
+  letterDisplay.style.fontSize = '36px';
+  letterDisplay.style.lineHeight = '44px';
   letterDisplay.textContent = letter;
 
   const scoreDisplay = document.createElement('div');
   scoreDisplay.className = 'opacity-90 font-inter absolute';
-  scoreDisplay.style.fontSize = '20px';
-  scoreDisplay.style.lineHeight = '24px';
+  scoreDisplay.style.fontSize = '16px';
+  scoreDisplay.style.lineHeight = '20px';
   scoreDisplay.style.bottom = '0px';
   scoreDisplay.style.left = 'calc(100% + 2px)';
   scoreDisplay.textContent = '1';

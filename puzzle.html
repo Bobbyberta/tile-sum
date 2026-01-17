@@ -235,18 +235,18 @@
         </div>
 
         <!-- Hint and Submit Buttons -->
-        <div class="mb-8 flex flex-col sm:flex-row gap-4">
+        <div class="mb-8 flex flex-row gap-4 md:justify-center">
             <button
                 id="hint-btn"
-                class="w-full md:w-auto px-8 py-3 bg-hint text-white font-bold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                style="font-size: 24px; line-height: 30px;"
+                class="flex-1 md:flex-none md:w-auto px-8 py-3 bg-hint text-white font-bold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                style="font-size: 20px; line-height: 25px;"
             >
                 Hint
             </button>
             <button 
                 id="submit-btn" 
-                class="w-full md:w-auto px-8 py-3 bg-submit text-text-primary font-black rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-submit focus:ring-offset-2 transition-colors"
-                style="font-size: 24px; line-height: 30px;"
+                class="flex-1 md:flex-none md:w-auto px-8 py-3 bg-submit text-text-primary font-black rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-submit focus:ring-offset-2 transition-colors"
+                style="font-size: 20px; line-height: 25px;"
             >
                 Submit
             </button>
@@ -314,20 +314,20 @@
                     <div class="flex items-center gap-3 mb-2">
                         <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-[60px] h-[60px] flex items-center justify-center shadow-md font-inter relative">
                             <div class="relative inline-block">
-                                <div class="text-2xl font-bold" style="font-size: 40px; line-height: 48px;">A</div>
-                                <div class="text-xs opacity-90 absolute" style="font-size: 20px; line-height: 24px; bottom: 0px; left: calc(100% + 2px);">1</div>
+                                <div class="text-2xl font-bold" style="font-size: 36px; line-height: 44px;">A</div>
+                                <div class="text-xs opacity-90 absolute" style="font-size: 16px; line-height: 20px; bottom: 0px; left: calc(100% + 2px);">1</div>
                             </div>
                         </div>
                         <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-[60px] h-[60px] flex items-center justify-center shadow-md font-inter relative">
                             <div class="relative inline-block">
-                                <div class="text-2xl font-bold" style="font-size: 40px; line-height: 48px;">Q</div>
-                                <div class="text-xs opacity-90 absolute" style="font-size: 20px; line-height: 24px; bottom: 0px; left: calc(100% + 2px);">10</div>
+                                <div class="text-2xl font-bold" style="font-size: 36px; line-height: 44px;">Q</div>
+                                <div class="text-xs opacity-90 absolute" style="font-size: 16px; line-height: 20px; bottom: 0px; left: calc(100% + 2px);">10</div>
                             </div>
                         </div>
                         <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-[60px] h-[60px] flex items-center justify-center shadow-md font-inter relative">
                             <div class="relative inline-block">
-                                <div class="text-2xl font-bold" style="font-size: 40px; line-height: 48px;">Z</div>
-                                <div class="text-xs opacity-90 absolute" style="font-size: 20px; line-height: 24px; bottom: 0px; left: calc(100% + 2px);">10</div>
+                                <div class="text-2xl font-bold" style="font-size: 36px; line-height: 44px;">Z</div>
+                                <div class="text-xs opacity-90 absolute" style="font-size: 16px; line-height: 20px; bottom: 0px; left: calc(100% + 2px);">10</div>
                             </div>
                         </div>
                     </div>
@@ -341,8 +341,8 @@
                     <div class="flex items-center gap-4 mb-2 flex-wrap">
                         <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-[60px] h-[60px] flex items-center justify-center shadow-md relative font-inter">
                             <div class="relative inline-block">
-                                <div class="text-2xl font-bold" style="font-size: 40px; line-height: 48px;">T</div>
-                                <div class="text-xs opacity-90 absolute" style="font-size: 20px; line-height: 24px; bottom: 0px; left: calc(100% + 2px);">1</div>
+                                <div class="text-2xl font-bold" style="font-size: 36px; line-height: 44px;">T</div>
+                                <div class="text-xs opacity-90 absolute" style="font-size: 16px; line-height: 20px; bottom: 0px; left: calc(100% + 2px);">1</div>
                             </div>
                             <!-- Drag cursor indicator -->
                             <div class="absolute -top-1 -right-1 w-4 h-4 bg-hint rounded-full flex items-center justify-center">
@@ -367,48 +367,54 @@
                 <div class="mb-6">
                     <h3 class="text-lg font-semibold text-text-primary mb-3">3. Form Words</h3>
                     <p class="text-text-primary mb-3">Arrange tiles to form two words that match the scrabble score value.</p>
-                    <div class="bg-white rounded-lg shadow-md p-4 mb-2">
+                    <div class="bg-slot-container rounded-lg shadow-md p-4 mb-2 border-0">
                         <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
                             <span class="text-sm font-semibold text-text-primary whitespace-nowrap">Word 1:</span>
                             <div class="flex gap-1">
                                 <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-2 w-[60px] h-[60px] flex items-center justify-center shadow-md font-inter relative">
                                     <div class="relative inline-block">
-                                        <div class="text-xl font-bold" style="font-size: 40px; line-height: 48px;">C</div>
-                                        <div class="text-xs opacity-90 absolute" style="font-size: 20px; line-height: 24px; bottom: 0px; left: calc(100% + 2px);">3</div>
+                                        <div class="text-xl font-bold" style="font-size: 36px; line-height: 44px;">C</div>
+                                        <div class="text-xs opacity-90 absolute" style="font-size: 16px; line-height: 20px; bottom: 0px; left: calc(100% + 2px);">3</div>
                                     </div>
                                 </div>
                                 <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-2 w-[60px] h-[60px] flex items-center justify-center shadow-md font-inter relative">
                                     <div class="relative inline-block">
-                                        <div class="text-xl font-bold" style="font-size: 40px; line-height: 48px;">A</div>
-                                        <div class="text-xs opacity-90 absolute" style="font-size: 20px; line-height: 24px; bottom: 0px; left: calc(100% + 2px);">1</div>
+                                        <div class="text-xl font-bold" style="font-size: 36px; line-height: 44px;">A</div>
+                                        <div class="text-xs opacity-90 absolute" style="font-size: 16px; line-height: 20px; bottom: 0px; left: calc(100% + 2px);">1</div>
                                     </div>
                                 </div>
                                 <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-2 w-[60px] h-[60px] flex items-center justify-center shadow-md font-inter relative">
                                     <div class="relative inline-block">
-                                        <div class="text-xl font-bold" style="font-size: 40px; line-height: 48px;">T</div>
-                                        <div class="text-xs opacity-90 absolute" style="font-size: 20px; line-height: 24px; bottom: 0px; left: calc(100% + 2px);">1</div>
+                                        <div class="text-xl font-bold" style="font-size: 36px; line-height: 44px;">T</div>
+                                        <div class="text-xs opacity-90 absolute" style="font-size: 16px; line-height: 20px; bottom: 0px; left: calc(100% + 2px);">1</div>
                                     </div>
                                 </div>
                             </div>
-                            <span class="text-sm text-text-primary sm:ml-2">Score: 5</span>
+                            <div class="bg-category-bg rounded-[16px] px-3 py-2.5 text-white font-rem sm:ml-2" style="font-size: 20px; line-height: 25px; font-weight: 500;">5 / 5 points</div>
                         </div>
                         <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                             <span class="text-sm font-semibold text-text-primary whitespace-nowrap">Word 2:</span>
                             <div class="flex gap-1">
-                                <div class="bg-hint text-white rounded-[12px] p-2 w-[60px] h-[60px] flex flex-col items-center justify-center shadow-md font-inter">
-                                    <div class="text-xl font-bold" style="font-size: 40px; line-height: 48px;">D</div>
-                                    <div class="text-xs opacity-90" style="font-size: 20px; line-height: 24px;">2</div>
+                                <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-2 w-[60px] h-[60px] flex items-center justify-center shadow-md font-inter relative">
+                                    <div class="relative inline-block">
+                                        <div class="text-xl font-bold" style="font-size: 36px; line-height: 44px;">D</div>
+                                        <div class="text-xs opacity-90 absolute" style="font-size: 16px; line-height: 20px; bottom: 0px; left: calc(100% + 2px);">2</div>
+                                    </div>
                                 </div>
-                                <div class="bg-hint text-white rounded-[12px] p-2 w-[60px] h-[60px] flex flex-col items-center justify-center shadow-md font-inter">
-                                    <div class="text-xl font-bold" style="font-size: 40px; line-height: 48px;">O</div>
-                                    <div class="text-xs opacity-90" style="font-size: 20px; line-height: 24px;">1</div>
+                                <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-2 w-[60px] h-[60px] flex items-center justify-center shadow-md font-inter relative">
+                                    <div class="relative inline-block">
+                                        <div class="text-xl font-bold" style="font-size: 36px; line-height: 44px;">O</div>
+                                        <div class="text-xs opacity-90 absolute" style="font-size: 16px; line-height: 20px; bottom: 0px; left: calc(100% + 2px);">1</div>
+                                    </div>
                                 </div>
-                                <div class="bg-hint text-white rounded-[12px] p-2 w-[60px] h-[60px] flex flex-col items-center justify-center shadow-md font-inter">
-                                    <div class="text-xl font-bold" style="font-size: 40px; line-height: 48px;">G</div>
-                                    <div class="text-xs opacity-90" style="font-size: 20px; line-height: 24px;">2</div>
+                                <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-2 w-[60px] h-[60px] flex items-center justify-center shadow-md font-inter relative">
+                                    <div class="relative inline-block">
+                                        <div class="text-xl font-bold" style="font-size: 36px; line-height: 44px;">G</div>
+                                        <div class="text-xs opacity-90 absolute" style="font-size: 16px; line-height: 20px; bottom: 0px; left: calc(100% + 2px);">2</div>
+                                    </div>
                                 </div>
                             </div>
-                            <span class="text-sm text-text-primary sm:ml-2">Score: 5</span>
+                            <div class="bg-category-bg rounded-[16px] px-3 py-2.5 text-white font-rem sm:ml-2" style="font-size: 20px; line-height: 25px; font-weight: 500;">5 / 5 points</div>
                         </div>
                     </div>
                     <p class="text-sm text-text-primary">Fill all slots for both words, then submit to check your solution!</p>

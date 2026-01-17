@@ -152,7 +152,7 @@ export function loadArchivePuzzle(dateString) {
         return;
     }
     
-    // Format date for display
+    // Format date for display (not displayed in archive mode, but kept for future use)
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const dayName = dayNames[date.getDay()];
     const daySuffix = getDaySuffix(date.getDate());
@@ -160,6 +160,16 @@ export function loadArchivePuzzle(dateString) {
     
     // Create puzzle DOM structure
     createPuzzleDOMStructure(archiveContent, 'archive-', dateDisplay);
+    
+    // Hide the date title in archive mode (date picker remains visible)
+    const puzzleTitle = document.getElementById('archive-puzzle-title');
+    if (puzzleTitle) {
+        // Hide the title element by hiding its parent header
+        const titleHeader = puzzleTitle.closest('header');
+        if (titleHeader) {
+            titleHeader.classList.add('hidden');
+        }
+    }
     
     // Initialize the puzzle interface using shared initialization function
     initArchivePuzzle(puzzleNumber, dateString);

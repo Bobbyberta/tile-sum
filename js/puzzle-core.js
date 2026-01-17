@@ -45,14 +45,14 @@ export function createTile(letter, index, isLocked = false, handlers = {}) {
     
     const letterDisplay = document.createElement('div');
     letterDisplay.className = 'font-bold font-inter';
-    letterDisplay.style.fontSize = '40px';
-    letterDisplay.style.lineHeight = '48px';
+    letterDisplay.style.fontSize = '36px';
+    letterDisplay.style.lineHeight = '44px';
     letterDisplay.textContent = letter;
 
     const scoreDisplay = document.createElement('div');
     scoreDisplay.className = 'opacity-90 font-inter absolute';
-    scoreDisplay.style.fontSize = '20px';
-    scoreDisplay.style.lineHeight = '24px';
+    scoreDisplay.style.fontSize = '16px';
+    scoreDisplay.style.lineHeight = '20px';
     scoreDisplay.style.bottom = '0px';
     scoreDisplay.style.left = 'calc(100% + 2px)';
     scoreDisplay.textContent = SCRABBLE_SCORES[letter.toUpperCase()] || 0;
@@ -263,7 +263,7 @@ export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     
     const tilesContainer = document.createElement('div');
     tilesContainer.id = `${prefix}tiles-container`;
-    tilesContainer.className = 'flex flex-wrap gap-2 p-4 bg-tile-bg rounded-lg shadow-md justify-center';
+    tilesContainer.className = 'flex flex-wrap gap-2 justify-center';
     tilesCenteringWrapper.appendChild(tilesContainer);
     
     tilesWrapper.appendChild(tilesCenteringWrapper);
@@ -281,28 +281,28 @@ export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     
     const wordSlotsContainer = document.createElement('div');
     wordSlotsContainer.id = `${prefix}word-slots`;
-    wordSlotsContainer.className = 'grid grid-cols-1 md:grid-cols-2 md:flex md:flex-row md:gap-5 gap-6';
+    wordSlotsContainer.className = 'grid grid-cols-1 md:grid-cols-2 md:flex md:flex-row md:justify-center md:gap-5 gap-6';
     slotsWrapper.appendChild(wordSlotsContainer);
     
     containerElement.appendChild(slotsWrapper);
     
     // Create buttons container matching puzzle.html structure
     const buttonsContainer = document.createElement('div');
-    buttonsContainer.className = 'mb-8 flex flex-col sm:flex-row gap-4';
+    buttonsContainer.className = 'mb-8 flex flex-row gap-4 md:justify-center';
     
     const hintBtn = document.createElement('button');
     hintBtn.id = `${prefix}hint-btn`;
-    hintBtn.className = 'w-full md:w-auto px-8 py-3 bg-hint text-white font-bold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-rem';
-    hintBtn.style.fontSize = '24px';
-    hintBtn.style.lineHeight = '30px';
+    hintBtn.className = 'flex-1 md:flex-none md:w-auto px-8 py-3 bg-hint text-white font-bold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-rem';
+    hintBtn.style.fontSize = '20px';
+    hintBtn.style.lineHeight = '25px';
     hintBtn.textContent = 'Hint';
     buttonsContainer.appendChild(hintBtn);
     
     const submitBtn = document.createElement('button');
     submitBtn.id = `${prefix}submit-btn`;
-    submitBtn.className = 'w-full md:w-auto px-8 py-3 bg-submit text-text-primary font-black rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-submit focus:ring-offset-2 transition-colors font-rem';
-    submitBtn.style.fontSize = '24px';
-    submitBtn.style.lineHeight = '30px';
+    submitBtn.className = 'flex-1 md:flex-none md:w-auto px-8 py-3 bg-submit text-text-primary font-black rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-submit focus:ring-offset-2 transition-colors font-rem';
+    submitBtn.style.fontSize = '20px';
+    submitBtn.style.lineHeight = '25px';
     submitBtn.textContent = 'Submit';
     buttonsContainer.appendChild(submitBtn);
     
