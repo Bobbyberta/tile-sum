@@ -14,6 +14,11 @@
     <link rel="alternate icon" href="/favicon.png">
     <link rel="apple-touch-icon" href="/favicon.png">
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=REM:wght@400;500;700;900&family=Inter:wght@700&display=swap" rel="stylesheet">
+    
     <!-- Social Sharing Meta Tags (will be updated dynamically by JavaScript) -->
     <meta property="og:title" content="Puzzle - Sum Tile | Daily Word Puzzle" id="og-title">
     <meta property="og:description" content="Daily word puzzle game - Arrange letter tiles to form words in this Scrabble anagram challenge." id="og-description">
@@ -104,15 +109,16 @@
         }
         .slot {
             min-height: 60px;
-            border: 2px dashed #cbd5e1;
+            border: 3px dashed #4E2E07;
+            border-radius: 8px;
             transition: all 0.2s;
         }
         .slot.drag-over {
-            border-color: #6366f1;
-            background-color: #eef2ff;
+            border-color: #4E2E07;
+            background-color: rgba(230, 189, 83, 0.3);
         }
         .tile.drag-over {
-            outline: 2px solid #6366f1;
+            outline: 2px solid #4E2E07;
             outline-offset: 2px;
             transform: scale(1.05);
         }
@@ -122,29 +128,27 @@
         }
         .tile.locked {
             cursor: not-allowed;
-            border: 4px solid #f59e0b;
-            box-shadow: 0 0 0 2px #fef3c7;
+            border: 4px solid #FB5E52;
+            background-color: #FB5E52;
+            color: #FFFFFF;
         }
         .tile:focus {
-            outline: 3px solid #6366f1;
-            outline-offset: 3px;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+            outline: 2px solid #1C2542;
+            outline-offset: 2px;
         }
         .tile:focus:not(.ring-4) {
             /* Ensure focus is visible even when not selected */
-            outline: 3px solid #6366f1;
-            outline-offset: 3px;
+            outline: 2px solid #1C2542;
+            outline-offset: 2px;
         }
         .tile.ring-4:focus {
             /* When selected and focused, show both selection ring and focus outline */
-            outline: 3px solid #6366f1;
-            outline-offset: 3px;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3), 0 0 0 4px rgba(250, 204, 21, 0.4);
+            outline: 2px solid #1C2542;
+            outline-offset: 2px;
         }
         .slot:focus {
-            outline: 3px solid #6366f1;
-            outline-offset: 3px;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+            outline: 2px solid #1C2542;
+            outline-offset: 2px;
         }
         .sr-only {
             position: absolute;
@@ -158,8 +162,8 @@
             border-width: 0;
         }
         .slot.locked {
-            border-color: #f59e0b;
-            background-color: #fef3c7;
+            border-color: #FB5E52;
+            background-color: rgba(251, 94, 82, 0.2);
         }
         #success-modal, #error-modal {
             animation: fadeIn 0.3s ease-in;
@@ -174,41 +178,40 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+<body class="bg-bg-primary min-h-screen font-rem">
     <!-- Skip to main content link -->
-    <a href="#main-content" class="sr-only focus:w-auto focus:h-auto focus:p-4 focus:m-0 focus:overflow-visible focus:clip-auto focus:whitespace-normal focus:border-0 focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-indigo-700 focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">
+    <a href="#main-content" class="sr-only focus:w-auto focus:h-auto focus:p-4 focus:m-0 focus:overflow-visible focus:clip-auto focus:whitespace-normal focus:border-0 focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-hint focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2">
         Skip to main content
     </a>
     <main class="container mx-auto px-4 py-8 max-w-4xl" id="main-content">
         <header class="mb-8">
             <nav class="flex items-center justify-between mb-4" aria-label="Page navigation">
-                <a href="index.html" id="back-link" class="text-indigo-700 hover:text-indigo-900 font-semibold inline-block">
+                <a href="index.html" id="back-link" class="text-text-primary hover:opacity-80 font-semibold inline-block">
                     ← Back to Calendar
                 </a>
-                <a href="archive.html" id="archive-link" class="text-indigo-700 hover:text-indigo-900 font-semibold inline-block hidden">
+                <a href="archive.html" id="archive-link" class="text-text-primary hover:opacity-80 font-semibold inline-block hidden">
                     View Archive →
                 </a>
             </nav>
             <p id="test-mode-indicator" class="hidden mt-2 text-sm text-orange-700 font-semibold"></p>
             <div class="flex items-center justify-between mb-2">
-                <h1 class="text-3xl md:text-4xl font-bold text-indigo-900" id="puzzle-title">
+                <h1 class="text-3xl md:text-4xl font-bold text-text-primary" id="puzzle-title" style="font-size: 48px; line-height: 60px;">
                     <!-- Title will be set by JavaScript -->
                 </h1>
                 <button 
                     id="help-btn"
-                    class="text-indigo-900 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-2"
+                    class="text-text-primary hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-text-primary rounded-full w-[45px] h-[45px] border-4 border-text-primary rounded-full flex items-center justify-center font-rem font-black"
+                    style="font-size: 24px; line-height: 30px;"
                     aria-label="Show help"
                 >
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+                    ?
                 </button>
             </div>
         </header>
 
         <!-- Streak Counter -->
         <div id="streak-container" class="mb-4 flex justify-end hidden">
-            <div class="flex items-center gap-2 text-indigo-900 font-semibold text-lg">
+            <div class="flex items-center gap-2 text-text-primary font-semibold text-lg">
                 <span id="streak-display" aria-label="Current streak"></span>
             </div>
         </div>
@@ -216,7 +219,7 @@
         <!-- Tiles Container -->
         <div class="mb-8">
             <h2 class="sr-only">Available Tiles</h2>
-            <div id="tiles-container" class="flex flex-wrap gap-2 p-4 bg-white rounded-lg shadow-md min-h-[100px]">
+            <div id="tiles-container" class="flex flex-wrap gap-2 p-4 bg-tile-bg rounded-lg shadow-md min-h-[100px]">
                 <!-- Tiles will be generated by JavaScript -->
             </div>
         </div>
@@ -224,7 +227,7 @@
         <!-- Puzzle Slots -->
         <div class="mb-8">
             <h2 class="sr-only">Word Slots</h2>
-            <div id="word-slots" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="word-slots" class="grid grid-cols-1 md:grid-cols-2 md:flex md:flex-row md:gap-5 gap-6">
                 <!-- Word slots will be generated by JavaScript -->
             </div>
         </div>
@@ -233,13 +236,15 @@
         <div class="mb-8 flex flex-col sm:flex-row gap-4">
             <button
                 id="hint-btn"
-                class="w-full md:w-auto px-8 py-3 bg-amber-700 text-white font-semibold rounded-lg hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                class="w-full md:w-auto px-8 py-3 bg-hint text-white font-bold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                style="font-size: 24px; line-height: 30px;"
             >
                 Get Hint
             </button>
             <button 
                 id="submit-btn" 
-                class="w-full md:w-auto px-8 py-3 bg-indigo-700 text-white font-semibold rounded-lg hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-colors"
+                class="w-full md:w-auto px-8 py-3 bg-submit text-text-primary font-black rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-submit focus:ring-offset-2 transition-colors"
+                style="font-size: 24px; line-height: 30px;"
             >
                 Submit Solution
             </button>
@@ -256,14 +261,14 @@
         <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4 relative">
             <button 
                 id="close-success-modal"
-                class="absolute top-4 right-4 text-gray-700 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1"
+                class="absolute top-4 right-4 text-gray-700 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-text-primary rounded-full p-1"
                 aria-label="Close modal"
             >
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
-            <h2 id="modal-title" class="text-3xl font-bold text-indigo-900 mb-4 text-center">You solved the puzzle!</h2>
+            <h2 id="modal-title" class="text-3xl font-bold text-text-primary mb-4 text-center">You solved the puzzle!</h2>
             <p id="hints-used-message" class="text-center text-gray-700 mb-4"></p>
             <div id="share-message-container" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <p id="share-message" class="text-sm text-gray-700 whitespace-pre-wrap break-words"></p>
@@ -271,7 +276,7 @@
             <div class="flex justify-center gap-4">
                 <button
                     id="share-btn"
-                    class="px-8 py-3 bg-amber-700 text-white font-semibold rounded-lg hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    class="px-8 py-3 bg-hint text-white font-semibold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     Copy
                 </button>
@@ -285,10 +290,10 @@
             <!-- Sticky Header -->
             <div class="sticky top-0 bg-white rounded-t-lg border-b border-gray-200 px-6 md:px-8 pt-6 md:pt-8 pb-4 z-10">
                 <div class="flex items-center justify-between">
-                    <h2 id="help-modal-title" class="text-2xl font-bold text-indigo-900">How to Play</h2>
+                    <h2 id="help-modal-title" class="text-2xl font-bold text-text-primary">How to Play</h2>
                     <button 
                         id="close-help-modal"
-                        class="text-gray-600 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1"
+                        class="text-gray-600 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-text-primary rounded-full p-1"
                         aria-label="Close modal"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -302,102 +307,102 @@
             <div id="help-modal-content" class="overflow-y-auto px-6 md:px-8 pt-6 md:pt-8 pb-6 md:pb-8">
                 <!-- Step 1: Tile Appearance -->
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-indigo-900 mb-3">1. Understand the Tiles</h3>
-                    <p class="text-indigo-900 mb-3">Each tile shows a letter and its Scrabble point value.</p>
+                    <h3 class="text-lg font-semibold text-text-primary mb-3">1. Understand the Tiles</h3>
+                    <p class="text-text-primary mb-3">Each tile shows a letter and its Scrabble point value.</p>
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="bg-indigo-600 text-white rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center shadow-md">
-                            <div class="text-2xl font-bold">A</div>
-                            <div class="text-xs mt-1 opacity-90">1</div>
+                        <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-12 h-12 flex flex-col items-center justify-center shadow-md font-inter">
+                            <div class="text-2xl font-bold" style="font-size: 40px; line-height: 48px;">A</div>
+                            <div class="text-xs mt-1 opacity-90" style="font-size: 20px; line-height: 24px;">1</div>
                         </div>
-                        <div class="bg-indigo-600 text-white rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center shadow-md">
-                            <div class="text-2xl font-bold">Q</div>
-                            <div class="text-xs mt-1 opacity-90">10</div>
+                        <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-12 h-12 flex flex-col items-center justify-center shadow-md font-inter">
+                            <div class="text-2xl font-bold" style="font-size: 40px; line-height: 48px;">Q</div>
+                            <div class="text-xs mt-1 opacity-90" style="font-size: 20px; line-height: 24px;">10</div>
                         </div>
-                        <div class="bg-indigo-600 text-white rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center shadow-md">
-                            <div class="text-2xl font-bold">Z</div>
-                            <div class="text-xs mt-1 opacity-90">10</div>
+                        <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-12 h-12 flex flex-col items-center justify-center shadow-md font-inter">
+                            <div class="text-2xl font-bold" style="font-size: 40px; line-height: 48px;">Z</div>
+                            <div class="text-xs mt-1 opacity-90" style="font-size: 20px; line-height: 24px;">10</div>
                         </div>
                     </div>
-                    <p class="text-sm text-indigo-900">The large letter is what you use to form words. The small number is the Scrabble score.</p>
+                    <p class="text-sm text-text-primary">The large letter is what you use to form words. The small number is the Scrabble score.</p>
                 </div>
 
                 <!-- Step 2: Dragging Tiles -->
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-indigo-900 mb-3">2. Drag Tiles to Slots</h3>
-                    <p class="text-indigo-900 mb-3">Click and drag tiles from the top container into the word slots below.</p>
+                    <h3 class="text-lg font-semibold text-text-primary mb-3">2. Drag Tiles to Slots</h3>
+                    <p class="text-text-primary mb-3">Click and drag tiles from the top container into the word slots below.</p>
                     <div class="flex items-center gap-4 mb-2 flex-wrap">
-                        <div class="bg-indigo-700 text-white rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center shadow-md relative">
-                            <div class="text-2xl font-bold">T</div>
-                            <div class="text-xs mt-1 opacity-90">1</div>
+                        <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-12 h-12 flex flex-col items-center justify-center shadow-md relative font-inter">
+                            <div class="text-2xl font-bold" style="font-size: 40px; line-height: 48px;">T</div>
+                            <div class="text-xs mt-1 opacity-90" style="font-size: 20px; line-height: 24px;">1</div>
                             <!-- Drag cursor indicator -->
-                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center">
+                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-hint rounded-full flex items-center justify-center">
                                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"></path>
                                 </svg>
                             </div>
                         </div>
                         <!-- Arrow SVG -->
-                        <svg class="w-8 h-8 text-indigo-700 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-8 h-8 text-text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                         </svg>
                         <!-- Empty slot -->
-                        <div class="w-12 h-14 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 bg-gray-50">
-                            <span class="text-gray-700 text-xs">Slot</span>
+                        <div class="w-12 h-12 rounded-[8px] flex items-center justify-center border-[3px] border-dashed border-slot-border">
+                            <span class="text-text-primary text-xs">Slot</span>
                         </div>
                     </div>
-                    <p class="text-sm text-indigo-900">You can also click a tile, then click a slot to place it. Use keyboard navigation for accessibility.</p>
+                    <p class="text-sm text-text-primary">You can also click a tile, then click a slot to place it. Use keyboard navigation for accessibility.</p>
                 </div>
 
                 <!-- Step 3: Completed Word -->
                 <div class="mb-6">
-                    <h3 class="text-lg font-semibold text-indigo-900 mb-3">3. Form Words</h3>
-                    <p class="text-indigo-900 mb-3">Arrange tiles to form two words that match the scrabble score value.</p>
+                    <h3 class="text-lg font-semibold text-text-primary mb-3">3. Form Words</h3>
+                    <p class="text-text-primary mb-3">Arrange tiles to form two words that match the scrabble score value.</p>
                     <div class="bg-white rounded-lg shadow-md p-4 mb-2">
                         <div class="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
-                            <span class="text-sm font-semibold text-indigo-900 whitespace-nowrap">Word 1:</span>
+                            <span class="text-sm font-semibold text-text-primary whitespace-nowrap">Word 1:</span>
                             <div class="flex gap-1">
-                                <div class="bg-indigo-600 text-white rounded-lg p-2 w-12 h-14 flex flex-col items-center justify-center shadow-md">
-                                    <div class="text-xl font-bold">C</div>
-                                    <div class="text-xs opacity-90">3</div>
+                                <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-2 w-12 h-12 flex flex-col items-center justify-center shadow-md font-inter">
+                                    <div class="text-xl font-bold" style="font-size: 40px; line-height: 48px;">C</div>
+                                    <div class="text-xs opacity-90" style="font-size: 20px; line-height: 24px;">3</div>
                                 </div>
-                                <div class="bg-indigo-600 text-white rounded-lg p-2 w-12 h-14 flex flex-col items-center justify-center shadow-md">
-                                    <div class="text-xl font-bold">A</div>
-                                    <div class="text-xs opacity-90">1</div>
+                                <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-2 w-12 h-12 flex flex-col items-center justify-center shadow-md font-inter">
+                                    <div class="text-xl font-bold" style="font-size: 40px; line-height: 48px;">A</div>
+                                    <div class="text-xs opacity-90" style="font-size: 20px; line-height: 24px;">1</div>
                                 </div>
-                                <div class="bg-indigo-600 text-white rounded-lg p-2 w-12 h-14 flex flex-col items-center justify-center shadow-md">
-                                    <div class="text-xl font-bold">T</div>
-                                    <div class="text-xs opacity-90">1</div>
+                                <div class="bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-2 w-12 h-12 flex flex-col items-center justify-center shadow-md font-inter">
+                                    <div class="text-xl font-bold" style="font-size: 40px; line-height: 48px;">T</div>
+                                    <div class="text-xs opacity-90" style="font-size: 20px; line-height: 24px;">1</div>
                                 </div>
                             </div>
-                            <span class="text-sm text-indigo-900 sm:ml-2">Score: 5</span>
+                            <span class="text-sm text-text-primary sm:ml-2">Score: 5</span>
                         </div>
                         <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="text-sm font-semibold text-indigo-900 whitespace-nowrap">Word 2:</span>
+                            <span class="text-sm font-semibold text-text-primary whitespace-nowrap">Word 2:</span>
                             <div class="flex gap-1">
-                                <div class="bg-indigo-700 text-white rounded-lg p-2 w-12 h-14 flex flex-col items-center justify-center shadow-md">
-                                    <div class="text-xl font-bold">D</div>
-                                    <div class="text-xs opacity-90">2</div>
+                                <div class="bg-hint text-white rounded-[12px] p-2 w-12 h-12 flex flex-col items-center justify-center shadow-md font-inter">
+                                    <div class="text-xl font-bold" style="font-size: 40px; line-height: 48px;">D</div>
+                                    <div class="text-xs opacity-90" style="font-size: 20px; line-height: 24px;">2</div>
                                 </div>
-                                <div class="bg-indigo-700 text-white rounded-lg p-2 w-12 h-14 flex flex-col items-center justify-center shadow-md">
-                                    <div class="text-xl font-bold">O</div>
-                                    <div class="text-xs opacity-90">1</div>
+                                <div class="bg-hint text-white rounded-[12px] p-2 w-12 h-12 flex flex-col items-center justify-center shadow-md font-inter">
+                                    <div class="text-xl font-bold" style="font-size: 40px; line-height: 48px;">O</div>
+                                    <div class="text-xs opacity-90" style="font-size: 20px; line-height: 24px;">1</div>
                                 </div>
-                                <div class="bg-indigo-700 text-white rounded-lg p-2 w-12 h-14 flex flex-col items-center justify-center shadow-md">
-                                    <div class="text-xl font-bold">G</div>
-                                    <div class="text-xs opacity-90">2</div>
+                                <div class="bg-hint text-white rounded-[12px] p-2 w-12 h-12 flex flex-col items-center justify-center shadow-md font-inter">
+                                    <div class="text-xl font-bold" style="font-size: 40px; line-height: 48px;">G</div>
+                                    <div class="text-xs opacity-90" style="font-size: 20px; line-height: 24px;">2</div>
                                 </div>
                             </div>
-                            <span class="text-sm text-indigo-900 sm:ml-2">Score: 5</span>
+                            <span class="text-sm text-text-primary sm:ml-2">Score: 5</span>
                         </div>
                     </div>
-                    <p class="text-sm text-indigo-900">Fill all slots for both words, then submit to check your solution!</p>
+                    <p class="text-sm text-text-primary">Fill all slots for both words, then submit to check your solution!</p>
                 </div>
 
                 <!-- Close Button -->
                 <div class="flex justify-center pt-4 border-t border-gray-200 mt-6">
                     <button 
                         id="close-help-modal-btn"
-                        class="px-8 py-3 bg-indigo-700 text-white font-semibold rounded-lg hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-colors"
+                        class="px-8 py-3 bg-submit text-text-primary font-semibold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-submit focus:ring-offset-2 transition-colors"
                     >
                         Got it
                     </button>

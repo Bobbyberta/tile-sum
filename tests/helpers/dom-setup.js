@@ -23,28 +23,28 @@ export function createMockPuzzleDOM(prefix = '') {
 
   // Create word containers
   const word1Container = document.createElement('div');
-  word1Container.className = 'bg-white rounded-lg shadow-md p-4';
+  word1Container.className = 'bg-slot-container rounded-[24px] shadow-container p-2 flex flex-col items-end gap-3';
   word1Container.setAttribute('data-word-index', '0');
   word1Container.setAttribute('data-max-score', '10');
 
   const word2Container = document.createElement('div');
-  word2Container.className = 'bg-white rounded-lg shadow-md p-4';
+  word2Container.className = 'bg-slot-container rounded-[24px] shadow-container p-2 flex flex-col items-end gap-3';
   word2Container.setAttribute('data-word-index', '1');
   word2Container.setAttribute('data-max-score', '12');
 
   // Create slots containers
   const slots1Container = document.createElement('div');
-  slots1Container.className = 'flex flex-wrap gap-2 mb-3';
+  slots1Container.className = 'flex flex-wrap gap-[6px]';
   slots1Container.setAttribute('data-word-slots', '0');
 
   const slots2Container = document.createElement('div');
-  slots2Container.className = 'flex flex-wrap gap-2 mb-3';
+  slots2Container.className = 'flex flex-wrap gap-[6px]';
   slots2Container.setAttribute('data-word-slots', '1');
 
   // Create slots for word 1 (4 letters: SNOW)
   for (let i = 0; i < 4; i++) {
     const slot = document.createElement('div');
-    slot.className = 'slot w-12 h-14 rounded-lg';
+    slot.className = 'slot w-12 h-12 rounded-[8px]';
     slot.setAttribute('data-word-index', '0');
     slot.setAttribute('data-slot-index', String(i));
     slot.setAttribute('droppable', 'true');
@@ -55,7 +55,7 @@ export function createMockPuzzleDOM(prefix = '') {
   // Create slots for word 2 (5 letters: FLAKE)
   for (let i = 0; i < 5; i++) {
     const slot = document.createElement('div');
-    slot.className = 'slot w-12 h-14 rounded-lg';
+    slot.className = 'slot w-12 h-12 rounded-[8px]';
     slot.setAttribute('data-word-index', '1');
     slot.setAttribute('data-slot-index', String(i));
     slot.setAttribute('droppable', 'true');
@@ -66,12 +66,18 @@ export function createMockPuzzleDOM(prefix = '') {
   // Create score displays
   const score1Display = document.createElement('div');
   score1Display.id = `${prefix}word1-score-display`;
-  score1Display.className = 'text-lg font-semibold text-indigo-800 text-right';
+  score1Display.className = 'bg-category-bg rounded-[16px] px-3 py-2.5 text-white font-rem';
+  score1Display.style.fontSize = '20px';
+  score1Display.style.lineHeight = '25px';
+  score1Display.style.fontWeight = '500';
   score1Display.textContent = '0 / 10 points';
 
   const score2Display = document.createElement('div');
   score2Display.id = `${prefix}word2-score-display`;
-  score2Display.className = 'text-lg font-semibold text-indigo-800 text-right';
+  score2Display.className = 'bg-category-bg rounded-[16px] px-3 py-2.5 text-white font-rem';
+  score2Display.style.fontSize = '20px';
+  score2Display.style.lineHeight = '25px';
+  score2Display.style.fontWeight = '500';
   score2Display.textContent = '0 / 12 points';
 
   word1Container.appendChild(slots1Container);
@@ -85,13 +91,17 @@ export function createMockPuzzleDOM(prefix = '') {
   // Create buttons
   const submitBtn = document.createElement('button');
   submitBtn.id = `${prefix}submit-btn`;
-  submitBtn.className = 'bg-indigo-600 text-white px-6 py-3 rounded-lg';
+  submitBtn.className = 'bg-submit text-text-primary font-black rounded-[24px] shadow-button px-6 py-3 font-rem';
+  submitBtn.style.fontSize = '24px';
+  submitBtn.style.lineHeight = '30px';
   submitBtn.textContent = 'Submit';
   document.body.appendChild(submitBtn);
 
   const hintBtn = document.createElement('button');
   hintBtn.id = `${prefix}hint-btn`;
-  hintBtn.className = 'bg-indigo-600 text-white px-6 py-3 rounded-lg';
+  hintBtn.className = 'bg-hint text-white font-bold rounded-[24px] shadow-button px-6 py-3 font-rem';
+  hintBtn.style.fontSize = '24px';
+  hintBtn.style.lineHeight = '30px';
   hintBtn.textContent = 'Get Hint (3 left)';
   document.body.appendChild(hintBtn);
 
@@ -118,7 +128,7 @@ export function createMockPuzzleDOM(prefix = '') {
  */
 export function createMockTile(letter, index = 0, isLocked = false) {
   const tile = document.createElement('div');
-  tile.className = `tile bg-indigo-600 text-white rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center shadow-md`;
+  tile.className = `tile bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-12 h-12 flex flex-col items-center justify-center shadow-md font-inter`;
   tile.setAttribute('draggable', isLocked ? 'false' : 'true');
   tile.setAttribute('data-letter', letter);
   if (index !== null && index !== undefined) {
@@ -131,11 +141,15 @@ export function createMockTile(letter, index = 0, isLocked = false) {
   tile.setAttribute('tabindex', '0');
 
   const letterDisplay = document.createElement('div');
-  letterDisplay.className = 'text-2xl font-bold';
+  letterDisplay.className = 'font-bold font-inter';
+  letterDisplay.style.fontSize = '40px';
+  letterDisplay.style.lineHeight = '48px';
   letterDisplay.textContent = letter;
 
   const scoreDisplay = document.createElement('div');
-  scoreDisplay.className = 'text-xs mt-1 opacity-90';
+  scoreDisplay.className = 'mt-1 opacity-90 font-inter';
+  scoreDisplay.style.fontSize = '20px';
+  scoreDisplay.style.lineHeight = '24px';
   scoreDisplay.textContent = '1';
 
   tile.appendChild(letterDisplay);
@@ -153,7 +167,7 @@ export function createMockTile(letter, index = 0, isLocked = false) {
  */
 export function createMockSlot(wordIndex, slotIndex, isLocked = false) {
   const slot = document.createElement('div');
-  slot.className = `slot w-12 h-14 rounded-lg flex items-center justify-center`;
+  slot.className = `slot w-12 h-12 rounded-[8px] flex items-center justify-center`;
   slot.setAttribute('data-word-index', String(wordIndex));
   slot.setAttribute('data-slot-index', String(slotIndex));
   slot.setAttribute('droppable', 'true');

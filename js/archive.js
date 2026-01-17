@@ -132,7 +132,7 @@ export function loadArchivePuzzle(dateString) {
     if (date < startDate) {
         archiveContent.innerHTML = `
             <div class="text-center p-8 bg-white rounded-lg shadow-md">
-                <p class="text-lg text-indigo-900">No puzzles available before ${formatDateString(startDate)}.</p>
+                <p class="text-lg text-text-primary">No puzzles available before ${formatDateString(startDate)}.</p>
             </div>
         `;
         return;
@@ -145,8 +145,8 @@ export function loadArchivePuzzle(dateString) {
     if (!PUZZLE_DATA[puzzleNumber]) {
         archiveContent.innerHTML = `
             <div class="text-center p-8 bg-white rounded-lg shadow-md">
-                <p class="text-lg text-indigo-900">No puzzle available for ${formatDateString(date)}.</p>
-                <p class="text-sm text-indigo-800 mt-2">Puzzle #${puzzleNumber} has not been created yet.</p>
+                <p class="text-lg text-text-primary">No puzzle available for ${formatDateString(date)}.</p>
+                <p class="text-sm text-text-primary mt-2">Puzzle #${puzzleNumber} has not been created yet.</p>
             </div>
         `;
         return;

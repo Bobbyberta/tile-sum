@@ -28,7 +28,7 @@ import { handleTileKeyDown } from './keyboard.js';
  */
 export function createTile(letter, index, isLocked = false, handlers = {}) {
     const tile = document.createElement('div');
-    tile.className = `tile bg-indigo-700 text-white rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center shadow-md transition-shadow ${isLocked ? 'locked' : 'hover:shadow-lg'}`;
+    tile.className = `tile bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-12 h-12 flex flex-col items-center justify-center shadow-md transition-shadow font-inter ${isLocked ? 'locked' : 'hover:shadow-lg'}`;
     tile.setAttribute('draggable', isLocked ? 'false' : 'true');
     tile.setAttribute('data-letter', letter);
     tile.setAttribute('data-tile-index', index);
@@ -40,11 +40,15 @@ export function createTile(letter, index, isLocked = false, handlers = {}) {
     tile.setAttribute('aria-label', `Tile with letter ${letter}, score ${SCRABBLE_SCORES[letter.toUpperCase()] || 0}${isLocked ? ' (locked)' : ''}`);
 
     const letterDisplay = document.createElement('div');
-    letterDisplay.className = 'text-2xl font-bold';
+    letterDisplay.className = 'font-bold font-inter';
+    letterDisplay.style.fontSize = '40px';
+    letterDisplay.style.lineHeight = '48px';
     letterDisplay.textContent = letter;
 
     const scoreDisplay = document.createElement('div');
-    scoreDisplay.className = 'text-xs mt-1 opacity-90';
+    scoreDisplay.className = 'mt-1 opacity-90 font-inter';
+    scoreDisplay.style.fontSize = '20px';
+    scoreDisplay.style.lineHeight = '24px';
     scoreDisplay.textContent = SCRABBLE_SCORES[letter.toUpperCase()] || 0;
 
     tile.appendChild(letterDisplay);
@@ -109,7 +113,7 @@ export function createTile(letter, index, isLocked = false, handlers = {}) {
  */
 export function createSlot(wordIndex, slotIndex, isLocked = false, handlers = {}) {
     const slot = document.createElement('div');
-    slot.className = `slot w-12 h-14 rounded-lg flex items-center justify-center ${isLocked ? 'locked' : ''}`;
+    slot.className = `slot w-12 h-12 rounded-[8px] flex items-center justify-center ${isLocked ? 'locked' : ''}`;
     slot.setAttribute('data-word-index', wordIndex);
     slot.setAttribute('data-slot-index', slotIndex);
     slot.setAttribute('droppable', 'true');
@@ -164,7 +168,7 @@ export function updatePlaceholderTile(containerId = 'tiles-container') {
         // Show placeholder if no tiles
         if (!placeholder) {
             const placeholderTile = document.createElement('div');
-            placeholderTile.className = 'tile bg-transparent text-transparent opacity-0 rounded-lg p-3 w-12 h-14 flex flex-col items-center justify-center pointer-events-none';
+            placeholderTile.className = 'tile bg-transparent text-transparent opacity-0 rounded-[12px] p-3 w-12 h-12 flex flex-col items-center justify-center pointer-events-none';
             placeholderTile.style.visibility = 'hidden';
             placeholderTile.setAttribute('data-placeholder', 'true');
             placeholderTile.setAttribute('aria-hidden', 'true');
@@ -221,7 +225,9 @@ export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     titleContainer.className = 'flex items-center justify-between mb-2';
     
     const puzzleTitle = document.createElement('h1');
-    puzzleTitle.className = 'text-3xl md:text-4xl font-bold text-indigo-900';
+    puzzleTitle.className = 'text-3xl md:text-4xl font-bold text-text-primary font-rem';
+    puzzleTitle.style.fontSize = '48px';
+    puzzleTitle.style.lineHeight = '60px';
     puzzleTitle.id = `${prefix}puzzle-title`;
     puzzleTitle.textContent = titleText;
     titleContainer.appendChild(puzzleTitle);
@@ -240,7 +246,7 @@ export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     
     const tilesContainer = document.createElement('div');
     tilesContainer.id = `${prefix}tiles-container`;
-    tilesContainer.className = 'flex flex-wrap gap-2 p-4 bg-white rounded-lg shadow-md min-h-[100px]';
+    tilesContainer.className = 'flex flex-wrap gap-2 p-4 bg-tile-bg rounded-lg shadow-md min-h-[100px]';
     tilesWrapper.appendChild(tilesContainer);
     
     containerElement.appendChild(tilesWrapper);
@@ -256,7 +262,7 @@ export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     
     const wordSlotsContainer = document.createElement('div');
     wordSlotsContainer.id = `${prefix}word-slots`;
-    wordSlotsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-6';
+    wordSlotsContainer.className = 'grid grid-cols-1 md:grid-cols-2 md:flex md:flex-row md:gap-5 gap-6';
     slotsWrapper.appendChild(wordSlotsContainer);
     
     containerElement.appendChild(slotsWrapper);
@@ -267,13 +273,17 @@ export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     
     const hintBtn = document.createElement('button');
     hintBtn.id = `${prefix}hint-btn`;
-    hintBtn.className = 'w-full md:w-auto px-8 py-3 bg-amber-700 text-white font-semibold rounded-lg hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors';
+    hintBtn.className = 'w-full md:w-auto px-8 py-3 bg-hint text-white font-bold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-rem';
+    hintBtn.style.fontSize = '24px';
+    hintBtn.style.lineHeight = '30px';
     hintBtn.textContent = 'Get Hint';
     buttonsContainer.appendChild(hintBtn);
     
     const submitBtn = document.createElement('button');
     submitBtn.id = `${prefix}submit-btn`;
-    submitBtn.className = 'w-full md:w-auto px-8 py-3 bg-indigo-700 text-white font-semibold rounded-lg hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 transition-colors';
+    submitBtn.className = 'w-full md:w-auto px-8 py-3 bg-submit text-text-primary font-black rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-submit focus:ring-offset-2 transition-colors font-rem';
+    submitBtn.style.fontSize = '24px';
+    submitBtn.style.lineHeight = '30px';
     submitBtn.textContent = 'Submit Solution';
     buttonsContainer.appendChild(submitBtn);
     

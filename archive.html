@@ -14,6 +14,11 @@
     <link rel="alternate icon" href="/favicon.png">
     <link rel="apple-touch-icon" href="/favicon.png">
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=REM:wght@400;500;700;900&family=Inter:wght@700&display=swap" rel="stylesheet">
+    
     <!-- Social Sharing Meta Tags -->
     <meta property="og:title" content="Puzzle Archive - Sum Tile">
     <meta property="og:description" content="Browse archived puzzles - Play past daily word challenges from the Sum Tile puzzle collection.">
@@ -58,15 +63,16 @@
         }
         .slot {
             min-height: 60px;
-            border: 2px dashed #cbd5e1;
+            border: 3px dashed #4E2E07;
+            border-radius: 8px;
             transition: all 0.2s;
         }
         .slot.drag-over {
-            border-color: #6366f1;
-            background-color: #eef2ff;
+            border-color: #4E2E07;
+            background-color: rgba(230, 189, 83, 0.3);
         }
         .tile.drag-over {
-            outline: 2px solid #6366f1;
+            outline: 2px solid #4E2E07;
             outline-offset: 2px;
             transform: scale(1.05);
         }
@@ -76,15 +82,16 @@
         }
         .tile.locked {
             cursor: not-allowed;
-            border: 4px solid #f59e0b;
-            box-shadow: 0 0 0 2px #fef3c7;
+            border: 4px solid #FB5E52;
+            background-color: #FB5E52;
+            color: #FFFFFF;
         }
         .tile:focus {
-            outline: 2px solid #6366f1;
+            outline: 2px solid #1C2542;
             outline-offset: 2px;
         }
         .slot:focus {
-            outline: 2px solid #6366f1;
+            outline: 2px solid #1C2542;
             outline-offset: 2px;
         }
         .sr-only {
@@ -99,8 +106,8 @@
             border-width: 0;
         }
         .slot.locked {
-            border-color: #f59e0b;
-            background-color: #fef3c7;
+            border-color: #FB5E52;
+            background-color: rgba(251, 94, 82, 0.2);
         }
         #archive-success-modal, #archive-error-modal {
             animation: fadeIn 0.3s ease-in;
@@ -115,34 +122,34 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+<body class="bg-bg-primary min-h-screen font-rem">
     <!-- Skip to main content link -->
-    <a href="#main-content" class="sr-only focus:w-auto focus:h-auto focus:p-4 focus:m-0 focus:overflow-visible focus:clip-auto focus:whitespace-normal focus:border-0 focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-indigo-700 focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">
+    <a href="#main-content" class="sr-only focus:w-auto focus:h-auto focus:p-4 focus:m-0 focus:overflow-visible focus:clip-auto focus:whitespace-normal focus:border-0 focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-hint focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2">
         Skip to main content
     </a>
     <main class="container mx-auto px-4 py-8 max-w-4xl" id="main-content">
         <header class="mb-8">
             <nav class="flex items-center justify-between mb-4" aria-label="Page navigation">
-                <a href="index.html" class="text-indigo-700 hover:text-indigo-900 font-semibold">
+                <a href="index.html" class="text-text-primary hover:opacity-80 font-semibold">
                     ← Back to Home
                 </a>
-                <a href="index.html" class="text-indigo-700 hover:text-indigo-900 font-semibold">
+                <a href="index.html" class="text-text-primary hover:opacity-80 font-semibold">
                     Today's Puzzle →
                 </a>
             </nav>
-            <h1 class="text-3xl md:text-4xl font-bold text-indigo-900 mb-2">Puzzle Archive</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-text-primary mb-2" style="font-size: 48px; line-height: 60px;">Puzzle Archive</h1>
             <p id="test-mode-indicator" class="hidden mt-2 text-sm text-orange-700 font-semibold"></p>
         </header>
 
         <!-- Date Picker -->
         <div class="mb-8 bg-white rounded-lg shadow-md p-6">
-            <label for="date-picker" class="block text-center text-sm font-semibold text-indigo-900 mb-3">
+            <label for="date-picker" class="block text-center text-sm font-semibold text-text-primary mb-3">
                 Select puzzle date
             </label>
             <div class="flex items-center justify-center gap-4">
                 <button 
                     id="date-prev-btn"
-                    class="p-2 text-indigo-700 hover:text-indigo-900 hover:bg-indigo-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                    class="p-2 text-text-primary hover:opacity-80 hover:bg-opacity-20 hover:bg-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-text-primary transition-colors"
                     aria-label="Previous day"
                 >
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -152,12 +159,12 @@
                 <input 
                     type="date" 
                     id="date-picker"
-                    class="px-4 py-2 border-2 border-indigo-300 rounded-lg text-lg font-semibold text-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    class="px-4 py-2 border-2 border-slot-border rounded-lg text-lg font-semibold text-text-primary focus:outline-none focus:ring-2 focus:ring-text-primary focus:border-slot-border"
                     aria-label="Select puzzle date"
                 />
                 <button 
                     id="date-next-btn"
-                    class="p-2 text-indigo-700 hover:text-indigo-900 hover:bg-indigo-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                    class="p-2 text-text-primary hover:opacity-80 hover:bg-opacity-20 hover:bg-text-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-text-primary transition-colors"
                     aria-label="Next day"
                 >
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,7 +190,7 @@
 
         <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4 relative">
 
-            <button id="archive-close-success-modal" class="absolute top-4 right-4 text-gray-600 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1" aria-label="Close modal">
+            <button id="archive-close-success-modal" class="absolute top-4 right-4 text-gray-600 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-text-primary rounded-full p-1" aria-label="Close modal">
 
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 
@@ -193,7 +200,7 @@
 
             </button>
 
-            <h2 id="archive-modal-title" class="text-3xl font-bold text-indigo-900 mb-4 text-center">You solved the puzzle!</h2>
+            <h2 id="archive-modal-title" class="text-3xl font-bold text-text-primary mb-4 text-center">You solved the puzzle!</h2>
 
             <p id="archive-hints-used-message" class="text-center text-gray-700 mb-4"></p>
 
@@ -205,7 +212,7 @@
 
             <div class="flex justify-center gap-4">
 
-                <button id="archive-share-btn" class="px-8 py-3 bg-amber-700 text-white font-semibold rounded-lg hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                <button id="archive-share-btn" class="px-8 py-3 bg-hint text-white font-semibold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
 
                     Copy
 
@@ -222,7 +229,7 @@
         <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4 relative">
             <button 
                 id="archive-close-error-modal"
-                class="absolute top-4 right-4 text-gray-600 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1"
+                class="absolute top-4 right-4 text-gray-600 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-text-primary rounded-full p-1"
                 aria-label="Close modal"
             >
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -270,7 +277,7 @@
     </script>
 
     <footer class="text-center py-6 text-gray-700 text-xs">
-        © <a href="https://bobbieallsop.co.uk" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded transition-colors">Bobbie Allsop</a> created Dec 2025
+        © <a href="https://bobbieallsop.co.uk" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-text-primary rounded transition-colors">Bobbie Allsop</a> created Dec 2025
     </footer>
 </body>
 </html>

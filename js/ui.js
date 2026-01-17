@@ -199,7 +199,7 @@ function displayCompletedPuzzle(puzzleNumber, displayDate) {
     if (header && tilesContainer) {
         const completionMessage = document.createElement('div');
         completionMessage.id = 'daily-completion-message';
-        completionMessage.className = 'text-lg text-indigo-900 text-center mb-8';
+        completionMessage.className = 'text-lg text-text-primary text-center mb-8 font-rem';
         completionMessage.textContent = 'Puzzle complete! Come back tomorrow for another daily puzzle';
         // Insert after header, before tiles container
         header.insertAdjacentElement('afterend', completionMessage);
@@ -225,7 +225,7 @@ function displayCompletedPuzzle(puzzleNumber, displayDate) {
         
         puzzle.solution.forEach((word, wordIndex) => {
             const wordContainer = document.createElement('div');
-            wordContainer.className = 'bg-white rounded-lg shadow-md p-4';
+            wordContainer.className = 'bg-slot-container rounded-[24px] shadow-container p-2 flex flex-col items-end gap-3';
             wordContainer.setAttribute('data-word-index', wordIndex);
             wordContainer.setAttribute('data-max-score', maxScores[wordIndex]);
             
@@ -237,7 +237,7 @@ function displayCompletedPuzzle(puzzleNumber, displayDate) {
 
             // Create slots container (same structure as interactive version)
             const slotsContainer = document.createElement('div');
-            slotsContainer.className = 'flex flex-wrap gap-2 mb-3';
+            slotsContainer.className = 'flex flex-wrap gap-[6px]';
             slotsContainer.setAttribute('data-word-slots', wordIndex);
             
             // Create slots and populate with solution tiles
@@ -258,12 +258,35 @@ function displayCompletedPuzzle(puzzleNumber, displayDate) {
             
             wordContainer.appendChild(slotsContainer);
             
-            // Score display below the slots (right-aligned, same as interactive version)
+            // Category and score display section
+            const categoryScoreContainer = document.createElement('div');
+            categoryScoreContainer.className = 'flex flex-row items-center';
+            
+            // Category label (if category exists in puzzle data)
+            const category = puzzle.categories?.[wordIndex];
+            
+            if (category) {
+                const categoryLabel = document.createElement('div');
+                categoryLabel.className = 'border-[4px] border-slot-border rounded-l-[20px] px-3 py-2.5 font-rem';
+                categoryLabel.style.fontSize = '20px';
+                categoryLabel.style.lineHeight = '25px';
+                categoryLabel.style.fontWeight = '500';
+                categoryLabel.style.color = '#4E2E07';
+                categoryLabel.textContent = category;
+                categoryScoreContainer.appendChild(categoryLabel);
+            }
+            
+            // Score display
             const scoreDisplay = document.createElement('div');
-            scoreDisplay.className = 'text-lg font-semibold text-indigo-800 text-right';
+            scoreDisplay.className = category ? 'bg-category-bg rounded-r-[20px] px-3 py-2.5 text-white font-rem' : 'bg-category-bg rounded-[16px] px-3 py-2.5 text-white font-rem';
+            scoreDisplay.style.fontSize = '20px';
+            scoreDisplay.style.lineHeight = '25px';
+            scoreDisplay.style.fontWeight = '500';
             scoreDisplay.setAttribute('id', `daily-word${wordIndex + 1}-score-display`);
             scoreDisplay.textContent = `${maxScores[wordIndex]} / ${maxScores[wordIndex]} points`;
-            wordContainer.appendChild(scoreDisplay);
+            categoryScoreContainer.appendChild(scoreDisplay);
+            
+            wordContainer.appendChild(categoryScoreContainer);
             
             wordSlots.appendChild(wordContainer);
         });
@@ -305,9 +328,9 @@ export function initCalendar() {
         }
 
         const dayElement = document.createElement('div');
-        dayElement.className = `relative p-4 rounded-lg text-center transition-all ${
+        dayElement.className = `relative p-4 rounded-lg text-center transition-all font-rem ${
             isUnlocked 
-                ? 'bg-white shadow-md hover:shadow-lg cursor-pointer border-2 border-indigo-300 hover:border-indigo-500' 
+                ? 'bg-white shadow-md hover:shadow-lg cursor-pointer border-2 border-slot-border hover:border-text-primary' 
                 : 'bg-gray-200 opacity-60 cursor-not-allowed border-2 border-gray-300'
         }`;
         
@@ -344,14 +367,14 @@ export function initCalendar() {
         }
 
         const dayNumber = document.createElement('div');
-        dayNumber.className = `text-2xl font-bold ${
-            isUnlocked ? 'text-indigo-900' : 'text-gray-500'
+        dayNumber.className = `text-2xl font-bold font-rem ${
+            isUnlocked ? 'text-text-primary' : 'text-gray-500'
         }`;
         dayNumber.textContent = day;
 
         const dayLabel = document.createElement('div');
-        dayLabel.className = `text-sm mt-1 ${
-            isUnlocked ? 'text-indigo-900' : 'text-gray-500'
+        dayLabel.className = `text-sm mt-1 font-rem ${
+            isUnlocked ? 'text-text-primary' : 'text-gray-500'
         }`;
         dayLabel.textContent = 'Dec';
 
@@ -360,7 +383,7 @@ export function initCalendar() {
 
         if (isToday) {
             const todayBadge = document.createElement('div');
-            todayBadge.className = 'absolute top-1 right-1 w-3 h-3 bg-indigo-700 rounded-full';
+            todayBadge.className = 'absolute top-1 right-1 w-3 h-3 bg-hint rounded-full';
             todayBadge.setAttribute('aria-label', 'Today');
             dayElement.appendChild(todayBadge);
         }

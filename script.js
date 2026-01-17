@@ -187,7 +187,7 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
     
     puzzle.words.forEach((word, wordIndex) => {
         const wordContainer = document.createElement('div');
-        wordContainer.className = 'bg-white rounded-lg shadow-md p-4';
+        wordContainer.className = 'bg-slot-container rounded-[24px] shadow-container p-2 flex flex-col items-end gap-3';
         wordContainer.setAttribute('data-word-index', wordIndex);
         wordContainer.setAttribute('data-max-score', maxScores[wordIndex]);
         
@@ -198,7 +198,7 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
         wordContainer.appendChild(wordLabel);
 
         const slotsContainer = document.createElement('div');
-        slotsContainer.className = 'flex flex-wrap gap-2 mb-3';
+        slotsContainer.className = 'flex flex-wrap gap-[6px]';
         slotsContainer.setAttribute('data-word-slots', wordIndex);
         
         for (let i = 0; i < word.length; i++) {
@@ -208,12 +208,35 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
         
         wordContainer.appendChild(slotsContainer);
         
-        // Score display below the slots
+        // Category and score display section
+        const categoryScoreContainer = document.createElement('div');
+        categoryScoreContainer.className = 'flex flex-row items-center';
+        
+        // Category label (if category exists in puzzle data)
+        const category = puzzle.categories?.[wordIndex];
+        
+        if (category) {
+            const categoryLabel = document.createElement('div');
+            categoryLabel.className = 'border-[4px] border-slot-border rounded-l-[20px] px-3 py-2.5 font-rem';
+            categoryLabel.style.fontSize = '20px';
+            categoryLabel.style.lineHeight = '25px';
+            categoryLabel.style.fontWeight = '500';
+            categoryLabel.style.color = '#4E2E07';
+            categoryLabel.textContent = category;
+            categoryScoreContainer.appendChild(categoryLabel);
+        }
+        
+        // Score display
         const scoreDisplay = document.createElement('div');
-        scoreDisplay.className = 'text-lg font-semibold text-indigo-800 text-right';
+        scoreDisplay.className = category ? 'bg-category-bg rounded-r-[20px] px-3 py-2.5 text-white font-rem' : 'bg-category-bg rounded-[16px] px-3 py-2.5 text-white font-rem';
+        scoreDisplay.style.fontSize = '20px';
+        scoreDisplay.style.lineHeight = '25px';
+        scoreDisplay.style.fontWeight = '500';
         scoreDisplay.setAttribute('id', `${prefix}word${wordIndex + 1}-score-display`);
         scoreDisplay.textContent = `0 / ${maxScores[wordIndex]} points`;
-        wordContainer.appendChild(scoreDisplay);
+        categoryScoreContainer.appendChild(scoreDisplay);
+        
+        wordContainer.appendChild(categoryScoreContainer);
         
         wordSlots.appendChild(wordContainer);
     });
