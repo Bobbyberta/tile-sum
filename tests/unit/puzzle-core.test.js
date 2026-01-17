@@ -245,7 +245,7 @@ describe('puzzle-core.js', () => {
 
       const hintBtn = document.getElementById('test-hint-btn');
       expect(hintBtn).toBeTruthy();
-      expect(hintBtn.textContent).toBe('Get Hint');
+      expect(hintBtn.textContent).toBe('Hint');
       expect(hintBtn.tagName).toBe('BUTTON');
     });
 
@@ -257,7 +257,7 @@ describe('puzzle-core.js', () => {
 
       const submitBtn = document.getElementById('archive-submit-btn');
       expect(submitBtn).toBeTruthy();
-      expect(submitBtn.textContent).toBe('Submit Solution');
+      expect(submitBtn.textContent).toBe('Submit');
       expect(submitBtn.tagName).toBe('BUTTON');
     });
 

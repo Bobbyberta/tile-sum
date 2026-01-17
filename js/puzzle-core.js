@@ -258,10 +258,15 @@ export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     tilesHeading.textContent = 'Available Tiles';
     tilesWrapper.appendChild(tilesHeading);
     
+    const tilesCenteringWrapper = document.createElement('div');
+    tilesCenteringWrapper.className = 'flex justify-center';
+    
     const tilesContainer = document.createElement('div');
     tilesContainer.id = `${prefix}tiles-container`;
-    tilesContainer.className = 'flex flex-wrap gap-2 p-4 bg-tile-bg rounded-lg shadow-md min-h-[100px]';
-    tilesWrapper.appendChild(tilesContainer);
+    tilesContainer.className = 'flex flex-wrap gap-2 p-4 bg-tile-bg rounded-lg shadow-md justify-center';
+    tilesCenteringWrapper.appendChild(tilesContainer);
+    
+    tilesWrapper.appendChild(tilesCenteringWrapper);
     
     containerElement.appendChild(tilesWrapper);
     
@@ -290,7 +295,7 @@ export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     hintBtn.className = 'w-full md:w-auto px-8 py-3 bg-hint text-white font-bold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-rem';
     hintBtn.style.fontSize = '24px';
     hintBtn.style.lineHeight = '30px';
-    hintBtn.textContent = 'Get Hint';
+    hintBtn.textContent = 'Hint';
     buttonsContainer.appendChild(hintBtn);
     
     const submitBtn = document.createElement('button');
@@ -298,7 +303,7 @@ export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     submitBtn.className = 'w-full md:w-auto px-8 py-3 bg-submit text-text-primary font-black rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-submit focus:ring-offset-2 transition-colors font-rem';
     submitBtn.style.fontSize = '24px';
     submitBtn.style.lineHeight = '30px';
-    submitBtn.textContent = 'Submit Solution';
+    submitBtn.textContent = 'Submit';
     buttonsContainer.appendChild(submitBtn);
     
     containerElement.appendChild(buttonsContainer);

@@ -23,12 +23,12 @@ export function createMockPuzzleDOM(prefix = '') {
 
   // Create word containers
   const word1Container = document.createElement('div');
-  word1Container.className = 'bg-slot-container rounded-[24px] shadow-container p-2 flex flex-col items-end gap-3';
+  word1Container.className = 'bg-slot-container rounded-[24px] shadow-container p-2 flex flex-col items-start gap-3';
   word1Container.setAttribute('data-word-index', '0');
   word1Container.setAttribute('data-max-score', '10');
 
   const word2Container = document.createElement('div');
-  word2Container.className = 'bg-slot-container rounded-[24px] shadow-container p-2 flex flex-col items-end gap-3';
+  word2Container.className = 'bg-slot-container rounded-[24px] shadow-container p-2 flex flex-col items-start gap-3';
   word2Container.setAttribute('data-word-index', '1');
   word2Container.setAttribute('data-max-score', '12');
 
@@ -102,7 +102,7 @@ export function createMockPuzzleDOM(prefix = '') {
   hintBtn.className = 'bg-hint text-white font-bold rounded-[24px] shadow-button px-6 py-3 font-rem';
   hintBtn.style.fontSize = '24px';
   hintBtn.style.lineHeight = '30px';
-  hintBtn.textContent = 'Get Hint (3 left)';
+  hintBtn.textContent = 'Hint (3)';
   document.body.appendChild(hintBtn);
 
   return {

@@ -12,8 +12,8 @@ test.describe('Hints System', () => {
     const hintButton = page.locator('#hint-btn');
     await expect(hintButton).toBeVisible();
     const text = await hintButton.textContent();
-    expect(text).toContain('Get Hint');
-    expect(text).toContain('9 left'); // SNOW (4) + FLAKE (5) = 9
+    expect(text).toContain('Hint');
+    expect(text).toContain('(9)'); // SNOW (4) + FLAKE (5) = 9
   });
 
   test('should place a tile when hint is requested', async ({ page }) => {
@@ -41,7 +41,7 @@ test.describe('Hints System', () => {
     
     // Button text should update
     const newText = await hintButton.textContent();
-    expect(newText).toContain('8 left'); // 9 - 1 = 8
+    expect(newText).toContain('(8)'); // 9 - 1 = 8
     expect(newText).not.toBe(initialText);
   });
 
@@ -52,10 +52,10 @@ test.describe('Hints System', () => {
       await page.waitForTimeout(500);
     }
     
-    // Button should show "Get Hint (0 left)" and be disabled
+    // Button should show "Hint (0)" and be disabled
     const hintButton = page.locator('#hint-btn');
     const text = await hintButton.textContent();
-    expect(text).toContain('Get Hint (0 left)');
+    expect(text).toContain('Hint (0)');
     await expect(hintButton).toBeDisabled();
   });
 

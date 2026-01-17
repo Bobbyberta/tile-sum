@@ -225,7 +225,7 @@ function displayCompletedPuzzle(puzzleNumber, displayDate) {
         
         puzzle.solution.forEach((word, wordIndex) => {
             const wordContainer = document.createElement('div');
-            wordContainer.className = 'bg-slot-container rounded-[24px] shadow-container p-2 flex flex-col items-end gap-3';
+            wordContainer.className = 'bg-slot-container rounded-[24px] shadow-container p-2 flex flex-col items-start gap-3';
             wordContainer.setAttribute('data-word-index', wordIndex);
             wordContainer.setAttribute('data-max-score', maxScores[wordIndex]);
             
@@ -260,7 +260,7 @@ function displayCompletedPuzzle(puzzleNumber, displayDate) {
             
             // Category and score display section
             const categoryScoreContainer = document.createElement('div');
-            categoryScoreContainer.className = 'flex flex-row items-center';
+            categoryScoreContainer.className = 'flex flex-row items-center self-end';
             
             // Category label (if category exists in puzzle data)
             const category = puzzle.categories?.[wordIndex];

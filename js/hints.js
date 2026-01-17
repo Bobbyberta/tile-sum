@@ -81,9 +81,9 @@ export function updateHintButtonText(buttonId = 'hint-btn', hintsRemaining) {
     
     if (hintsRemaining <= 0) {
         hintBtn.disabled = true;
-        hintBtn.textContent = 'Get Hint (0 left)';
+        hintBtn.textContent = 'Hint (0)';
     } else {
-        hintBtn.textContent = `Get Hint (${hintsRemaining} left)`;
+        hintBtn.textContent = `Hint (${hintsRemaining})`;
     }
 }
 

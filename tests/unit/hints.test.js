@@ -103,15 +103,15 @@ describe('hints.js', () => {
       
       updateHintButtonText('hint-btn', 9);
       
-      expect(hintBtn.textContent).toBe('Get Hint (9 left)');
+      expect(hintBtn.textContent).toBe('Hint (9)');
     });
 
-    it('should show "Get Hint (0 left)" and disable button when no hints remaining', () => {
+    it('should show "Hint (0)" and disable button when no hints remaining', () => {
       const { hintBtn } = createMockPuzzleDOM();
       
       updateHintButtonText('hint-btn', 0);
       
-      expect(hintBtn.textContent).toBe('Get Hint (0 left)');
+      expect(hintBtn.textContent).toBe('Hint (0)');
       expect(hintBtn.disabled).toBe(true);
     });
 
@@ -124,7 +124,7 @@ describe('hints.js', () => {
       
       updateHintButtonText('daily-hint-btn', 2);
       
-      expect(hintBtn.textContent).toBe('Get Hint (2 left)');
+      expect(hintBtn.textContent).toBe('Hint (2)');
     });
   });
 
