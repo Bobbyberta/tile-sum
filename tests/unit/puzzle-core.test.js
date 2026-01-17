@@ -45,8 +45,12 @@ describe('puzzle-core.js', () => {
 
     it('should include letter and score display', () => {
       const tile = createTile('C', 0);
-      const letterDisplay = tile.querySelector('.text-2xl');
-      const scoreDisplay = tile.querySelector('.text-xs');
+      const letterWrapper = tile.querySelector('.relative.inline-block');
+      
+      expect(letterWrapper).toBeTruthy();
+      const divs = letterWrapper.querySelectorAll('div');
+      const letterDisplay = Array.from(divs).find(div => div.textContent === 'C');
+      const scoreDisplay = Array.from(divs).find(div => div.textContent === '3');
       
       expect(letterDisplay).toBeTruthy();
       expect(letterDisplay.textContent).toBe('C');

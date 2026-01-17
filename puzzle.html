@@ -549,6 +549,33 @@
             
             // Initialize puzzle
             initPuzzle(puzzleNumber);
+            
+            // Lazy load background shapes on large screens (768px+)
+            function loadBackgroundShapes() {
+                // Check if screen is large enough (md breakpoint: 768px)
+                if (window.innerWidth >= 768 && document.body.classList.contains('bg-bg-primary')) {
+                    // Wait for page to be fully loaded before loading background
+                    if (document.readyState === 'complete') {
+                        document.body.classList.add('bg-loaded');
+                    } else {
+                        window.addEventListener('load', () => {
+                            document.body.classList.add('bg-loaded');
+                        });
+                    }
+                }
+            }
+            
+            // Load background after DOM is ready
+            loadBackgroundShapes();
+            
+            // Also handle window resize in case user resizes from small to large
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    loadBackgroundShapes();
+                }, 150);
+            });
         });
         
         // Update navigation links based on mode

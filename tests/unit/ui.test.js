@@ -395,7 +395,7 @@ describe('ui.js', () => {
       initCalendar();
 
       const day15 = calendar.children[14]; // Day 15 (today)
-      const todayBadge = day15.querySelector('.bg-indigo-700');
+      const todayBadge = day15.querySelector('.bg-hint');
       expect(todayBadge).toBeTruthy();
     });
 
