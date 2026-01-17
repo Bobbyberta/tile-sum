@@ -36,8 +36,9 @@
   z-index: 2;
 }
 
-/* Tiles placed in slots should have red background */
-.slot.filled .tile {
+/* Tiles locked via hints should have red background */
+.slot.locked .tile,
+.tile.locked {
   background-color: #FB5E52 !important;
   color: #FFFFFF !important;
   border: 4px solid #FB5E52 !important;

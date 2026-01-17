@@ -614,9 +614,6 @@ video {
 .ml-2 {
   margin-left: 0.5rem;
 }
-.mt-1 {
-  margin-top: 0.25rem;
-}
 .mt-2 {
   margin-top: 0.5rem;
 }
@@ -641,9 +638,6 @@ video {
 .hidden {
   display: none;
 }
-.h-12 {
-  height: 3rem;
-}
 .h-3 {
   height: 0.75rem;
 }
@@ -659,6 +653,9 @@ video {
 .h-\[45px\] {
   height: 45px;
 }
+.h-\[60px\] {
+  height: 60px;
+}
 .max-h-\[90vh\] {
   max-height: 90vh;
 }
@@ -667,9 +664,6 @@ video {
 }
 .min-h-screen {
   min-height: 100vh;
-}
-.w-12 {
-  width: 3rem;
 }
 .w-3 {
   width: 0.75rem;
@@ -685,6 +679,9 @@ video {
 }
 .w-\[45px\] {
   width: 45px;
+}
+.w-\[60px\] {
+  width: 60px;
 }
 .w-full {
   width: 100%;
@@ -1138,8 +1135,9 @@ video {
   z-index: 2;
 }
 
-/* Tiles placed in slots should have red background */
-.slot.filled .tile {
+/* Tiles locked via hints should have red background */
+.slot.locked .tile,
+.tile.locked {
   background-color: #FB5E52 !important;
   color: #FFFFFF !important;
   border: 4px solid #FB5E52 !important;

@@ -44,7 +44,7 @@ export function createMockPuzzleDOM(prefix = '') {
   // Create slots for word 1 (4 letters: SNOW)
   for (let i = 0; i < 4; i++) {
     const slot = document.createElement('div');
-    slot.className = 'slot w-12 h-12 rounded-[8px]';
+    slot.className = 'slot w-[60px] h-[60px] rounded-[8px]';
     slot.setAttribute('data-word-index', '0');
     slot.setAttribute('data-slot-index', String(i));
     slot.setAttribute('droppable', 'true');
@@ -55,7 +55,7 @@ export function createMockPuzzleDOM(prefix = '') {
   // Create slots for word 2 (5 letters: FLAKE)
   for (let i = 0; i < 5; i++) {
     const slot = document.createElement('div');
-    slot.className = 'slot w-12 h-12 rounded-[8px]';
+    slot.className = 'slot w-[60px] h-[60px] rounded-[8px]';
     slot.setAttribute('data-word-index', '1');
     slot.setAttribute('data-slot-index', String(i));
     slot.setAttribute('droppable', 'true');
@@ -128,7 +128,7 @@ export function createMockPuzzleDOM(prefix = '') {
  */
 export function createMockTile(letter, index = 0, isLocked = false) {
   const tile = document.createElement('div');
-  tile.className = `tile bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-12 h-12 flex flex-col items-center justify-center shadow-md font-inter`;
+  tile.className = `tile bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-[60px] h-[60px] flex items-center justify-center shadow-md font-inter relative`;
   tile.setAttribute('draggable', isLocked ? 'false' : 'true');
   tile.setAttribute('data-letter', letter);
   if (index !== null && index !== undefined) {
@@ -140,6 +140,10 @@ export function createMockTile(letter, index = 0, isLocked = false) {
   tile.setAttribute('role', 'button');
   tile.setAttribute('tabindex', '0');
 
+  // Create a wrapper for the letter that will be centered
+  const letterWrapper = document.createElement('div');
+  letterWrapper.className = 'relative inline-block';
+  
   const letterDisplay = document.createElement('div');
   letterDisplay.className = 'font-bold font-inter';
   letterDisplay.style.fontSize = '40px';
@@ -147,13 +151,16 @@ export function createMockTile(letter, index = 0, isLocked = false) {
   letterDisplay.textContent = letter;
 
   const scoreDisplay = document.createElement('div');
-  scoreDisplay.className = 'mt-1 opacity-90 font-inter';
+  scoreDisplay.className = 'opacity-90 font-inter absolute';
   scoreDisplay.style.fontSize = '20px';
   scoreDisplay.style.lineHeight = '24px';
+  scoreDisplay.style.bottom = '0px';
+  scoreDisplay.style.left = 'calc(100% + 2px)';
   scoreDisplay.textContent = '1';
 
-  tile.appendChild(letterDisplay);
-  tile.appendChild(scoreDisplay);
+  letterWrapper.appendChild(letterDisplay);
+  letterWrapper.appendChild(scoreDisplay);
+  tile.appendChild(letterWrapper);
 
   return tile;
 }
@@ -167,7 +174,7 @@ export function createMockTile(letter, index = 0, isLocked = false) {
  */
 export function createMockSlot(wordIndex, slotIndex, isLocked = false) {
   const slot = document.createElement('div');
-  slot.className = `slot w-12 h-12 rounded-[8px] flex items-center justify-center`;
+  slot.className = `slot w-[60px] h-[60px] rounded-[8px] flex items-center justify-center`;
   slot.setAttribute('data-word-index', String(wordIndex));
   slot.setAttribute('data-slot-index', String(slotIndex));
   slot.setAttribute('droppable', 'true');

@@ -186,6 +186,7 @@ export function provideHint(day, context = {}) {
         existingTile.setAttribute('draggable', 'false');
         existingTile.classList.add('locked');
         targetSlot.setAttribute('data-locked', 'true');
+        targetSlot.classList.add('locked');
     } else {
         // Need to find and place the correct tile
         // Remove existing tile if present (wrong letter)
@@ -257,6 +258,7 @@ export function provideHint(day, context = {}) {
             targetSlot.appendChild(lockedTile);
             targetSlot.classList.add('filled');
             targetSlot.setAttribute('data-locked', 'true');
+            targetSlot.classList.add('locked');
         }
     }
     
@@ -449,6 +451,7 @@ export function showSolution(day, context = {}) {
             targetSlot.appendChild(lockedTile);
             // Locked slots don't need the 'filled' class since data-locked="true" indicates they're filled
             targetSlot.setAttribute('data-locked', 'true');
+            targetSlot.classList.add('locked');
         }
     });
     

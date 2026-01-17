@@ -28,7 +28,7 @@ import { handleTileKeyDown } from './keyboard.js';
  */
 export function createTile(letter, index, isLocked = false, handlers = {}) {
     const tile = document.createElement('div');
-    tile.className = `tile bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-12 h-12 flex flex-col items-center justify-center shadow-md transition-shadow font-inter ${isLocked ? 'locked' : 'hover:shadow-lg'}`;
+    tile.className = `tile bg-tile-bg border border-tile-border text-text-primary rounded-[12px] p-3 w-[60px] h-[60px] flex items-center justify-center shadow-md transition-shadow font-inter relative ${isLocked ? 'locked' : 'hover:shadow-lg'}`;
     tile.setAttribute('draggable', isLocked ? 'false' : 'true');
     tile.setAttribute('data-letter', letter);
     tile.setAttribute('data-tile-index', index);
@@ -39,6 +39,10 @@ export function createTile(letter, index, isLocked = false, handlers = {}) {
     tile.setAttribute('tabindex', '0');
     tile.setAttribute('aria-label', `Tile with letter ${letter}, score ${SCRABBLE_SCORES[letter.toUpperCase()] || 0}${isLocked ? ' (locked)' : ''}`);
 
+    // Create a wrapper for the letter that will be centered
+    const letterWrapper = document.createElement('div');
+    letterWrapper.className = 'relative inline-block';
+    
     const letterDisplay = document.createElement('div');
     letterDisplay.className = 'font-bold font-inter';
     letterDisplay.style.fontSize = '40px';
@@ -46,13 +50,16 @@ export function createTile(letter, index, isLocked = false, handlers = {}) {
     letterDisplay.textContent = letter;
 
     const scoreDisplay = document.createElement('div');
-    scoreDisplay.className = 'mt-1 opacity-90 font-inter';
+    scoreDisplay.className = 'opacity-90 font-inter absolute';
     scoreDisplay.style.fontSize = '20px';
     scoreDisplay.style.lineHeight = '24px';
+    scoreDisplay.style.bottom = '0px';
+    scoreDisplay.style.left = 'calc(100% + 2px)';
     scoreDisplay.textContent = SCRABBLE_SCORES[letter.toUpperCase()] || 0;
 
-    tile.appendChild(letterDisplay);
-    tile.appendChild(scoreDisplay);
+    letterWrapper.appendChild(letterDisplay);
+    letterWrapper.appendChild(scoreDisplay);
+    tile.appendChild(letterWrapper);
 
     // Drag and drop handlers only if not locked
     if (!isLocked) {
@@ -113,7 +120,7 @@ export function createTile(letter, index, isLocked = false, handlers = {}) {
  */
 export function createSlot(wordIndex, slotIndex, isLocked = false, handlers = {}) {
     const slot = document.createElement('div');
-    slot.className = `slot w-12 h-12 rounded-[8px] flex items-center justify-center ${isLocked ? 'locked' : ''}`;
+    slot.className = `slot w-[60px] h-[60px] rounded-[8px] flex items-center justify-center ${isLocked ? 'locked' : ''}`;
     slot.setAttribute('data-word-index', wordIndex);
     slot.setAttribute('data-slot-index', slotIndex);
     slot.setAttribute('droppable', 'true');
@@ -168,21 +175,28 @@ export function updatePlaceholderTile(containerId = 'tiles-container') {
         // Show placeholder if no tiles
         if (!placeholder) {
             const placeholderTile = document.createElement('div');
-            placeholderTile.className = 'tile bg-transparent text-transparent opacity-0 rounded-[12px] p-3 w-12 h-12 flex flex-col items-center justify-center pointer-events-none';
+            placeholderTile.className = 'tile bg-transparent text-transparent opacity-0 rounded-[12px] p-3 w-[60px] h-[60px] flex items-center justify-center pointer-events-none relative';
             placeholderTile.style.visibility = 'hidden';
             placeholderTile.setAttribute('data-placeholder', 'true');
             placeholderTile.setAttribute('aria-hidden', 'true');
+            
+            // Create a wrapper for the letter that will be centered
+            const letterWrapper = document.createElement('div');
+            letterWrapper.className = 'relative inline-block';
             
             const letterDisplay = document.createElement('div');
             letterDisplay.className = 'text-2xl font-bold text-transparent';
             letterDisplay.textContent = 'A';
             
             const scoreDisplay = document.createElement('div');
-            scoreDisplay.className = 'text-xs mt-1 text-transparent';
+            scoreDisplay.className = 'text-xs text-transparent absolute';
+            scoreDisplay.style.bottom = '0px';
+            scoreDisplay.style.left = 'calc(100% + 2px)';
             scoreDisplay.textContent = '1';
             
-            placeholderTile.appendChild(letterDisplay);
-            placeholderTile.appendChild(scoreDisplay);
+            letterWrapper.appendChild(letterDisplay);
+            letterWrapper.appendChild(scoreDisplay);
+            placeholderTile.appendChild(letterWrapper);
             tilesContainer.appendChild(placeholderTile);
         }
     } else {
