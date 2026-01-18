@@ -43,3 +43,68 @@
   color: #FFFFFF !important;
   border: 4px solid #FB5E52 !important;
 }
+/* Large screen background decorative shapes - lazy loaded */
+@media (min-width: 768px) {
+  body.bg-bg-primary {
+    position: relative;
+  }
+
+  /* Ensure all content is above the background */
+  /* Exclude modals - they need position: fixed and higher z-index */
+  body.bg-bg-primary > *:not([id$="-modal"]) {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Ensure modals appear above all content */
+  body.bg-bg-primary > [id$="-modal"] {
+    position: fixed !important;
+    z-index: 50 !important;
+  }
+
+  body.bg-bg-primary.bg-loaded::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('./bg-shapes.svg');
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Default: scale to width to keep left/right edge shapes at screen edges */
+  /* SVG is 1440x1024 (aspect ratio ~1.406:1) */
+  body.bg-bg-primary.bg-loaded::before {
+    background-size: 100% auto;
+    background-position: left top;
+  }
+
+  /* For very tall screens (taller than wider, aspect ratio < 1:1) */
+  /* Scale to height to ensure top/bottom edge shapes stay at screen edges */
+  @media (max-aspect-ratio: 1/1) {
+    body.bg-bg-primary.bg-loaded::before {
+      background-size: auto 100%;
+      background-position: left bottom;
+    }
+  }
+
+  /* Add blue background to puzzle content containers when background is loaded */
+  /* No padding to hug content tightly so background shapes remain visible */
+  body.bg-bg-primary.bg-loaded #daily-puzzle-container,
+  body.bg-bg-primary.bg-loaded #calendar-container {
+    background-color: rgb(98 200 189); /* bg-bg-primary color */
+    width: fit-content;
+    min-height: fit-content;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+    border-radius: 0;
+    box-sizing: border-box;
+  }
+}

@@ -96,15 +96,18 @@ export function deselectTile() {
         selected.setAttribute('aria-label', ariaLabel);
         
         // Maintain focus on the tile when deselected (user can continue tabbing)
-        // Only refocus if the tile is still the active element
+        // Only refocus if the tile is still the active element and is in the container (not in a slot)
         const wasFocused = document.activeElement === selected;
+        const isInSlot = selected.closest('.slot') !== null;
         clearSelectedTile();
         
-        // If the tile was focused, keep focus on it so user can continue tabbing
-        if (wasFocused && document.contains(selected)) {
+        // If the tile was focused and it's still in the container (not placed in a slot),
+        // keep focus on it so user can continue tabbing
+        // Don't refocus tiles that are in slots - let placeTileInSlot handle focus for placed tiles
+        if (wasFocused && !isInSlot && document.contains(selected)) {
             // Use setTimeout to ensure focus happens after any DOM changes
             setTimeout(() => {
-                if (document.contains(selected)) {
+                if (document.contains(selected) && selected.closest('.slot') === null) {
                     selected.focus();
                 }
             }, 0);

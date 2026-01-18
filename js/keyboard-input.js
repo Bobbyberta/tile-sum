@@ -158,9 +158,11 @@ function findNextEmptySlot(prefix = '', startFromSlot = null) {
     return allSlots[0] || null;
 }
 
-// Get all tiles in container in order
+// Get all tiles in order (both in container and in slots)
 function getAllTilesInOrder(prefix = '') {
-    // Determine container ID based on prefix
+    const tiles = [];
+    
+    // First, get tiles from container (unplaced tiles)
     let containerId = 'tiles-container';
     if (prefix === 'daily-') {
         containerId = 'daily-tiles-container';
@@ -169,10 +171,21 @@ function getAllTilesInOrder(prefix = '') {
     }
     
     const container = document.getElementById(containerId);
-    if (!container) return [];
+    if (container) {
+        const containerTiles = container.querySelectorAll('.tile:not([data-locked="true"])');
+        tiles.push(...Array.from(containerTiles));
+    }
     
-    const tiles = container.querySelectorAll('.tile:not([data-locked="true"])');
-    return Array.from(tiles);
+    // Then, get tiles from slots (placed tiles) - maintain reading order
+    const slots = getAllSlotsInOrder(prefix);
+    slots.forEach(slot => {
+        const tile = slot.querySelector('.tile:not([data-locked="true"])');
+        if (tile) {
+            tiles.push(tile);
+        }
+    });
+    
+    return tiles;
 }
 
 // Handle typing a letter
@@ -352,6 +365,7 @@ function handleTabNavigation(e, currentElement, context) {
 }
 
 // Handle arrow key navigation for tiles
+// Navigates between all tiles (both placed and unplaced) seamlessly
 function handleTileArrowNavigation(e, currentElement, context) {
     const prefix = context.prefix || '';
     const tiles = getAllTilesInOrder(prefix);
@@ -365,28 +379,24 @@ function handleTileArrowNavigation(e, currentElement, context) {
     
     switch (e.key) {
         case 'ArrowLeft':
-            // Move left to previous tile
+            // Move left to previous tile (all tiles)
             const leftIndex = currentIndex > 0 ? currentIndex - 1 : tiles.length - 1;
             nextElement = tiles[leftIndex];
             break;
         case 'ArrowRight':
-            // Move right to next tile
+            // Move right to next tile (all tiles)
             const rightIndex = currentIndex < tiles.length - 1 ? currentIndex + 1 : 0;
             nextElement = tiles[rightIndex];
             break;
         case 'ArrowUp':
-            // Move to slots (first slot of first word)
-            const slots = getAllSlotsInOrder(prefix);
-            if (slots.length > 0) {
-                nextElement = slots[0];
-            }
+            // Move to previous tile (all tiles) - same as ArrowLeft for linear navigation
+            const upIndex = currentIndex > 0 ? currentIndex - 1 : tiles.length - 1;
+            nextElement = tiles[upIndex];
             break;
         case 'ArrowDown':
-            // Move to slots (first slot of first word)
-            const slotsDown = getAllSlotsInOrder(prefix);
-            if (slotsDown.length > 0) {
-                nextElement = slotsDown[0];
-            }
+            // Move to next tile (all tiles) - same as ArrowRight for linear navigation
+            const downIndex = currentIndex < tiles.length - 1 ? currentIndex + 1 : 0;
+            nextElement = tiles[downIndex];
             break;
         default:
             return;
@@ -564,9 +574,15 @@ export function handleSlotKeyDown(e, context) {
         e.preventDefault();
         const selectedTile = getSelectedTile();
         if (selectedTile && activeContext.placeTileCallback) {
-            // Place selected tile in this slot
-            activeContext.placeTileCallback(selectedTile, slot);
+            // Store reference before deselecting (deselect clears the stored reference)
+            const tileToPlace = selectedTile;
+            
+            // Deselect tile first to avoid focus conflicts with placeTileInSlot's focus management
             deselectTile();
+            
+            // Place tile in slot
+            // placeTileInSlot will handle focus with isKeyboardNavigation flag
+            activeContext.placeTileCallback(tileToPlace, slot);
         }
         return;
     }
@@ -602,15 +618,11 @@ export function handleTileKeyDown(e, context) {
     }
     
     // Handle Arrow key navigation
+    // Always navigate between tiles (not slots) for seamless navigation between placed and unplaced tiles
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-        // If tile is in a slot, use slot navigation
-        const slot = tile.closest('.slot');
-        if (slot) {
-            handleSlotArrowNavigation(e, slot, activeContext);
-        } else {
-            // Tile is in container, use tile navigation
-            handleTileArrowNavigation(e, tile, activeContext);
-        }
+        // Always use tile navigation - tiles in slots should navigate to other tiles, not slots
+        // This allows seamless navigation between placed and unplaced tiles
+        handleTileArrowNavigation(e, tile, activeContext);
         return;
     }
     

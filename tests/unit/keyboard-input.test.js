@@ -417,19 +417,23 @@ describe('keyboard-input.js', () => {
     });
 
     it('should handle arrow keys for tile in slot', () => {
-      const { slots1Container } = createMockPuzzleDOM();
-      const tile = createMockTile('A', 0);
+      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
+      const tile1 = createMockTile('A', 0);
+      const tile2 = createMockTile('B', 1);
       const slot = slots1Container.children[0];
-      slot.appendChild(tile);
+      slot.appendChild(tile1);
+      tilesContainer.appendChild(tile2);
       
       const context = {
         prefix: ''
       };
       
-      const event = createKeyboardEventWithTarget('keydown', { key: 'ArrowRight' }, tile);
+      const event = createKeyboardEventWithTarget('keydown', { key: 'ArrowRight' }, tile1);
       event.preventDefault = vi.fn();
       
-      const focusSpy = vi.spyOn(slots1Container.children[1], 'focus');
+      // With new behavior, tiles in slots navigate to other tiles (not slots)
+      // Should navigate to tile2 in container
+      const focusSpy = vi.spyOn(tile2, 'focus');
       
       handleTileKeyDown(event, context);
       
