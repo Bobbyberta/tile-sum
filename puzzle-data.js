@@ -10,1080 +10,1349 @@ export const SCRABBLE_SCORES = {
 export const PUZZLE_DATA = {
     0: {
         words: ['TEST', 'DUMMY'],
-        solution: ['TEST', 'DUMMY']
-    },
+        solution: ['TEST', 'DUMMY'],
+        categories: ['noun', 'noun']
+},
     1: {
         words: ['SNOW', 'FLAKE'],
-        solution: ['SNOW', 'FLAKE']
-    },
+        solution: ['SNOW', 'FLAKE'],
+        categories: ['noun', 'noun']
+},
     2: {
         words: ['JOLLY', 'ELF'],
-        solution: ['JOLLY', 'ELF']
-    },
+        solution: ['JOLLY', 'ELF'],
+        categories: ['adverb', 'noun']
+},
     3: {
         words: ['GIFT', 'WRAP'],
-        solution: ['GIFT', 'WRAP']
-    },
+        solution: ['GIFT', 'WRAP'],
+        categories: ['noun', 'verb']
+},
     4: {
         words: ['CANDLE', 'CRAGS'],
-        solution: ['CANDLE', 'CRAGS']
-    },
+        solution: ['CANDLE', 'CRAGS'],
+        categories: ['noun', 'noun']
+},
     5: {
         words: ['STAR', 'TREE'],
-        solution: ['STAR', 'TREE']
-    },
+        solution: ['STAR', 'TREE'],
+        categories: ['noun', 'noun']
+},
     6: {
         words: ['WREATH', 'HOLLY'],
-        solution: ['WREATH', 'HOLLY']
-    },
+        solution: ['WREATH', 'HOLLY'],
+        categories: ['noun', 'adverb']
+},
     7: {
         words: ['COOKIE', 'MILK'],
-        solution: ['COOKIE', 'MILK']
-    },
+        solution: ['COOKIE', 'MILK'],
+        categories: ['noun', 'noun']
+},
     8: {
         words: ['RUDOLF', 'DASHER'],
-        solution: ['RUDOLF', 'DASHER']
-    },
+        solution: ['RUDOLF', 'DASHER'],
+        categories: ['noun', 'noun']
+},
     9: {
         words: ['TINSEL', 'WATER'],
-        solution: ['TINSEL', 'WATER']
-    },
+        solution: ['TINSEL', 'WATER'],
+        categories: ['noun', 'noun']
+},
     10: {
         words: ['BOX', 'UNWRAP'],
-        solution: ['BOX', 'UNWRAP']
-    },
+        solution: ['BOX', 'UNWRAP'],
+        categories: ['noun', 'adjective']
+},
     11: {
         words: ['FROSTY', 'WINTER'],
-        solution: ['FROSTY', 'WINTER']
-    },
+        solution: ['FROSTY', 'WINTER'],
+        categories: ['noun', 'noun']
+},
     12: {
         words: ['TURKEY', 'FAMILY'],
-        solution: ['TURKEY', 'FAMILY']
-    },
+        solution: ['TURKEY', 'FAMILY'],
+        categories: ['noun', 'noun']
+},
     13: {
         words: ['ADVENT', 'ICICLE'],
-        solution: ['ADVENT', 'ICICLE']
-    },
+        solution: ['ADVENT', 'ICICLE'],
+        categories: ['noun', 'noun']
+},
     14: {
         words: ['EGG', 'ALCOHOL'],
-        solution: ['EGG', 'ALCOHOL']
-    },
+        solution: ['EGG', 'ALCOHOL'],
+        categories: ['noun', 'noun']
+},
     15: {
         words: ['NOEL', 'EVE'],
-        solution: ['NOEL', 'EVE']
-    },
+        solution: ['NOEL', 'EVE'],
+        categories: ['noun', 'adjective']
+},
     16: {
         words: ['COZY', 'FIRE'],
-        solution: ['COZY', 'FIRE']
-    },
+        solution: ['COZY', 'FIRE'],
+        categories: ['noun', 'noun']
+},
     17: {
         words: ['CANDY', 'STRIPE'],
-        solution: ['CANDY', 'STRIPE']
-    },
+        solution: ['CANDY', 'STRIPE'],
+        categories: ['noun', 'noun']
+},
     18: {
         words: ['HEARTH', 'WARM'],
-        solution: ['HEARTH', 'WARM']
-    },
+        solution: ['HEARTH', 'WARM'],
+        categories: ['noun', 'adjective']
+},
     19: {
         words: ['COAL', 'SOCKS'],
-        solution: ['COAL', 'SOCKS']
-    },
+        solution: ['COAL', 'SOCKS'],
+        categories: ['noun', 'noun']
+},
     20: {
         words: ['SLEIGH', 'BELL'],
-        solution: ['SLEIGH', 'BELL']
-    },
+        solution: ['SLEIGH', 'BELL'],
+        categories: ['noun', 'noun']
+},
     21: {
         words: ['EGGNOG', 'AFTER'],
-        solution: ['EGGNOG', 'AFTER']
-    },
+        solution: ['EGGNOG', 'AFTER'],
+        categories: ['noun', 'preposition']
+},
     22: {
         words: ['YULE', 'LOG'],
-        solution: ['YULE', 'LOG']
-    },
+        solution: ['YULE', 'LOG'],
+        categories: ['noun', 'noun']
+},
     23: {
         words: ['MERRY', 'JOY'],
-        solution: ['MERRY', 'JOY']
-    },
+        solution: ['MERRY', 'JOY'],
+        categories: ['noun', 'noun']
+},
     24: {
         words: ['WIN', 'BILLION'],
-        solution: ['WIN', 'BILLION']
-    },
+        solution: ['WIN', 'BILLION'],
+        categories: ['verb', 'number']
+},
     25: {
         words: ['CALL', 'FORMAL'],
-        solution: ['CALL', 'FORMAL']
-    },
+        solution: ['CALL', 'FORMAL'],
+        categories: ['verb', 'adjective']
+},
     26: {
         words: ['DRY', 'AMAZING'],
-        solution: ['DRY', 'AMAZING']
-    },
+        solution: ['DRY', 'AMAZING'],
+        categories: ['adjective', 'adjective']
+},
     27: {
         words: ['WRITE', 'SING'],
-        solution: ['WRITE', 'SING']
-    },
+        solution: ['WRITE', 'SING'],
+        categories: ['verb', 'verb']
+},
     28: {
         words: ['DEBT', 'BUTTER'],
-        solution: ['DEBT', 'BUTTER']
-    },
+        solution: ['DEBT', 'BUTTER'],
+        categories: ['noun', 'noun']
+},
     29: {
         words: ['BEND', 'BROKEN'],
-        solution: ['BEND', 'BROKEN']
-    },
+        solution: ['BEND', 'BROKEN'],
+        categories: ['verb', 'verb']
+},
     30: {
         words: ['FIT', 'ANXIOUS'],
-        solution: ['FIT', 'ANXIOUS']
-    },
+        solution: ['FIT', 'ANXIOUS'],
+        categories: ['verb', 'adjective']
+},
     31: {
         words: ['DVD', 'BICYCLE'],
-        solution: ['DVD', 'BICYCLE']
-    },
+        solution: ['DVD', 'BICYCLE'],
+        categories: ['noun', 'noun']
+},
     32: {
         words: ['JUMP', 'FORGET'],
-        solution: ['JUMP', 'FORGET']
-    },
+        solution: ['JUMP', 'FORGET'],
+        categories: ['noun', 'verb']
+},
     33: {
         words: ['WHICH', 'MATCH'],
-        solution: ['WHICH', 'MATCH']
-    },
+        solution: ['WHICH', 'MATCH'],
+        categories: ['pronoun', 'verb']
+},
     34: {
         words: ['NECK', 'HUNGRY'],
-        solution: ['NECK', 'HUNGRY']
-    },
+        solution: ['NECK', 'HUNGRY'],
+        categories: ['noun', 'adjective']
+},
     35: {
         words: ['QUICK', 'GROUP'],
-        solution: ['QUICK', 'GROUP']
-    },
+        solution: ['QUICK', 'GROUP'],
+        categories: ['adjective', 'noun']
+},
     36: {
         words: ['DUE', 'EXPLODE'],
-        solution: ['DUE', 'EXPLODE']
-    },
+        solution: ['DUE', 'EXPLODE'],
+        categories: ['adjective', 'verb']
+},
     37: {
         words: ['CLUB', 'MYSELF'],
-        solution: ['CLUB', 'MYSELF']
-    },
+        solution: ['CLUB', 'MYSELF'],
+        categories: ['noun', 'pronoun']
+},
     38: {
         words: ['KID', 'COMPLEX'],
-        solution: ['KID', 'COMPLEX']
-    },
+        solution: ['KID', 'COMPLEX'],
+        categories: ['noun', 'adjective']
+},
     39: {
         words: ['FIGHT', 'RIVER'],
-        solution: ['FIGHT', 'RIVER']
-    },
+        solution: ['FIGHT', 'RIVER'],
+        categories: ['noun', 'noun']
+},
     40: {
         words: ['CROWD', 'PROVE'],
-        solution: ['CROWD', 'PROVE']
-    },
+        solution: ['CROWD', 'PROVE'],
+        categories: ['noun', 'verb']
+},
     41: {
         words: ['DUE', 'ACHIEVE'],
-        solution: ['DUE', 'ACHIEVE']
-    },
+        solution: ['DUE', 'ACHIEVE'],
+        categories: ['adjective', 'verb']
+},
     42: {
         words: ['FLOOD', 'CLIMB'],
-        solution: ['FLOOD', 'CLIMB']
-    },
+        solution: ['FLOOD', 'CLIMB'],
+        categories: ['noun', 'verb']
+},
     43: {
         words: ['FLY', 'ATTEMPT'],
-        solution: ['FLY', 'ATTEMPT']
-    },
+        solution: ['FLY', 'ATTEMPT'],
+        categories: ['verb', 'noun']
+},
     44: {
         words: ['FIX', 'WELCOME'],
-        solution: ['FIX', 'WELCOME']
-    },
+        solution: ['FIX', 'WELCOME'],
+        categories: ['verb', 'adjective']
+},
     45: {
         words: ['JAZZ', 'FRIDGE'],
-        solution: ['JAZZ', 'FRIDGE']
-    },
+        solution: ['JAZZ', 'FRIDGE'],
+        categories: ['noun', 'noun']
+},
     46: {
         words: ['TEXT', 'BEHAVE'],
-        solution: ['TEXT', 'BEHAVE']
-    },
+        solution: ['TEXT', 'BEHAVE'],
+        categories: ['noun', 'verb']
+},
     47: {
         words: ['SHY', 'PROGRAM'],
-        solution: ['SHY', 'PROGRAM']
-    },
+        solution: ['SHY', 'PROGRAM'],
+        categories: ['adjective', 'noun']
+},
     48: {
         words: ['OFF', 'ABILITY'],
-        solution: ['OFF', 'ABILITY']
-    },
+        solution: ['OFF', 'ABILITY'],
+        categories: ['', 'noun']
+},
     49: {
         words: ['BOND', 'COLUMN'],
-        solution: ['BOND', 'COLUMN']
-    },
+        solution: ['BOND', 'COLUMN'],
+        categories: ['noun', 'noun']
+},
     50: {
         words: ['COPY', 'BELONG'],
-        solution: ['COPY', 'BELONG']
-    },
+        solution: ['COPY', 'BELONG'],
+        categories: ['verb', 'verb']
+},
     51: {
         words: ['PUB', 'JUSTIFY'],
-        solution: ['PUB', 'JUSTIFY']
-    },
+        solution: ['PUB', 'JUSTIFY'],
+        categories: ['noun', 'verb']
+},
     52: {
         words: ['WAVE', 'CURVED'],
-        solution: ['WAVE', 'CURVED']
-    },
+        solution: ['WAVE', 'CURVED'],
+        categories: ['noun', 'adjective']
+},
     53: {
         words: ['DRY', 'TRAFFIC'],
-        solution: ['DRY', 'TRAFFIC']
-    },
+        solution: ['DRY', 'TRAFFIC'],
+        categories: ['adjective', 'noun']
+},
     54: {
         words: ['WOW', 'CONCEPT'],
-        solution: ['WOW', 'CONCEPT']
-    },
+        solution: ['WOW', 'CONCEPT'],
+        categories: ['noun', 'noun']
+},
     55: {
         words: ['BOOT', 'BEFORE'],
-        solution: ['BOOT', 'BEFORE']
-    },
+        solution: ['BOOT', 'BEFORE'],
+        categories: ['noun', 'adverb']
+},
     56: {
         words: ['LONG', 'MOSTLY'],
-        solution: ['LONG', 'MOSTLY']
-    },
+        solution: ['LONG', 'MOSTLY'],
+        categories: ['adjective', 'adverb']
+},
     57: {
         words: ['YOU', 'GOODBYE'],
-        solution: ['YOU', 'GOODBYE']
-    },
+        solution: ['YOU', 'GOODBYE'],
+        categories: ['pronoun', 'exclamation']
+},
     58: {
         words: ['CELL', 'CHANGE'],
-        solution: ['CELL', 'CHANGE']
-    },
+        solution: ['CELL', 'CHANGE'],
+        categories: ['noun', 'verb']
+},
     59: {
         words: ['FULL', 'SWITCH'],
-        solution: ['FULL', 'SWITCH']
-    },
+        solution: ['FULL', 'SWITCH'],
+        categories: ['adjective', 'noun']
+},
     60: {
         words: ['FRY', 'SURVIVE'],
-        solution: ['FRY', 'SURVIVE']
-    },
+        solution: ['FRY', 'SURVIVE'],
+        categories: ['FRY', 'verb']
+},
     61: {
         words: ['HOBBY', 'RUGBY'],
-        solution: ['HOBBY', 'RUGBY']
-    },
+        solution: ['HOBBY', 'RUGBY'],
+        categories: ['noun', 'noun']
+},
     62: {
         words: ['FIFTH', 'KNIFE'],
-        solution: ['FIFTH', 'KNIFE']
-    },
+        solution: ['FIFTH', 'KNIFE'],
+        categories: ['number', 'noun']
+},
     63: {
         words: ['BURN', 'FOURTH'],
-        solution: ['BURN', 'FOURTH']
-    },
+        solution: ['BURN', 'FOURTH'],
+        categories: ['verb', 'number']
+},
     64: {
         words: ['FIT', 'ANYBODY'],
-        solution: ['FIT', 'ANYBODY']
-    },
+        solution: ['FIT', 'ANYBODY'],
+        categories: ['verb', 'noun']
+},
     65: {
         words: ['FILL', 'FELLOW'],
-        solution: ['FILL', 'FELLOW']
-    },
+        solution: ['FILL', 'FELLOW'],
+        categories: ['verb', 'noun']
+},
     66: {
         words: ['FEE', 'POSSESS'],
-        solution: ['FEE', 'POSSESS']
-    },
+        solution: ['FEE', 'POSSESS'],
+        categories: ['noun', 'verb']
+},
     67: {
         words: ['KNOCK', 'EXACT'],
-        solution: ['KNOCK', 'EXACT']
-    },
+        solution: ['KNOCK', 'EXACT'],
+        categories: ['verb', 'adjective']
+},
     68: {
         words: ['ENJOY', 'BUILD'],
-        solution: ['ENJOY', 'BUILD']
-    },
+        solution: ['ENJOY', 'BUILD'],
+        categories: ['verb', 'verb']
+},
     69: {
         words: ['FLY', 'JOURNEY'],
-        solution: ['FLY', 'JOURNEY']
-    },
+        solution: ['FLY', 'JOURNEY'],
+        categories: ['verb', 'noun']
+},
     70: {
         words: ['CRY', 'CRUCIAL'],
-        solution: ['CRY', 'CRUCIAL']
-    },
+        solution: ['CRY', 'CRUCIAL'],
+        categories: ['verb', 'adjective']
+},
     71: {
         words: ['CIVIL', 'WORRY'],
-        solution: ['CIVIL', 'WORRY']
-    },
+        solution: ['CIVIL', 'WORRY'],
+        categories: ['adjective', 'verb']
+},
     72: {
         words: ['BEE', 'EXPENSE'],
-        solution: ['BEE', 'EXPENSE']
-    },
+        solution: ['BEE', 'EXPENSE'],
+        categories: ['noun', 'noun']
+},
     73: {
         words: ['FACT', 'JACKET'],
-        solution: ['FACT', 'JACKET']
-    },
+        solution: ['FACT', 'JACKET'],
+        categories: ['noun', 'noun']
+},
     74: {
         words: ['EGG', 'COMMENT'],
-        solution: ['EGG', 'COMMENT']
-    },
+        solution: ['EGG', 'COMMENT'],
+        categories: ['noun', 'verb']
+},
     75: {
         words: ['WIN', 'MAXIMUM'],
-        solution: ['WIN', 'MAXIMUM']
-    },
+        solution: ['WIN', 'MAXIMUM'],
+        categories: ['verb', 'adjective']
+},
     76: {
         words: ['SKY', 'UNUSUAL'],
-        solution: ['SKY', 'UNUSUAL']
-    },
+        solution: ['SKY', 'UNUSUAL'],
+        categories: ['noun', 'adjective']
+},
     77: {
         words: ['DRINK', 'PROUD'],
-        solution: ['DRINK', 'PROUD']
-    },
+        solution: ['DRINK', 'PROUD'],
+        categories: ['noun', 'adjective']
+},
     78: {
         words: ['WOULD', 'PLANT'],
-        solution: ['WOULD', 'PLANT']
-    },
+        solution: ['WOULD', 'PLANT'],
+        categories: ['verb', 'noun']
+},
     79: {
         words: ['QUEUE', 'PIECE'],
-        solution: ['QUEUE', 'PIECE']
-    },
+        solution: ['QUEUE', 'PIECE'],
+        categories: ['noun', 'noun']
+},
     80: {
         words: ['WATCH', 'ALLOW'],
-        solution: ['WATCH', 'ALLOW']
-    },
+        solution: ['WATCH', 'ALLOW'],
+        categories: ['verb', 'verb']
+},
     81: {
         words: ['VIRUS', 'SPICY'],
-        solution: ['VIRUS', 'SPICY']
-    },
+        solution: ['VIRUS', 'SPICY'],
+        categories: ['noun', 'adjective']
+},
     82: {
         words: ['DRUG', 'BRIGHT'],
-        solution: ['DRUG', 'BRIGHT']
-    },
+        solution: ['DRUG', 'BRIGHT'],
+        categories: ['noun', 'adjective']
+},
     83: {
         words: ['BLOCK', 'BUNCH'],
-        solution: ['BLOCK', 'BUNCH']
-    },
+        solution: ['BLOCK', 'BUNCH'],
+        categories: ['noun', 'noun']
+},
     84: {
         words: ['DVD', 'ACCOUNT'],
-        solution: ['DVD', 'ACCOUNT']
-    },
+        solution: ['DVD', 'ACCOUNT'],
+        categories: ['noun', 'noun']
+},
     85: {
         words: ['ROLL', 'HORROR'],
-        solution: ['ROLL', 'HORROR']
-    },
+        solution: ['ROLL', 'HORROR'],
+        categories: ['noun', 'noun']
+},
     86: {
         words: ['PHOTO', 'UPPER'],
-        solution: ['PHOTO', 'UPPER']
-    },
+        solution: ['PHOTO', 'UPPER'],
+        categories: ['noun', 'adjective']
+},
     87: {
         words: ['DRUG', 'NARROW'],
-        solution: ['DRUG', 'NARROW']
-    },
+        solution: ['DRUG', 'NARROW'],
+        categories: ['noun', 'adjective']
+},
     88: {
         words: ['HIGH', 'FUTURE'],
-        solution: ['HIGH', 'FUTURE']
-    },
+        solution: ['HIGH', 'FUTURE'],
+        categories: ['adjective', 'noun']
+},
     89: {
         words: ['FISH', 'AUGUST'],
-        solution: ['FISH', 'AUGUST']
-    },
+        solution: ['FISH', 'AUGUST'],
+        categories: ['noun', 'noun']
+},
     90: {
         words: ['MOTOR', 'THINK'],
-        solution: ['MOTOR', 'THINK']
-    },
+        solution: ['MOTOR', 'THINK'],
+        categories: ['noun', 'verb']
+},
     91: {
         words: ['NEXT', 'FREEZE'],
-        solution: ['NEXT', 'FREEZE']
-    },
+        solution: ['NEXT', 'FREEZE'],
+        categories: ['adjective', 'noun']
+},
     92: {
         words: ['BROWN', 'STOCK'],
-        solution: ['BROWN', 'STOCK']
-    },
+        solution: ['BROWN', 'STOCK'],
+        categories: ['adjective', 'noun']
+},
     93: {
         words: ['CAKE', 'EITHER'],
-        solution: ['CAKE', 'EITHER']
-    },
+        solution: ['CAKE', 'EITHER'],
+        categories: ['noun', 'adverb']
+},
     94: {
         words: ['DISH', 'DRIVER'],
-        solution: ['DISH', 'DRIVER']
-    },
+        solution: ['DISH', 'DRIVER'],
+        categories: ['noun', 'noun']
+},
     95: {
         words: ['DOUBT', 'PROOF'],
-        solution: ['DOUBT', 'PROOF']
-    },
+        solution: ['DOUBT', 'PROOF'],
+        categories: ['noun', 'noun']
+},
     96: {
         words: ['TYPE', 'REJECT'],
-        solution: ['TYPE', 'REJECT']
-    },
+        solution: ['TYPE', 'REJECT'],
+        categories: ['noun', 'verb']
+},
     97: {
         words: ['PRINT', 'FRONT'],
-        solution: ['PRINT', 'FRONT']
-    },
+        solution: ['PRINT', 'FRONT'],
+        categories: ['noun', 'noun']
+},
     98: {
         words: ['WOUND', 'LUCKY'],
-        solution: ['WOUND', 'LUCKY']
-    },
+        solution: ['WOUND', 'LUCKY'],
+        categories: ['noun', 'adjective']
+},
     99: {
         words: ['WILD', 'HIGHLY'],
-        solution: ['WILD', 'HIGHLY']
-    },
+        solution: ['WILD', 'HIGHLY'],
+        categories: ['adjective', 'adverb']
+},
     100: {
         words: ['GRASS', 'SORRY'],
-        solution: ['GRASS', 'SORRY']
-    },
+        solution: ['GRASS', 'SORRY'],
+        categories: ['noun', 'adjective']
+},
     101: {
         words: ['BOX', 'ABANDON'],
-        solution: ['BOX', 'ABANDON']
-    },
+        solution: ['BOX', 'ABANDON'],
+        categories: ['noun', 'verb']
+},
     102: {
         words: ['DOWN', 'OBJECT'],
-        solution: ['DOWN', 'OBJECT']
-    },
+        solution: ['DOWN', 'OBJECT'],
+        categories: ['adverb', 'noun']
+},
     103: {
         words: ['FEE', 'AVERAGE'],
-        solution: ['FEE', 'AVERAGE']
-    },
+        solution: ['FEE', 'AVERAGE'],
+        categories: ['noun', 'adjective']
+},
     104: {
         words: ['STYLE', 'JUDGE'],
-        solution: ['STYLE', 'JUDGE']
-    },
+        solution: ['STYLE', 'JUDGE'],
+        categories: ['noun', 'noun']
+},
     105: {
         words: ['AWAY', 'ACTUAL'],
-        solution: ['AWAY', 'ACTUAL']
-    },
+        solution: ['AWAY', 'ACTUAL'],
+        categories: ['adverb', 'adjective']
+},
     106: {
         words: ['FENCE', 'CATCH'],
-        solution: ['FENCE', 'CATCH']
-    },
+        solution: ['FENCE', 'CATCH'],
+        categories: ['noun', 'verb']
+},
     107: {
         words: ['BALL', 'CHURCH'],
-        solution: ['BALL', 'CHURCH']
-    },
+        solution: ['BALL', 'CHURCH'],
+        categories: ['noun', 'noun']
+},
     108: {
         words: ['FUND', 'ANNUAL'],
-        solution: ['FUND', 'ANNUAL']
-    },
+        solution: ['FUND', 'ANNUAL'],
+        categories: ['noun', 'adjective']
+},
     109: {
         words: ['SHY', 'BALANCE'],
-        solution: ['SHY', 'BALANCE']
-    },
+        solution: ['SHY', 'BALANCE'],
+        categories: ['adjective', 'noun']
+},
     110: {
         words: ['QUEEN', 'PENNY'],
-        solution: ['QUEEN', 'PENNY']
-    },
+        solution: ['QUEEN', 'PENNY'],
+        categories: ['noun', 'noun']
+},
     111: {
         words: ['CRAZY', 'FAULT'],
-        solution: ['CRAZY', 'FAULT']
-    },
+        solution: ['CRAZY', 'FAULT'],
+        categories: ['adjective', 'noun']
+},
     112: {
         words: ['JOY', 'ANGRILY'],
-        solution: ['JOY', 'ANGRILY']
-    },
+        solution: ['JOY', 'ANGRILY'],
+        categories: ['noun', 'adverb']
+},
     113: {
         words: ['PLAN', 'HAPPEN'],
-        solution: ['PLAN', 'HAPPEN']
-    },
+        solution: ['PLAN', 'HAPPEN'],
+        categories: ['noun', 'verb']
+},
     114: {
         words: ['CYCLE', 'FUNNY'],
-        solution: ['CYCLE', 'FUNNY']
-    },
+        solution: ['CYCLE', 'FUNNY'],
+        categories: ['noun', 'adjective']
+},
     115: {
         words: ['KID', 'ARRIVAL'],
-        solution: ['KID', 'ARRIVAL']
-    },
+        solution: ['KID', 'ARRIVAL'],
+        categories: ['noun', 'noun']
+},
     116: {
         words: ['TALL', 'GLOBAL'],
-        solution: ['TALL', 'GLOBAL']
-    },
+        solution: ['TALL', 'GLOBAL'],
+        categories: ['adjective', 'adjective']
+},
     117: {
         words: ['JOKE', 'INVITE'],
-        solution: ['JOKE', 'INVITE']
-    },
+        solution: ['JOKE', 'INVITE'],
+        categories: ['noun', 'verb']
+},
     118: {
         words: ['GIVE', 'SETTLE'],
-        solution: ['GIVE', 'SETTLE']
-    },
+        solution: ['GIVE', 'SETTLE'],
+        categories: ['verb', 'verb']
+},
     119: {
         words: ['HELP', 'THOUGH'],
-        solution: ['HELP', 'THOUGH']
-    },
+        solution: ['HELP', 'THOUGH'],
+        categories: ['verb', 'conjunction']
+},
     120: {
         words: ['HOUR', 'HONOUR'],
-        solution: ['HOUR', 'HONOUR']
-    },
+        solution: ['HOUR', 'HONOUR'],
+        categories: ['noun', 'noun']
+},
     121: {
         words: ['WHOM', 'SHADOW'],
-        solution: ['WHOM', 'SHADOW']
-    },
+        solution: ['WHOM', 'SHADOW'],
+        categories: ['pronoun', 'noun']
+},
     122: {
         words: ['CURVE', 'BRING'],
-        solution: ['CURVE', 'BRING']
-    },
+        solution: ['CURVE', 'BRING'],
+        categories: ['noun', 'verb']
+},
     123: {
         words: ['IMAGE', 'TWICE'],
-        solution: ['IMAGE', 'TWICE']
-    },
+        solution: ['IMAGE', 'TWICE'],
+        categories: ['noun', 'adverb']
+},
     124: {
         words: ['HELL', 'VICTIM'],
-        solution: ['HELL', 'VICTIM']
-    },
+        solution: ['HELL', 'VICTIM'],
+        categories: ['noun', 'noun']
+},
     125: {
         words: ['FOOD', 'FEMALE'],
-        solution: ['FOOD', 'FEMALE']
-    },
+        solution: ['FOOD', 'FEMALE'],
+        categories: ['noun', 'adjective']
+},
     126: {
         words: ['BLACK', 'HAPPY'],
-        solution: ['BLACK', 'HAPPY']
-    },
+        solution: ['BLACK', 'HAPPY'],
+        categories: ['adjective', 'adjective']
+},
     127: {
         words: ['ERROR', 'THIRD'],
-        solution: ['ERROR', 'THIRD']
-    },
+        solution: ['ERROR', 'THIRD'],
+        categories: ['noun', 'number']
+},
     128: {
         words: ['LUNCH', 'DRAFT'],
-        solution: ['LUNCH', 'DRAFT']
-    },
+        solution: ['LUNCH', 'DRAFT'],
+        categories: ['noun', 'noun']
+},
     129: {
         words: ['MIGHT', 'BLIND'],
-        solution: ['MIGHT', 'BLIND']
-    },
+        solution: ['MIGHT', 'BLIND'],
+        categories: ['verb', 'adjective']
+},
     130: {
         words: ['PITCH', 'ADAPT'],
-        solution: ['PITCH', 'ADAPT']
-    },
+        solution: ['PITCH', 'ADAPT'],
+        categories: ['noun', 'verb']
+},
     131: {
         words: ['GANG', 'COUNTY'],
-        solution: ['GANG', 'COUNTY']
-    },
+        solution: ['GANG', 'COUNTY'],
+        categories: ['noun', 'noun']
+},
     132: {
         words: ['WOW', 'BATTERY'],
-        solution: ['WOW', 'BATTERY']
-    },
+        solution: ['WOW', 'BATTERY'],
+        categories: ['noun', 'noun']
+},
     133: {
         words: ['PINK', 'BECOME'],
-        solution: ['PINK', 'BECOME']
-    },
+        solution: ['PINK', 'BECOME'],
+        categories: ['adjective', 'verb']
+},
     134: {
         words: ['JUICE', 'OFTEN'],
-        solution: ['JUICE', 'OFTEN']
-    },
+        solution: ['JUICE', 'OFTEN'],
+        categories: ['noun', 'adverb']
+},
     135: {
         words: ['CELL', 'WEALTH'],
-        solution: ['CELL', 'WEALTH']
-    },
+        solution: ['CELL', 'WEALTH'],
+        categories: ['noun', 'noun']
+},
     136: {
         words: ['BALL', 'BEHIND'],
-        solution: ['BALL', 'BEHIND']
-    },
+        solution: ['BALL', 'BEHIND'],
+        categories: ['noun', '']
+},
     137: {
         words: ['FACT', 'BUTTON'],
-        solution: ['FACT', 'BUTTON']
-    },
+        solution: ['FACT', 'BUTTON'],
+        categories: ['noun', 'noun']
+},
     138: {
         words: ['WHILE', 'THICK'],
-        solution: ['WHILE', 'THICK']
-    },
+        solution: ['WHILE', 'THICK'],
+        categories: ['conjunction', 'adjective']
+},
     139: {
         words: ['MOVE', 'FAVOUR'],
-        solution: ['MOVE', 'FAVOUR']
-    },
+        solution: ['MOVE', 'FAVOUR'],
+        categories: ['noun', 'noun']
+},
     140: {
         words: ['PRESS', 'DRESS'],
-        solution: ['PRESS', 'DRESS']
-    },
+        solution: ['PRESS', 'DRESS'],
+        categories: ['noun', 'noun']
+},
     141: {
         words: ['CREW', 'BUDGET'],
-        solution: ['CREW', 'BUDGET']
-    },
+        solution: ['CREW', 'BUDGET'],
+        categories: ['noun', 'noun']
+},
     142: {
         words: ['ORDER', 'FORCE'],
-        solution: ['ORDER', 'FORCE']
-    },
+        solution: ['ORDER', 'FORCE'],
+        categories: ['noun', 'noun']
+},
     143: {
         words: ['OCCUR', 'DRUNK'],
-        solution: ['OCCUR', 'DRUNK']
-    },
+        solution: ['OCCUR', 'DRUNK'],
+        categories: ['verb', 'adjective']
+},
     144: {
         words: ['WEEK', 'TWENTY'],
-        solution: ['WEEK', 'TWENTY']
-    },
+        solution: ['WEEK', 'TWENTY'],
+        categories: ['noun', 'number']
+},
     145: {
         words: ['HALF', 'EXTENT'],
-        solution: ['HALF', 'EXTENT']
-    },
+        solution: ['HALF', 'EXTENT'],
+        categories: ['noun', 'noun']
+},
     146: {
         words: ['TRICK', 'LIGHT'],
-        solution: ['TRICK', 'LIGHT']
-    },
+        solution: ['TRICK', 'LIGHT'],
+        categories: ['noun', 'noun']
+},
     147: {
         words: ['HALL', 'GROWTH'],
-        solution: ['HALL', 'GROWTH']
-    },
+        solution: ['HALL', 'GROWTH'],
+        categories: ['noun', 'noun']
+},
     148: {
         words: ['MELT', 'AMAZED'],
-        solution: ['MELT', 'AMAZED']
-    },
+        solution: ['MELT', 'AMAZED'],
+        categories: ['verb', 'verb']
+},
     149: {
         words: ['BAND', 'NOBODY'],
-        solution: ['BAND', 'NOBODY']
-    },
+        solution: ['BAND', 'NOBODY'],
+        categories: ['noun', 'noun']
+},
     150: {
         words: ['JULY', 'MUSEUM'],
-        solution: ['JULY', 'MUSEUM']
-    },
+        solution: ['JULY', 'MUSEUM'],
+        categories: ['adverb', 'noun']
+},
     151: {
         words: ['CLICK', 'WEIGH'],
-        solution: ['CLICK', 'WEIGH']
-    },
+        solution: ['CLICK', 'WEIGH'],
+        categories: ['noun', 'verb']
+},
     152: {
         words: ['FOUR', 'ANYWAY'],
-        solution: ['FOUR', 'ANYWAY']
-    },
+        solution: ['FOUR', 'ANYWAY'],
+        categories: ['number', 'adverb']
+},
     153: {
         words: ['KICK', 'BOTTLE'],
-        solution: ['KICK', 'BOTTLE']
-    },
+        solution: ['KICK', 'BOTTLE'],
+        categories: ['noun', 'noun']
+},
     154: {
         words: ['PICK', 'INJURE'],
-        solution: ['PICK', 'INJURE']
-    },
+        solution: ['PICK', 'INJURE'],
+        categories: ['verb', 'verb']
+},
     155: {
         words: ['PULL', 'FOLLOW'],
-        solution: ['PULL', 'FOLLOW']
-    },
+        solution: ['PULL', 'FOLLOW'],
+        categories: ['verb', 'verb']
+},
     156: {
         words: ['WISE', 'MEDIUM'],
-        solution: ['WISE', 'MEDIUM']
-    },
+        solution: ['WISE', 'MEDIUM'],
+        categories: ['adjective', 'noun']
+},
     157: {
         words: ['WORK', 'WINDOW'],
-        solution: ['WORK', 'WINDOW']
-    },
+        solution: ['WORK', 'WINDOW'],
+        categories: ['noun', 'noun']
+},
     158: {
         words: ['GROW', 'BORROW'],
-        solution: ['GROW', 'BORROW']
-    },
+        solution: ['GROW', 'BORROW'],
+        categories: ['verb', 'verb']
+},
     159: {
         words: ['JUNE', 'SURVEY'],
-        solution: ['JUNE', 'SURVEY']
-    },
+        solution: ['JUNE', 'SURVEY'],
+        categories: ['noun', 'noun']
+},
     160: {
         words: ['QUIT', 'DIVIDE'],
-        solution: ['QUIT', 'DIVIDE']
-    },
+        solution: ['QUIT', 'DIVIDE'],
+        categories: ['verb', 'verb']
+},
     161: {
         words: ['APPLY', 'MONTH'],
-        solution: ['APPLY', 'MONTH']
-    },
+        solution: ['APPLY', 'MONTH'],
+        categories: ['verb', 'noun']
+},
     162: {
         words: ['YOUR', 'UNIQUE'],
-        solution: ['YOUR', 'UNIQUE']
-    },
+        solution: ['YOUR', 'UNIQUE'],
+        categories: ['determiner', 'adjective']
+},
     163: {
         words: ['MILD', 'AFFORD'],
-        solution: ['MILD', 'AFFORD']
-    },
+        solution: ['MILD', 'AFFORD'],
+        categories: ['adjective', 'verb']
+},
     164: {
         words: ['SADLY', 'FANCY'],
-        solution: ['SADLY', 'FANCY']
-    },
+        solution: ['SADLY', 'FANCY'],
+        categories: ['adverb', 'adjective']
+},
     165: {
         words: ['BOOT', 'COFFEE'],
-        solution: ['BOOT', 'COFFEE']
-    },
+        solution: ['BOOT', 'COFFEE'],
+        categories: ['noun', 'noun']
+},
     166: {
         words: ['POWER', 'ONION'],
-        solution: ['POWER', 'ONION']
-    },
+        solution: ['POWER', 'ONION'],
+        categories: ['noun', 'noun']
+},
     167: {
         words: ['BITE', 'HEALTH'],
-        solution: ['BITE', 'HEALTH']
-    },
+        solution: ['BITE', 'HEALTH'],
+        categories: ['verb', 'noun']
+},
     168: {
         words: ['DEBT', 'ENGAGE'],
-        solution: ['DEBT', 'ENGAGE']
-    },
+        solution: ['DEBT', 'ENGAGE'],
+        categories: ['noun', 'verb']
+},
     169: {
         words: ['PRAY', 'JUNIOR'],
-        solution: ['PRAY', 'JUNIOR']
-    },
+        solution: ['PRAY', 'JUNIOR'],
+        categories: ['verb', 'adjective']
+},
     170: {
         words: ['FORK', 'LIQUID'],
-        solution: ['FORK', 'LIQUID']
-    },
+        solution: ['FORK', 'LIQUID'],
+        categories: ['noun', 'adjective']
+},
     171: {
         words: ['GOOD', 'MIRROR'],
-        solution: ['GOOD', 'MIRROR']
-    },
+        solution: ['GOOD', 'MIRROR'],
+        categories: ['adjective', 'noun']
+},
     172: {
         words: ['BAND', 'AFFECT'],
-        solution: ['BAND', 'AFFECT']
-    },
+        solution: ['BAND', 'AFFECT'],
+        categories: ['noun', 'verb']
+},
     173: {
         words: ['VENUE', 'YOUTH'],
-        solution: ['VENUE', 'YOUTH']
-    },
+        solution: ['VENUE', 'YOUTH'],
+        categories: ['noun', 'noun']
+},
     174: {
         words: ['BRAND', 'TRUCK'],
-        solution: ['BRAND', 'TRUCK']
-    },
+        solution: ['BRAND', 'TRUCK'],
+        categories: ['noun', 'noun']
+},
     175: {
         words: ['MIXED', 'HURRY'],
-        solution: ['MIXED', 'HURRY']
-    },
+        solution: ['MIXED', 'HURRY'],
+        categories: ['verb', 'noun']
+},
     176: {
         words: ['VITAL', 'STAFF'],
-        solution: ['VITAL', 'STAFF']
-    },
+        solution: ['VITAL', 'STAFF'],
+        categories: ['adjective', 'noun']
+},
     177: {
         words: ['TOOTH', 'EIGHT'],
-        solution: ['TOOTH', 'EIGHT']
-    },
+        solution: ['TOOTH', 'EIGHT'],
+        categories: ['noun', 'number']
+},
     178: {
         words: ['CITY', 'EXPAND'],
-        solution: ['CITY', 'EXPAND']
-    },
+        solution: ['CITY', 'EXPAND'],
+        categories: ['noun', 'verb']
+},
     179: {
         words: ['TIGHT', 'ADOPT'],
-        solution: ['TIGHT', 'ADOPT']
-    },
+        solution: ['TIGHT', 'ADOPT'],
+        categories: ['adjective', 'verb']
+},
     180: {
         words: ['PACK', 'EIGHTY'],
-        solution: ['PACK', 'EIGHTY']
-    },
+        solution: ['PACK', 'EIGHTY'],
+        categories: ['noun', 'number']
+},
     181: {
         words: ['COPY', 'WAITER'],
-        solution: ['COPY', 'WAITER']
-    },
+        solution: ['COPY', 'WAITER'],
+        categories: ['verb', 'noun']
+},
     182: {
         words: ['THIEF', 'MOVIE'],
-        solution: ['THIEF', 'MOVIE']
-    },
+        solution: ['THIEF', 'MOVIE'],
+        categories: ['noun', 'noun']
+},
     183: {
         words: ['BILL', 'EFFECT'],
-        solution: ['BILL', 'EFFECT']
-    },
+        solution: ['BILL', 'EFFECT'],
+        categories: ['noun', 'noun']
+},
     184: {
         words: ['LORRY', 'CHECK'],
-        solution: ['LORRY', 'CHECK']
-    },
+        solution: ['LORRY', 'CHECK'],
+        categories: ['noun', 'verb']
+},
     185: {
         words: ['WISH', 'INSIST'],
-        solution: ['WISH', 'INSIST']
-    },
+        solution: ['WISH', 'INSIST'],
+        categories: ['verb', 'verb']
+},
     186: {
         words: ['MALL', 'ATTACK'],
-        solution: ['MALL', 'ATTACK']
-    },
+        solution: ['MALL', 'ATTACK'],
+        categories: ['noun', 'verb']
+},
     187: {
         words: ['LUCK', 'FLIGHT'],
-        solution: ['LUCK', 'FLIGHT']
-    },
+        solution: ['LUCK', 'FLIGHT'],
+        categories: ['noun', 'noun']
+},
     188: {
         words: ['SPELL', 'LEVEL'],
-        solution: ['SPELL', 'LEVEL']
-    },
+        solution: ['SPELL', 'LEVEL'],
+        categories: ['verb', 'noun']
+},
     189: {
         words: ['TALK', 'COMMIT'],
-        solution: ['TALK', 'COMMIT']
-    },
+        solution: ['TALK', 'COMMIT'],
+        categories: ['verb', 'verb']
+},
     190: {
         words: ['AWAY', 'COMEDY'],
-        solution: ['AWAY', 'COMEDY']
-    },
+        solution: ['AWAY', 'COMEDY'],
+        categories: ['adverb', 'noun']
+},
     191: {
         words: ['FRUIT', 'WORLD'],
-        solution: ['FRUIT', 'WORLD']
-    },
+        solution: ['FRUIT', 'WORLD'],
+        categories: ['noun', 'noun']
+},
     192: {
         words: ['FRY', 'APPROVE'],
-        solution: ['FRY', 'APPROVE']
-    },
+        solution: ['FRY', 'APPROVE'],
+        categories: ['verb', 'verb']
+},
     193: {
         words: ['GRANT', 'EMPTY'],
-        solution: ['GRANT', 'EMPTY']
-    },
+        solution: ['GRANT', 'EMPTY'],
+        categories: ['noun', 'adjective']
+},
     194: {
         words: ['SKY', 'ATTRACT'],
-        solution: ['SKY', 'ATTRACT']
-    },
+        solution: ['SKY', 'ATTRACT'],
+        categories: ['noun', 'verb']
+},
     195: {
         words: ['DEPTH', 'SIGHT'],
-        solution: ['DEPTH', 'SIGHT']
-    },
+        solution: ['DEPTH', 'SIGHT'],
+        categories: ['noun', 'noun']
+},
     196: {
         words: ['DUTY', 'USEFUL'],
-        solution: ['DUTY', 'USEFUL']
-    },
+        solution: ['DUTY', 'USEFUL'],
+        categories: ['noun', 'adjective']
+},
     197: {
         words: ['PUB', 'BELIEVE'],
-        solution: ['PUB', 'BELIEVE']
-    },
+        solution: ['PUB', 'BELIEVE'],
+        categories: ['noun', 'verb']
+},
     198: {
         words: ['FLASH', 'CLASS'],
-        solution: ['FLASH', 'CLASS']
-    },
+        solution: ['FLASH', 'CLASS'],
+        categories: ['noun', 'noun']
+},
     199: {
         words: ['UNIT', 'RHYTHM'],
-        solution: ['UNIT', 'RHYTHM']
-    },
+        solution: ['UNIT', 'RHYTHM'],
+        categories: ['noun', 'noun']
+},
     200: {
         words: ['KILL', 'BUBBLE'],
-        solution: ['KILL', 'BUBBLE']
-    },
+        solution: ['KILL', 'BUBBLE'],
+        categories: ['verb', 'noun']
+},
     201: {
         words: ['CALL', 'LENGTH'],
-        solution: ['CALL', 'LENGTH']
-    },
+        solution: ['CALL', 'LENGTH'],
+        categories: ['verb', 'noun']
+},
     202: {
         words: ['FIX', 'AIRLINE'],
-        solution: ['FIX', 'AIRLINE']
-    },
+        solution: ['FIX', 'AIRLINE'],
+        categories: ['verb', 'noun']
+},
     203: {
         words: ['FIVE', 'EMERGE'],
-        solution: ['FIVE', 'EMERGE']
-    },
+        solution: ['FIVE', 'EMERGE'],
+        categories: ['number', 'verb']
+},
     204: {
         words: ['CHEF', 'ACCESS'],
-        solution: ['CHEF', 'ACCESS']
-    },
+        solution: ['CHEF', 'ACCESS'],
+        categories: ['noun', 'noun']
+},
     205: {
         words: ['DOWN', 'MEMORY'],
-        solution: ['DOWN', 'MEMORY']
-    },
+        solution: ['DOWN', 'MEMORY'],
+        categories: ['adverb', 'noun']
+},
     206: {
         words: ['FEED', 'VOLUME'],
-        solution: ['FEED', 'VOLUME']
-    },
+        solution: ['FEED', 'VOLUME'],
+        categories: ['noun', 'noun']
+},
     207: {
         words: ['HOUSE', 'PEACE'],
-        solution: ['HOUSE', 'PEACE']
-    },
+        solution: ['HOUSE', 'PEACE'],
+        categories: ['noun', 'noun']
+},
     208: {
         words: ['SAFE', 'OFFEND'],
-        solution: ['SAFE', 'OFFEND']
-    },
+        solution: ['SAFE', 'OFFEND'],
+        categories: ['adjective', 'verb']
+},
     209: {
         words: ['WOOD', 'ANYONE'],
-        solution: ['WOOD', 'ANYONE']
-    },
+        solution: ['WOOD', 'ANYONE'],
+        categories: ['noun', 'pronoun']
+},
     210: {
         words: ['CITY', 'CRISIS'],
-        solution: ['CITY', 'CRISIS']
-    },
+        solution: ['CITY', 'CRISIS'],
+        categories: ['noun', 'noun']
+},
     211: {
         words: ['LEND', 'CLEVER'],
-        solution: ['LEND', 'CLEVER']
-    },
+        solution: ['LEND', 'CLEVER'],
+        categories: ['verb', 'noun']
+},
     212: {
         words: ['CLUB', 'EXCUSE'],
-        solution: ['CLUB', 'EXCUSE']
-    },
+        solution: ['CLUB', 'EXCUSE'],
+        categories: ['noun', 'verb']
+},
     213: {
         words: ['GOODS', 'AWARE'],
-        solution: ['GOODS', 'AWARE']
-    },
+        solution: ['GOODS', 'AWARE'],
+        categories: ['noun', 'adjective']
+},
     214: {
         words: ['CAKE', 'CHANCE'],
-        solution: ['CAKE', 'CHANCE']
-    },
+        solution: ['CAKE', 'CHANCE'],
+        categories: ['noun', 'noun']
+},
     215: {
         words: ['ROOF', 'FROZEN'],
-        solution: ['ROOF', 'FROZEN']
-    },
+        solution: ['ROOF', 'FROZEN'],
+        categories: ['noun', 'verb']
+},
     216: {
         words: ['BEE', 'ANALYSE'],
-        solution: ['BEE', 'ANALYSE']
-    },
+        solution: ['BEE', 'ANALYSE'],
+        categories: ['noun', 'verb']
+},
     217: {
         words: ['HOLD', 'LOUDLY'],
-        solution: ['HOLD', 'LOUDLY']
-    },
+        solution: ['HOLD', 'LOUDLY'],
+        categories: ['verb', 'adverb']
+},
     218: {
         words: ['BITE', 'LUXURY'],
-        solution: ['BITE', 'LUXURY']
-    },
+        solution: ['BITE', 'LUXURY'],
+        categories: ['verb', 'noun']
+},
     219: {
         words: ['MARRY', 'DIRTY'],
-        solution: ['MARRY', 'DIRTY']
-    },
+        solution: ['MARRY', 'DIRTY'],
+        categories: ['verb', 'adjective']
+},
     220: {
         words: ['CLOCK', 'VOICE'],
-        solution: ['CLOCK', 'VOICE']
-    },
+        solution: ['CLOCK', 'VOICE'],
+        categories: ['noun', 'noun']
+},
     221: {
         words: ['FULLY', 'PUPIL'],
-        solution: ['FULLY', 'PUPIL']
-    },
+        solution: ['FULLY', 'PUPIL'],
+        categories: ['adverb', 'noun']
+},
     222: {
         words: ['RICH', 'BOTTOM'],
-        solution: ['RICH', 'BOTTOM']
-    },
+        solution: ['RICH', 'BOTTOM'],
+        categories: ['adjective', 'noun']
+},
     223: {
         words: ['DISC', 'MEMBER'],
-        solution: ['DISC', 'MEMBER']
-    },
+        solution: ['DISC', 'MEMBER'],
+        categories: ['noun', 'noun']
+},
     224: {
         words: ['WOOL', 'SUPPLY'],
-        solution: ['WOOL', 'SUPPLY']
-    },
+        solution: ['WOOL', 'SUPPLY'],
+        categories: ['noun', 'verb']
+},
     225: {
         words: ['HOLE', 'EXPOSE'],
-        solution: ['HOLE', 'EXPOSE']
-    },
+        solution: ['HOLE', 'EXPOSE'],
+        categories: ['noun', 'verb']
+},
     226: {
         words: ['CHEF', 'BETTER'],
-        solution: ['CHEF', 'BETTER']
-    },
+        solution: ['CHEF', 'BETTER'],
+        categories: ['noun', 'adjective']
+},
     227: {
         words: ['SWIM', 'STICKY'],
-        solution: ['SWIM', 'STICKY']
-    },
+        solution: ['SWIM', 'STICKY'],
+        categories: ['verb', 'adjective']
+},
     228: {
         words: ['CRY', 'ADDRESS'],
-        solution: ['CRY', 'ADDRESS']
-    },
+        solution: ['CRY', 'ADDRESS'],
+        categories: ['verb', 'noun']
+},
     229: {
         words: ['LAZY', 'PEPPER'],
-        solution: ['LAZY', 'PEPPER']
-    },
+        solution: ['LAZY', 'PEPPER'],
+        categories: ['adjective', 'noun']
+},
     230: {
         words: ['FLAG', 'GUILTY'],
-        solution: ['FLAG', 'GUILTY']
-    },
+        solution: ['FLAG', 'GUILTY'],
+        categories: ['noun', 'adjective']
+},
     231: {
         words: ['FOOT', 'PUBLIC'],
-        solution: ['FOOT', 'PUBLIC']
-    },
+        solution: ['FOOT', 'PUBLIC'],
+        categories: ['noun', 'adjective']
+},
     232: {
         words: ['WIFE', 'REFUSE'],
-        solution: ['WIFE', 'REFUSE']
-    },
+        solution: ['WIFE', 'REFUSE'],
+        categories: ['noun', 'verb']
+},
     233: {
         words: ['PUSH', 'STUDIO'],
-        solution: ['PUSH', 'STUDIO']
-    },
+        solution: ['PUSH', 'STUDIO'],
+        categories: ['verb', 'noun']
+},
     234: {
         words: ['TINY', 'POLICY'],
-        solution: ['TINY', 'POLICY']
-    },
+        solution: ['TINY', 'POLICY'],
+        categories: ['adjective', 'noun']
+},
     235: {
         words: ['MARK', 'TWELVE'],
-        solution: ['MARK', 'TWELVE']
-    },
+        solution: ['MARK', 'TWELVE'],
+        categories: ['noun', 'number']
+},
     236: {
         words: ['OFF', 'ADVANCE'],
-        solution: ['OFF', 'ADVANCE']
-    },
+        solution: ['OFF', 'ADVANCE'],
+        categories: ['adverb', 'noun']
+},
     237: {
         words: ['TAXI', 'SCRIPT'],
-        solution: ['TAXI', 'SCRIPT']
-    },
+        solution: ['TAXI', 'SCRIPT'],
+        categories: ['noun', 'noun']
+},
     238: {
         words: ['FOLK', 'STRONG'],
-        solution: ['FOLK', 'STRONG']
-    },
+        solution: ['FOLK', 'STRONG'],
+        categories: ['noun', 'adjective']
+},
     239: {
         words: ['MATHS', 'BLANK'],
-        solution: ['MATHS', 'BLANK']
-    },
+        solution: ['MATHS', 'BLANK'],
+        categories: ['noun', 'adjective']
+},
     240: {
         words: ['TIDY', 'DETECT'],
-        solution: ['TIDY', 'DETECT']
-    },
+        solution: ['TIDY', 'DETECT'],
+        categories: ['adjective', 'verb']
+},
     241: {
         words: ['GUESS', 'FRESH'],
-        solution: ['GUESS', 'FRESH']
-    },
+        solution: ['GUESS', 'FRESH'],
+        categories: ['verb', 'adjective']
+},
     242: {
         words: ['POUND', 'CLOTH'],
-        solution: ['POUND', 'CLOTH']
-    },
+        solution: ['POUND', 'CLOTH'],
+        categories: ['noun', 'noun']
+},
     243: {
         words: ['BILL', 'FINISH'],
-        solution: ['BILL', 'FINISH']
-    },
+        solution: ['BILL', 'FINISH'],
+        categories: ['noun', 'verb']
+},
     244: {
         words: ['SIZE', 'DEVICE'],
-        solution: ['SIZE', 'DEVICE']
-    },
+        solution: ['SIZE', 'DEVICE'],
+        categories: ['noun', 'noun']
+},
     245: {
         words: ['BACK', 'AUTHOR'],
-        solution: ['BACK', 'AUTHOR']
-    },
+        solution: ['BACK', 'AUTHOR'],
+        categories: ['adverb', 'noun']
+},
     246: {
         words: ['FIND', 'INJURY'],
-        solution: ['FIND', 'INJURY']
-    },
+        solution: ['FIND', 'INJURY'],
+        categories: ['verb', 'noun']
+},
     247: {
         words: ['GLAD', 'VALLEY'],
-        solution: ['GLAD', 'VALLEY']
-    },
+        solution: ['GLAD', 'VALLEY'],
+        categories: ['adjective', 'noun']
+},
     248: {
         words: ['SOUL', 'HOLLOW'],
-        solution: ['SOUL', 'HOLLOW']
-    },
+        solution: ['SOUL', 'HOLLOW'],
+        categories: ['noun', 'adjective']
+},
     249: {
         words: ['BURN', 'FRIDAY'],
-        solution: ['BURN', 'FRIDAY']
-    },
+        solution: ['BURN', 'FRIDAY'],
+        categories: ['verb', 'noun']
+},
     250: {
         words: ['SOCK', 'VISION'],
-        solution: ['SOCK', 'VISION']
-    },
+        solution: ['SOCK', 'VISION'],
+        categories: ['noun', 'noun']
+},
     251: {
         words: ['DUTY', 'BEAUTY'],
-        solution: ['DUTY', 'BEAUTY']
-    },
+        solution: ['DUTY', 'BEAUTY'],
+        categories: ['noun', 'noun']
+},
     252: {
         words: ['CREW', 'CHEESE'],
-        solution: ['CREW', 'CHEESE']
-    },
+        solution: ['CREW', 'CHEESE'],
+        categories: ['noun', 'noun']
+},
     253: {
         words: ['FILM', 'HARDLY'],
-        solution: ['FILM', 'HARDLY']
-    },
+        solution: ['FILM', 'HARDLY'],
+        categories: ['noun', 'adverb']
+},
     254: {
         words: ['HUGE', 'WEIGHT'],
-        solution: ['HUGE', 'WEIGHT']
-    },
+        solution: ['HUGE', 'WEIGHT'],
+        categories: ['adjective', 'noun']
+},
     255: {
         words: ['BACK', 'SAVING'],
-        solution: ['BACK', 'SAVING']
-    },
+        solution: ['BACK', 'SAVING'],
+        categories: ['adverb', 'verb']
+},
     256: {
         words: ['BOND', 'BRANCH'],
-        solution: ['BOND', 'BRANCH']
-    },
+        solution: ['BOND', 'BRANCH'],
+        categories: ['noun', 'noun']
+},
     257: {
         words: ['TELL', 'EXPERT'],
-        solution: ['TELL', 'EXPERT']
-    },
+        solution: ['TELL', 'EXPERT'],
+        categories: ['verb', 'noun']
+},
     258: {
         words: ['BEND', 'ACCEPT'],
-        solution: ['BEND', 'ACCEPT']
-    },
+        solution: ['BEND', 'ACCEPT'],
+        categories: ['verb', 'verb']
+},
     259: {
         words: ['GIRL', 'COMMON'],
-        solution: ['GIRL', 'COMMON']
-    },
+        solution: ['GIRL', 'COMMON'],
+        categories: ['noun', 'adjective']
+},
     260: {
         words: ['WILL', 'FIGURE'],
-        solution: ['WILL', 'FIGURE']
-    },
+        solution: ['WILL', 'FIGURE'],
+        categories: ['verb', 'noun']
+},
     261: {
         words: ['DISH', 'STUPID'],
-        solution: ['DISH', 'STUPID']
-    },
+        solution: ['DISH', 'STUPID'],
+        categories: ['noun', 'adjective']
+},
     262: {
         words: ['HILL', 'HUMOUR'],
-        solution: ['HILL', 'HUMOUR']
-    },
+        solution: ['HILL', 'HUMOUR'],
+        categories: ['noun', 'noun']
+},
     263: {
         words: ['HOLY', 'DOLLAR'],
-        solution: ['HOLY', 'DOLLAR']
-    },
+        solution: ['HOLY', 'DOLLAR'],
+        categories: ['adjective', 'noun']
+},
     264: {
         words: ['WAIT', 'TOMATO'],
-        solution: ['WAIT', 'TOMATO']
-    },
+        solution: ['WAIT', 'TOMATO'],
+        categories: ['verb', 'noun']
+},
     265: {
         words: ['WIND', 'MONKEY'],
-        solution: ['WIND', 'MONKEY']
-    },
+        solution: ['WIND', 'MONKEY'],
+        categories: ['noun', 'noun']
+},
     266: {
         words: ['TRIP', 'THIRTY'],
-        solution: ['TRIP', 'THIRTY']
-    },
+        solution: ['TRIP', 'THIRTY'],
+        categories: ['noun', 'number']
+},
     267: {
         words: ['WALL', 'ALWAYS'],
-        solution: ['WALL', 'ALWAYS']
-    },
+        solution: ['WALL', 'ALWAYS'],
+        categories: ['noun', 'adverb']
+},
     268: {
         words: ['YOU', 'BIOLOGY'],
-        solution: ['YOU', 'BIOLOGY']
-    }
+        solution: ['YOU', 'BIOLOGY'],
+        categories: ['pronoun', 'noun']
+}
 };
 
 // Get all letters from a puzzle (combined anagram)

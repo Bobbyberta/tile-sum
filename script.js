@@ -218,18 +218,19 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
         
         if (category) {
             const categoryLabel = document.createElement('div');
-            categoryLabel.className = 'border-[4px] border-slot-border rounded-l-[20px] px-3 py-2.5 font-rem';
+            categoryLabel.className = 'border-[4px] border-slot-border rounded-l-[20px] px-3 h-[45px] flex items-center font-rem';
             categoryLabel.style.fontSize = '20px';
             categoryLabel.style.lineHeight = '25px';
             categoryLabel.style.fontWeight = '500';
             categoryLabel.style.color = '#4E2E07';
+            categoryLabel.style.boxSizing = 'border-box';
             categoryLabel.textContent = category;
             categoryScoreContainer.appendChild(categoryLabel);
         }
         
         // Score display
         const scoreDisplay = document.createElement('div');
-        scoreDisplay.className = category ? 'bg-category-bg rounded-r-[20px] px-3 py-2.5 text-white font-rem' : 'bg-category-bg rounded-[16px] px-3 py-2.5 text-white font-rem';
+        scoreDisplay.className = category ? 'bg-category-bg rounded-r-[20px] px-3 h-[45px] flex items-center text-white font-rem' : 'bg-category-bg rounded-[16px] px-3 h-[45px] flex items-center text-white font-rem';
         scoreDisplay.style.fontSize = '20px';
         scoreDisplay.style.lineHeight = '25px';
         scoreDisplay.style.fontWeight = '500';
