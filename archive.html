@@ -17,7 +17,8 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=REM:wght@400;500;700;900&family=Inter:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=REM:wght@400;500;700;900&family=Inter:wght@700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=REM:wght@400;500;700;900&family=Inter:wght@700&display=swap" rel="stylesheet"></noscript>
     
     <!-- Social Sharing Meta Tags -->
     <meta property="og:title" content="Puzzle Archive - Sum Tile">
@@ -41,8 +42,8 @@
         gtag('config', 'G-E4YJ359T9L');
     </script>
     
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="styles.css"></noscript>
     <style>
         @media (prefers-reduced-motion: reduce) {
             * {
@@ -302,6 +303,7 @@
     <footer class="text-center py-6 text-gray-700 text-xs">
         © <a href="https://bobbieallsop.co.uk" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-text-primary rounded transition-colors">Bobbie Allsop</a> created Dec 2025
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
 </body>
 </html>
 
