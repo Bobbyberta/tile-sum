@@ -262,7 +262,7 @@ describe('modals.js', () => {
       expect(content).toContain('🟩');
       expect(content).toContain('🟧');
       // Should contain hints message
-      expect(content).toContain('I used 2 hints on todays puzzle');
+      expect(content).toContain('Hints used: 2');
     });
 
     it('should display emoji grid with all hints used (all orange)', () => {
@@ -289,7 +289,7 @@ describe('modals.js', () => {
       
       const content = shareMessage.textContent;
       expect(content).toContain('🟧');
-      expect(content).toContain('I used 2 hints on todays puzzle');
+      expect(content).toContain('Hints used: 2');
     });
 
     it('should display emoji grid for daily puzzles', () => {
@@ -300,7 +300,7 @@ describe('modals.js', () => {
       
       const content = shareMessage.textContent;
       expect(content).toContain('🟧');
-      expect(content).toContain('I used 2 hints on todays puzzle');
+      expect(content).toContain('Hints used: 2');
     });
 
     it('should include challenge message in share text', () => {
@@ -455,7 +455,8 @@ describe('modals.js', () => {
       
       copyShareMessage(shareText, puzzleUrl, shareBtn, 'Share', 'bg-amber-500');
       
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait longer for requestAnimationFrame + setTimeout + promise chain
+      await new Promise(resolve => setTimeout(resolve, 200));
       
       expect(mockShare).toHaveBeenCalled();
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(shareText);
@@ -480,7 +481,8 @@ describe('modals.js', () => {
       
       copyShareMessage(shareText, puzzleUrl, shareBtn, 'Share', 'bg-amber-500');
       
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait longer for requestAnimationFrame + setTimeout + promise chain
+      await new Promise(resolve => setTimeout(resolve, 200));
       
       expect(mockShare).toHaveBeenCalled();
       // Should fall back to clipboard on cancellation
