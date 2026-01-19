@@ -257,6 +257,16 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
             'hints_used': displayHintsUsed,
             'solution_shown': solutionShown
         });
+        
+        // Debug logging (remove in production if desired)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.log('📊 GA Event: completed_modal_shown', {
+                day,
+                hintsUsed: displayHintsUsed,
+                solutionShown,
+                dataLayerLength: window.dataLayer?.length || 0
+            });
+        }
     }
     
     // Ensure aria-describedby is set for accessibility
@@ -296,15 +306,35 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
         
         // Add event listener to the new button
         newShareBtn.addEventListener('click', () => {
-            copyShareMessage(shareText, newShareBtn, originalText, originalClassName);
+            copyShareMessage(shareText, newShareBtn, originalText, originalClassName, prefix, day);
         });
     }
 }
 
 // Copy share message to clipboard
-export function copyShareMessage(shareText, buttonElement, originalText, originalClassName) {
+export function copyShareMessage(shareText, buttonElement, originalText, originalClassName, prefix = '', day = null) {
     const shareBtn = buttonElement || document.getElementById('share-btn');
     if (!shareBtn) return;
+    
+    // Track Google Analytics event for daily puzzle copy button click
+    const isDaily = prefix === 'daily-';
+    if (isDaily && typeof window.gtag !== 'undefined') {
+        window.gtag('event', 'copy_button_click', {
+            'event_category': 'game_interaction',
+            'event_label': 'daily_puzzle',
+            'puzzle_day': day,
+            'method': 'share_message'
+        });
+        
+        // Debug logging (remove in production if desired)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.log('📊 GA Event: copy_button_click', {
+                day,
+                prefix,
+                dataLayerLength: window.dataLayer?.length || 0
+            });
+        }
+    }
     
     // Show immediate feedback and ensure it renders
     shareBtn.textContent = 'Copying...';

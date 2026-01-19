@@ -262,6 +262,14 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
                     'event_label': 'daily_puzzle',
                     'puzzle_day': day
                 });
+                
+                // Debug logging (remove in production if desired)
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    console.log('📊 GA Event: submit_button_click', {
+                        day,
+                        dataLayerLength: window.dataLayer?.length || 0
+                    });
+                }
             }
             
             checkSolution(
@@ -312,6 +320,15 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
                     'puzzle_day': day,
                     'hints_remaining': hintsRemaining
                 });
+                
+                // Debug logging (remove in production if desired)
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    console.log('📊 GA Event: hint_button_click', {
+                        day,
+                        hintsRemaining,
+                        dataLayerLength: window.dataLayer?.length || 0
+                    });
+                }
             }
             
             // Pass full dragDropContext to ensure handlers are properly attached to returned tiles
