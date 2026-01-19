@@ -47,17 +47,20 @@ describe('mouse-drag.js', () => {
       
       const event = {
         preventDefault: vi.fn(),
+        currentTarget: tile,
         dataTransfer: {
           effectAllowed: '',
           setData: vi.fn()
         }
       };
       
-      handleDragStart.call(tile, event);
+      handleDragStart(event);
       
       expect(setDraggedTile).toHaveBeenCalledWith(tile);
       expect(tile.classList.contains('dragging')).toBe(true);
       expect(event.dataTransfer.effectAllowed).toBe('move');
+      expect(event.dataTransfer.setData).toHaveBeenCalledWith('text/html', tile.outerHTML);
+      expect(event.dataTransfer.setData).toHaveBeenCalledWith('text/plain', tile.outerHTML);
     });
 
     it('should prevent drag for locked tiles', () => {
@@ -66,13 +69,14 @@ describe('mouse-drag.js', () => {
       
       const event = {
         preventDefault: vi.fn(),
+        currentTarget: tile,
         dataTransfer: {
           effectAllowed: '',
           setData: vi.fn()
         }
       };
       
-      const result = handleDragStart.call(tile, event);
+      const result = handleDragStart(event);
       
       expect(event.preventDefault).toHaveBeenCalled();
       expect(result).toBe(false);
@@ -92,7 +96,7 @@ describe('mouse-drag.js', () => {
       document.body.appendChild(slot1);
       document.body.appendChild(slot2);
       
-      handleDragEnd.call(tile, {});
+      handleDragEnd({ currentTarget: tile });
       
       expect(tile.classList.contains('dragging')).toBe(false);
       expect(slot1.classList.contains('drag-over')).toBe(false);

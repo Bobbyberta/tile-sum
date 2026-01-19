@@ -58,12 +58,13 @@ describe('Drag & Drop Integration', () => {
     // Start drag
     const dragStartEvent = {
       preventDefault: vi.fn(),
+      currentTarget: tile,
       dataTransfer: {
         effectAllowed: '',
         setData: vi.fn()
       }
     };
-    handleDragStart.call(tile, dragStartEvent);
+    handleDragStart(dragStartEvent);
     
     // Drop on slot
     const slot = slots1Container.children[0];
