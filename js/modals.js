@@ -248,6 +248,17 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
     modal.classList.remove('hidden');
     modal.setAttribute('aria-hidden', 'false');
     
+    // Track Google Analytics event for daily puzzle completed modal shown
+    if (isDaily && typeof window.gtag !== 'undefined') {
+        window.gtag('event', 'completed_modal_shown', {
+            'event_category': 'game_interaction',
+            'event_label': 'daily_puzzle',
+            'puzzle_day': day,
+            'hints_used': displayHintsUsed,
+            'solution_shown': solutionShown
+        });
+    }
+    
     // Ensure aria-describedby is set for accessibility
     const shareContainer = document.getElementById(`${prefix}share-message-container`);
     if (shareContainer && !modal.getAttribute('aria-describedby')) {

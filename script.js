@@ -255,6 +255,15 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
         submitBtn.parentNode.replaceChild(newSubmitBtn, submitBtn);
         
         newSubmitBtn.addEventListener('click', () => {
+            // Track Google Analytics event for daily puzzle submit button click
+            if (prefix === 'daily-' && typeof window.gtag !== 'undefined') {
+                window.gtag('event', 'submit_button_click', {
+                    'event_category': 'game_interaction',
+                    'event_label': 'daily_puzzle',
+                    'puzzle_day': day
+                });
+            }
+            
             checkSolution(
                 day,
                 () => showErrorModal(prefix),
@@ -293,6 +302,16 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
             const hintsRemaining = stateManager.getHintsRemaining();
             if (hintsRemaining <= 0) {
                 return;
+            }
+            
+            // Track Google Analytics event for daily puzzle hint button click
+            if (prefix === 'daily-' && typeof window.gtag !== 'undefined') {
+                window.gtag('event', 'hint_button_click', {
+                    'event_category': 'game_interaction',
+                    'event_label': 'daily_puzzle',
+                    'puzzle_day': day,
+                    'hints_remaining': hintsRemaining
+                });
             }
             
             // Pass full dragDropContext to ensure handlers are properly attached to returned tiles
