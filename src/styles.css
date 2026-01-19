@@ -43,6 +43,19 @@
   color: #FFFFFF !important;
   border: 4px solid #FB5E52 !important;
 }
+
+/* Selected tile - pink border with bolder outline (separate from focus state) */
+.tile-selected {
+  /* Bolder pink border using box-shadow for more prominent outline */
+  box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.6), /* Pink ring - inner */
+              0 0 0 6px rgba(236, 72, 153, 0.4);  /* Pink ring - outer glow */
+}
+
+.tile-selected:focus {
+  /* Keep focus outline visible along with pink border */
+  outline: 2px solid #1C2542;
+  outline-offset: 2px;
+}
 /* Large screen background decorative shapes - lazy loaded */
 @media (min-width: 768px) {
   body.bg-bg-primary {

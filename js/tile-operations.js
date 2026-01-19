@@ -4,6 +4,7 @@ import { getSelectedTile, clearSelectedTile } from './puzzle-state.js';
 import { deselectTile } from './keyboard.js';
 import { createTile, updatePlaceholderTile } from './puzzle-core.js';
 import { handleTileKeyDown } from './keyboard.js';
+import { getKeyboardContext } from './keyboard-input.js';
 import { updateScoreDisplay, updateSubmitButton } from './scoring.js';
 import { checkAutoComplete, areAllSlotsFilled } from './auto-complete.js';
 import { debugLog as debugLogUtil } from './utils.js';
@@ -137,8 +138,25 @@ export function attachTileHandlers(tile, context, isInSlot = false) {
         tile.addEventListener('touchcancel', handleTouchCancel, { passive: true });
     }
     
-    // Attach keyboard handler with context
-    tile.addEventListener('keydown', (e) => handleTileKeyDown(e, context));
+    // Attach keyboard handler - always use keyboard context
+    // The keyboard context is the source of truth for keyboard operations
+    // This ensures tiles placed in slots or swapped back to container can be selected and moved via keyboard
+    // Use capture phase to ensure tile handler runs before slot handler
+    const keyboardCtx = getKeyboardContext();
+    if (keyboardCtx) {
+        // Use keyboard context which has placeTileCallback and removeTileCallback
+        // Use capture phase (true) so tile handler runs before slot handler
+        tile.addEventListener('keydown', (e) => {
+            handleTileKeyDown(e, keyboardCtx);
+        }, true);
+    } else {
+        // Fallback: log warning but still try to use passed context
+        // This maintains backward compatibility if keyboard context isn't initialized
+        console.warn('attachTileHandlers: Keyboard context not available, using passed context');
+        tile.addEventListener('keydown', (e) => {
+            handleTileKeyDown(e, context);
+        }, true);
+    }
 }
 
 // Place tile in slot
@@ -246,6 +264,13 @@ export function placeTileInSlot(tile, slot, context = {}) {
         // Reset any inline styles that might have been set during drag
         clonedTile.style.opacity = '';
         
+        // Ensure tile is interactive (has tabindex and role for keyboard navigation)
+        // cloneNode copies attributes, but we need to ensure they're set correctly
+        if (!isLocked) {
+            clonedTile.setAttribute('role', 'button');
+            clonedTile.setAttribute('tabindex', '0');
+        }
+        
         // Attach handlers using helper function (tile will be in slot)
         attachTileHandlers(clonedTile, context, true);
 
@@ -270,10 +295,11 @@ export function placeTileInSlot(tile, slot, context = {}) {
                 updatePlaceholderTile('archive-tiles-container');
             }
             
-            // If tile was in a slot, remove filled class
-            // Slot remains interactive (no change needed)
+            // If tile was in a slot, restore slot interactivity
+            // Slot becomes empty, so it should be interactive again
             if (isFromSlot) {
                 isFromSlot.classList.remove('filled');
+                makeSlotInteractive(isFromSlot);
             }
         } else {
             // Tile was already removed - this shouldn't happen but handle gracefully

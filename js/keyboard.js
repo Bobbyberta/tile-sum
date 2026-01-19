@@ -72,14 +72,13 @@ export function selectTile(tile) {
     }
     
     setSelectedTile(tile);
-    tile.classList.add('ring-4', 'ring-yellow-400', 'ring-offset-2');
+    // Add pink border with bolder outline - separate from focus state
+    tile.classList.add('ring-4', 'ring-pink-500', 'ring-offset-2', 'tile-selected');
     const currentLabel = (tile.getAttribute('aria-label') || '').replace(' (selected)', '');
     tile.setAttribute('aria-label', currentLabel + ' (selected)');
     
-    // Ensure the selected tile maintains focus for keyboard navigation
-    if (document.activeElement !== tile) {
-        tile.focus();
-    }
+    // Don't force focus - allow focus to move independently while keeping selection
+    // Focus will be managed by navigation, selection state persists
     
     // Announce selection to screen readers
     const letter = tile.getAttribute('data-letter');
@@ -91,7 +90,8 @@ export function selectTile(tile) {
 export function deselectTile() {
     const selected = getSelectedTile();
     if (selected) {
-        selected.classList.remove('ring-4', 'ring-yellow-400', 'ring-offset-2');
+        // Remove pink border styling
+        selected.classList.remove('ring-4', 'ring-pink-500', 'ring-offset-2', 'tile-selected');
         const ariaLabel = (selected.getAttribute('aria-label') || '').replace(' (selected)', '');
         selected.setAttribute('aria-label', ariaLabel);
         

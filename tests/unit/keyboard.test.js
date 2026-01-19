@@ -559,7 +559,7 @@ describe('keyboard.js', () => {
       expect(puzzleState.setSelectedTile).toHaveBeenCalledWith(tile);
     });
 
-    it('should focus tile if not already focused', async () => {
+    it('should not force focus when selecting tile', async () => {
       const puzzleState = await import('../../js/puzzle-state.js');
       const tile = createMockTile('A', 0);
       tile.setAttribute('aria-label', 'Tile A');
@@ -568,7 +568,9 @@ describe('keyboard.js', () => {
       const focusSpy = vi.spyOn(tile, 'focus');
       selectTile(tile);
       
-      expect(focusSpy).toHaveBeenCalled();
+      // Selection doesn't force focus - focus can move independently
+      // This allows users to navigate while keeping a tile selected
+      expect(focusSpy).not.toHaveBeenCalled();
       expect(puzzleState.setSelectedTile).toHaveBeenCalledWith(tile);
     });
   });

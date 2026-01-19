@@ -321,10 +321,27 @@ function handleTabNavigation(e, currentElement, context) {
     // Prevent default Tab behavior first
     e.preventDefault();
     
-    // Get all focusable elements in order: tiles first, then slots
+    // Get all focusable elements in order: tiles first, then slots, then buttons
     const tiles = getAllTilesInOrder(prefix);
     const slots = getAllSlotsInOrder(prefix);
-    const allFocusable = [...tiles, ...slots];
+    
+    // Get hint and submit buttons
+    const hintBtnId = prefix ? `${prefix}hint-btn` : 'hint-btn';
+    const submitBtnId = prefix ? `${prefix}submit-btn` : 'submit-btn';
+    const hintBtn = document.getElementById(hintBtnId);
+    const submitBtn = document.getElementById(submitBtnId);
+    
+    const buttons = [];
+    // Only include hint button if it exists and is not disabled
+    if (hintBtn && !hintBtn.disabled) {
+        buttons.push(hintBtn);
+    }
+    // Include submit button if it exists
+    if (submitBtn) {
+        buttons.push(submitBtn);
+    }
+    
+    const allFocusable = [...tiles, ...slots, ...buttons];
     
     if (allFocusable.length === 0) return;
     
@@ -364,42 +381,202 @@ function handleTabNavigation(e, currentElement, context) {
     }
 }
 
-// Handle arrow key navigation for tiles
-// Navigates between all tiles (both placed and unplaced) seamlessly
+// Get navigation rows: tiles container (row 0), word 0 slots (row 1), word 1 slots (row 2)
+function getNavigationRows(prefix = '') {
+    // Get tiles from container only (unplaced tiles)
+    let containerId = 'tiles-container';
+    if (prefix === 'daily-') {
+        containerId = 'daily-tiles-container';
+    } else if (prefix === 'archive-') {
+        containerId = 'archive-tiles-container';
+    }
+    
+    const container = document.getElementById(containerId);
+    const tiles = container ? Array.from(container.querySelectorAll('.tile:not([data-locked="true"])')) : [];
+    
+    // Get slots grouped by word
+    const slots = getAllSlotsInOrder(prefix);
+    const slotsByWord = [[], []];
+    slots.forEach(slot => {
+        const wordIndex = parseInt(slot.getAttribute('data-word-index') || '0');
+        if (wordIndex < 2) {
+            slotsByWord[wordIndex].push(slot);
+        }
+    });
+    
+    return {
+        tiles: tiles,           // Row 0
+        word0: slotsByWord[0],  // Row 1
+        word1: slotsByWord[1]   // Row 2
+    };
+}
+
+// Find which row an element is in and its index within that row
+function findCurrentRowAndIndex(element, rows) {
+    // Check tiles (row 0)
+    const tileIndex = rows.tiles.indexOf(element);
+    if (tileIndex !== -1) {
+        return { row: 0, index: tileIndex };
+    }
+    
+    // Check word 0 slots (row 1)
+    const word0Index = rows.word0.indexOf(element);
+    if (word0Index !== -1) {
+        return { row: 1, index: word0Index };
+    }
+    
+    // Check word 1 slots (row 2)
+    const word1Index = rows.word1.indexOf(element);
+    if (word1Index !== -1) {
+        return { row: 2, index: word1Index };
+    }
+    
+    // Check if element is a tile in a slot
+    const slot = element.closest('.slot');
+    if (slot) {
+        const wordIndex = parseInt(slot.getAttribute('data-word-index') || '0');
+        const slotIndex = rows.word0.indexOf(slot);
+        if (slotIndex !== -1 && wordIndex === 0) {
+            return { row: 1, index: slotIndex };
+        }
+        const slotIndex1 = rows.word1.indexOf(slot);
+        if (slotIndex1 !== -1 && wordIndex === 1) {
+            return { row: 2, index: slotIndex1 };
+        }
+    }
+    
+    return null;
+}
+
+// Handle arrow key navigation for tiles and slots
+// Navigates between words (Up/Down) and within rows (Left/Right)
 function handleTileArrowNavigation(e, currentElement, context) {
     const prefix = context.prefix || '';
-    const tiles = getAllTilesInOrder(prefix);
+    const rows = getNavigationRows(prefix);
     
-    if (tiles.length === 0) return;
+    // Find current position
+    const currentPos = findCurrentRowAndIndex(currentElement, rows);
+    if (!currentPos) return;
     
-    const currentIndex = tiles.indexOf(currentElement);
-    if (currentIndex === -1) return;
-    
+    const { row: currentRow, index: currentIndex } = currentPos;
     let nextElement = null;
     
     switch (e.key) {
         case 'ArrowLeft':
-            // Move left to previous tile (all tiles)
-            const leftIndex = currentIndex > 0 ? currentIndex - 1 : tiles.length - 1;
-            nextElement = tiles[leftIndex];
+            // Move left within current row
+            const currentRowElements = currentRow === 0 ? rows.tiles : 
+                                      currentRow === 1 ? rows.word0 : rows.word1;
+            if (currentIndex > 0) {
+                nextElement = currentRowElements[currentIndex - 1];
+            } else {
+                // Wrap to end of row
+                nextElement = currentRowElements[currentRowElements.length - 1];
+            }
             break;
         case 'ArrowRight':
-            // Move right to next tile (all tiles)
-            const rightIndex = currentIndex < tiles.length - 1 ? currentIndex + 1 : 0;
-            nextElement = tiles[rightIndex];
+            // Move right within current row
+            const currentRowElementsRight = currentRow === 0 ? rows.tiles : 
+                                           currentRow === 1 ? rows.word0 : rows.word1;
+            if (currentIndex < currentRowElementsRight.length - 1) {
+                nextElement = currentRowElementsRight[currentIndex + 1];
+            } else {
+                // Wrap to beginning of row
+                nextElement = currentRowElementsRight[0];
+            }
             break;
         case 'ArrowUp':
-            // Move to previous tile (all tiles) - same as ArrowLeft for linear navigation
-            const upIndex = currentIndex > 0 ? currentIndex - 1 : tiles.length - 1;
-            nextElement = tiles[upIndex];
+            // Move to same index in previous row
+            if (currentRow === 0) {
+                // From tiles, wrap to last word (word 1)
+                const targetRow = rows.word1.length > 0 ? rows.word1 : rows.word0;
+                if (targetRow.length > 0) {
+                    const targetIndex = Math.min(currentIndex, targetRow.length - 1);
+                    nextElement = targetRow[targetIndex];
+                }
+            } else if (currentRow === 1) {
+                // From word 0, move to tiles
+                if (rows.tiles.length > 0) {
+                    const targetIndex = Math.min(currentIndex, rows.tiles.length - 1);
+                    nextElement = rows.tiles[targetIndex];
+                } else {
+                    // No tiles, wrap to word 1
+                    if (rows.word1.length > 0) {
+                        const targetIndex = Math.min(currentIndex, rows.word1.length - 1);
+                        nextElement = rows.word1[targetIndex];
+                    }
+                }
+            } else if (currentRow === 2) {
+                // From word 1, move to word 0
+                if (rows.word0.length > 0) {
+                    const targetIndex = Math.min(currentIndex, rows.word0.length - 1);
+                    nextElement = rows.word0[targetIndex];
+                } else {
+                    // No word 0, move to tiles
+                    if (rows.tiles.length > 0) {
+                        const targetIndex = Math.min(currentIndex, rows.tiles.length - 1);
+                        nextElement = rows.tiles[targetIndex];
+                    }
+                }
+            }
             break;
         case 'ArrowDown':
-            // Move to next tile (all tiles) - same as ArrowRight for linear navigation
-            const downIndex = currentIndex < tiles.length - 1 ? currentIndex + 1 : 0;
-            nextElement = tiles[downIndex];
+            // Move to same index in next row
+            if (currentRow === 0) {
+                // From tiles, move to word 0
+                if (rows.word0.length > 0) {
+                    const targetIndex = Math.min(currentIndex, rows.word0.length - 1);
+                    nextElement = rows.word0[targetIndex];
+                } else if (rows.word1.length > 0) {
+                    // No word 0, move to word 1
+                    const targetIndex = Math.min(currentIndex, rows.word1.length - 1);
+                    nextElement = rows.word1[targetIndex];
+                }
+            } else if (currentRow === 1) {
+                // From word 0, move to word 1
+                if (rows.word1.length > 0) {
+                    const targetIndex = Math.min(currentIndex, rows.word1.length - 1);
+                    nextElement = rows.word1[targetIndex];
+                } else {
+                    // No word 1, wrap to tiles
+                    if (rows.tiles.length > 0) {
+                        const targetIndex = Math.min(currentIndex, rows.tiles.length - 1);
+                        nextElement = rows.tiles[targetIndex];
+                    }
+                }
+            } else if (currentRow === 2) {
+                // From word 1, wrap to tiles
+                if (rows.tiles.length > 0) {
+                    const targetIndex = Math.min(currentIndex, rows.tiles.length - 1);
+                    nextElement = rows.tiles[targetIndex];
+                } else {
+                    // No tiles, wrap to word 0
+                    if (rows.word0.length > 0) {
+                        const targetIndex = Math.min(currentIndex, rows.word0.length - 1);
+                        nextElement = rows.word0[targetIndex];
+                    }
+                }
+            }
             break;
         default:
             return;
+    }
+    
+    // If next element is a slot, check if it has a tile and navigate to the tile
+    // If slot is empty, ensure it's interactive (has tabindex) so it can be focused
+    if (nextElement && nextElement.classList.contains('slot')) {
+        const tileInSlot = nextElement.querySelector('.tile:not([data-locked="true"])');
+        if (tileInSlot) {
+            // Slot has a tile, navigate to the tile
+            nextElement = tileInSlot;
+        } else {
+            // Slot is empty, ensure it's interactive so it can be focused
+            // This handles cases where slots might have lost interactivity after swaps
+            const isLocked = nextElement.getAttribute('data-locked') === 'true';
+            if (!isLocked && !nextElement.hasAttribute('tabindex')) {
+                nextElement.setAttribute('role', 'button');
+                nextElement.setAttribute('tabindex', '0');
+            }
+        }
     }
     
     if (nextElement && document.contains(nextElement)) {
@@ -550,8 +727,17 @@ export function handleSlotKeyDown(e, context) {
     }
     
     // Handle Arrow key navigation
+    // Use unified navigation that includes both tiles and slots
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-        handleSlotArrowNavigation(e, slot, activeContext);
+        // Check if slot has a tile - if so, navigate from the tile; otherwise navigate from the slot
+        const tileInSlot = slot.querySelector('.tile:not([data-locked="true"])');
+        if (tileInSlot) {
+            // Slot has a tile, use unified navigation from the tile
+            handleTileArrowNavigation(e, tileInSlot, activeContext);
+        } else {
+            // Empty slot, use unified navigation from the slot
+            handleTileArrowNavigation(e, slot, activeContext);
+        }
         return;
     }
     
@@ -569,20 +755,28 @@ export function handleSlotKeyDown(e, context) {
         return;
     }
     
-    // Handle Enter key - place selected tile in slot
+    // Handle Enter key - place selected tile in slot or select tile in slot
     if (e.key === 'Enter') {
         e.preventDefault();
         const selectedTile = getSelectedTile();
+        
         if (selectedTile && activeContext.placeTileCallback) {
+            // Tile is selected, place it in slot
             // Store reference before deselecting (deselect clears the stored reference)
             const tileToPlace = selectedTile;
             
             // Deselect tile first to avoid focus conflicts with placeTileInSlot's focus management
             deselectTile();
             
-            // Place tile in slot
+            // Place tile in slot (will swap if slot has a tile)
             // placeTileInSlot will handle focus with isKeyboardNavigation flag
             activeContext.placeTileCallback(tileToPlace, slot);
+        } else {
+            // No tile selected - select tile in slot if it exists
+            const tileInSlot = slot.querySelector('.tile:not([data-locked="true"])');
+            if (tileInSlot) {
+                selectTile(tileInSlot);
+            }
         }
         return;
     }
@@ -618,10 +812,9 @@ export function handleTileKeyDown(e, context) {
     }
     
     // Handle Arrow key navigation
-    // Always navigate between tiles (not slots) for seamless navigation between placed and unplaced tiles
+    // Navigate between all tiles and slots seamlessly
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-        // Always use tile navigation - tiles in slots should navigate to other tiles, not slots
-        // This allows seamless navigation between placed and unplaced tiles
+        // Use unified navigation that includes both tiles and slots
         handleTileArrowNavigation(e, tile, activeContext);
         return;
     }
@@ -653,14 +846,56 @@ export function handleTileKeyDown(e, context) {
         return;
     }
     
-    // Handle Enter key - select tile for keyboard placement
+    // Handle Enter key - select tile or place selected tile
     if (e.key === 'Enter') {
         e.preventDefault();
-        // Only select tiles in container, not tiles already in slots
+        e.stopPropagation(); // Prevent slot handler from also handling this event
+        const selectedTile = getSelectedTile();
         const slot = tile.closest('.slot');
-        if (!slot) {
-            selectTile(tile);
+        
+        // If this tile is already selected, deselect it
+        if (selectedTile === tile) {
+            deselectTile();
+            return;
         }
+        
+        // If another tile is selected, handle placement/swapping
+        if (selectedTile && selectedTile !== tile) {
+            // Validate selected tile exists
+            if (!document.contains(selectedTile)) {
+                // Selected tile no longer exists, just select current tile
+                selectTile(tile);
+                return;
+            }
+            
+            const selectedSlot = selectedTile.closest('.slot');
+            
+            // If current tile is in a slot, place selected tile there (will swap)
+            if (slot && activeContext.placeTileCallback) {
+                const tileToPlace = selectedTile;
+                deselectTile();
+                // Call placeTileCallback - it will handle swapping via placeTileInSlot -> swapTiles
+                // placeTileInSlot detects existing tile and calls swapTiles automatically
+                activeContext.placeTileCallback(tileToPlace, slot);
+                return;
+            }
+            
+            // If selected tile is in a slot and current tile is in container, place current tile in selected slot (will swap)
+            if (selectedSlot && activeContext.placeTileCallback) {
+                deselectTile();
+                // placeTileInSlot detects existing tile and calls swapTiles automatically
+                activeContext.placeTileCallback(tile, selectedSlot);
+                return;
+            }
+            
+            // Both in containers - just select the new tile (replace selection)
+            selectTile(tile);
+            return;
+        }
+        
+        // No tile selected, select this tile (any non-locked tile, placed or unplaced)
+        // Note: Locked tiles are already filtered out at handler level
+        selectTile(tile);
         return;
     }
     

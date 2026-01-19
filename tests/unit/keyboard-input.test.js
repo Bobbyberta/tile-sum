@@ -180,8 +180,11 @@ describe('keyboard-input.js', () => {
 
     it('should handle Enter key without selected tile', async () => {
       const { getSelectedTile } = await import('../../js/puzzle-state.js');
+      const { selectTile } = await import('../../js/keyboard.js');
       const { slots1Container } = createMockPuzzleDOM();
       const slot = slots1Container.children[0];
+      const tile = createMockTile('A', 0);
+      slot.appendChild(tile);
       
       // Ensure getSelectedTile returns null (no selected tile)
       getSelectedTile.mockReturnValue(null);
@@ -199,6 +202,7 @@ describe('keyboard-input.js', () => {
       
       expect(event.preventDefault).toHaveBeenCalled();
       expect(placeTileCallback).not.toHaveBeenCalled();
+      expect(selectTile).toHaveBeenCalledWith(tile);
     });
 
     it('should handle arrow key navigation', () => {
@@ -310,7 +314,7 @@ describe('keyboard-input.js', () => {
       expect(selectTile).toHaveBeenCalledWith(tile);
     });
 
-    it('should not select tile on Enter when in slot', async () => {
+    it('should select tile on Enter when in slot', async () => {
       const { selectTile } = await import('../../js/keyboard.js');
       const { slots1Container } = createMockPuzzleDOM();
       const tile = createMockTile('A', 0);
@@ -327,7 +331,58 @@ describe('keyboard-input.js', () => {
       handleTileKeyDown(event, context);
       
       expect(event.preventDefault).toHaveBeenCalled();
-      expect(selectTile).not.toHaveBeenCalled();
+      expect(selectTile).toHaveBeenCalledWith(tile);
+    });
+
+    it('should place selected tile on placed tile with Enter (swap)', async () => {
+      const { getSelectedTile } = await import('../../js/puzzle-state.js');
+      const { deselectTile } = await import('../../js/keyboard.js');
+      const { tilesContainer, slots1Container } = createMockPuzzleDOM();
+      const selectedTile = createMockTile('A', 0);
+      const placedTile = createMockTile('B', 1);
+      const slot = slots1Container.children[0];
+      
+      tilesContainer.appendChild(selectedTile);
+      slot.appendChild(placedTile);
+      
+      getSelectedTile.mockReturnValue(selectedTile);
+      
+      const placeTileCallback = vi.fn();
+      const context = {
+        prefix: '',
+        placeTileCallback
+      };
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'Enter' }, placedTile);
+      event.preventDefault = vi.fn();
+      
+      handleTileKeyDown(event, context);
+      
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(placeTileCallback).toHaveBeenCalledWith(selectedTile, slot);
+      expect(deselectTile).toHaveBeenCalled();
+    });
+
+    it('should deselect tile when Enter pressed on already selected tile', async () => {
+      const { getSelectedTile } = await import('../../js/puzzle-state.js');
+      const { deselectTile } = await import('../../js/keyboard.js');
+      const { tilesContainer } = createMockPuzzleDOM();
+      const tile = createMockTile('A', 0);
+      
+      tilesContainer.appendChild(tile);
+      getSelectedTile.mockReturnValue(tile);
+      
+      const context = {
+        prefix: ''
+      };
+      
+      const event = createKeyboardEventWithTarget('keydown', { key: 'Enter' }, tile);
+      event.preventDefault = vi.fn();
+      
+      handleTileKeyDown(event, context);
+      
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(deselectTile).toHaveBeenCalled();
     });
 
     it('should handle Delete when tile in slot', async () => {
@@ -420,8 +475,9 @@ describe('keyboard-input.js', () => {
       const { tilesContainer, slots1Container } = createMockPuzzleDOM();
       const tile1 = createMockTile('A', 0);
       const tile2 = createMockTile('B', 1);
-      const slot = slots1Container.children[0];
-      slot.appendChild(tile1);
+      const slot1 = slots1Container.children[0];
+      const slot2 = slots1Container.children[1];
+      slot1.appendChild(tile1);
       tilesContainer.appendChild(tile2);
       
       const context = {
@@ -431,9 +487,10 @@ describe('keyboard-input.js', () => {
       const event = createKeyboardEventWithTarget('keydown', { key: 'ArrowRight' }, tile1);
       event.preventDefault = vi.fn();
       
-      // With new behavior, tiles in slots navigate to other tiles (not slots)
-      // Should navigate to tile2 in container
-      const focusSpy = vi.spyOn(tile2, 'focus');
+      // With new word-based navigation, ArrowRight navigates within the current row
+      // Tile1 is in slot1 (word 0, row 1), so ArrowRight should navigate to next slot in word 0
+      // Since slot2 is the next slot, we should navigate to slot2 (or tile in slot2 if it exists)
+      const focusSpy = vi.spyOn(slot2, 'focus');
       
       handleTileKeyDown(event, context);
       
