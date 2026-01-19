@@ -42,12 +42,15 @@ vi.mock('../../js/completion.js', () => ({
 Object.assign(navigator, {
   clipboard: {
     writeText: vi.fn(() => Promise.resolve())
-  }
+  },
+  share: undefined // Will be set in individual tests if needed
 });
 
 describe('modals.js', () => {
   beforeEach(() => {
     cleanupDOM();
+    // Reset navigator.share to undefined (not available) for tests that don't set it
+    navigator.share = undefined;
     vi.clearAllMocks();
     global.requestAnimationFrame = vi.fn((cb) => setTimeout(cb, 0));
     global.window.scrollTo = vi.fn();
@@ -351,8 +354,9 @@ describe('modals.js', () => {
       document.body.appendChild(shareBtn);
       
       const shareText = 'Test share message';
+      const puzzleUrl = 'https://sum-tile.uk/puzzle.html';
       
-      copyShareMessage(shareText, shareBtn, 'Share', 'bg-amber-500');
+      copyShareMessage(shareText, puzzleUrl, shareBtn, 'Share', 'bg-amber-500');
       
       await new Promise(resolve => setTimeout(resolve, 100));
       
@@ -365,7 +369,7 @@ describe('modals.js', () => {
       shareBtn.className = 'bg-amber-500';
       document.body.appendChild(shareBtn);
       
-      copyShareMessage('Test', shareBtn, 'Share', 'bg-amber-500');
+      copyShareMessage('Test', 'https://sum-tile.uk/puzzle.html', shareBtn, 'Share', 'bg-amber-500');
       
       await new Promise(resolve => setTimeout(resolve, 100));
       
@@ -379,7 +383,7 @@ describe('modals.js', () => {
       shareBtn.className = 'bg-amber-500';
       document.body.appendChild(shareBtn);
       
-      copyShareMessage('Test', shareBtn, 'Share', 'bg-amber-500');
+      copyShareMessage('Test', 'https://sum-tile.uk/puzzle.html', shareBtn, 'Share', 'bg-amber-500');
       
       await new Promise(resolve => setTimeout(resolve, 2100));
       
@@ -396,7 +400,7 @@ describe('modals.js', () => {
       shareBtn.className = 'bg-amber-500';
       document.body.appendChild(shareBtn);
       
-      copyShareMessage('Test', shareBtn, 'Share', 'bg-amber-500');
+      copyShareMessage('Test', 'https://sum-tile.uk/puzzle.html', shareBtn, 'Share', 'bg-amber-500');
       
       await new Promise(resolve => setTimeout(resolve, 100));
       
@@ -407,7 +411,80 @@ describe('modals.js', () => {
     });
 
     it('should return early if button not found', () => {
-      expect(() => copyShareMessage('Test', null, 'Share', 'bg-amber-500')).not.toThrow();
+      expect(() => copyShareMessage('Test', 'https://sum-tile.uk/puzzle.html', null, 'Share', 'bg-amber-500')).not.toThrow();
+    });
+
+    it('should use Web Share API when available', async () => {
+      // Mock Web Share API
+      const mockShare = vi.fn(() => Promise.resolve());
+      navigator.share = mockShare;
+      
+      const shareBtn = document.createElement('button');
+      shareBtn.textContent = 'Share';
+      shareBtn.className = 'bg-amber-500';
+      document.body.appendChild(shareBtn);
+      
+      const shareText = 'Test share message\nhttps://sum-tile.uk/puzzle.html';
+      const puzzleUrl = 'https://sum-tile.uk/puzzle.html';
+      
+      copyShareMessage(shareText, puzzleUrl, shareBtn, 'Share', 'bg-amber-500');
+      
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      expect(mockShare).toHaveBeenCalledWith({
+        title: 'Sum Tile Puzzle',
+        text: 'Test share message',
+        url: puzzleUrl
+      });
+      expect(shareBtn.textContent).toBe('Shared!');
+    });
+
+    it('should fall back to clipboard if Web Share API fails', async () => {
+      // Mock Web Share API to reject
+      const mockShare = vi.fn(() => Promise.reject(new Error('Share failed')));
+      navigator.share = mockShare;
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+      
+      const shareBtn = document.createElement('button');
+      shareBtn.textContent = 'Share';
+      shareBtn.className = 'bg-amber-500';
+      document.body.appendChild(shareBtn);
+      
+      const shareText = 'Test share message\nhttps://sum-tile.uk/puzzle.html';
+      const puzzleUrl = 'https://sum-tile.uk/puzzle.html';
+      
+      copyShareMessage(shareText, puzzleUrl, shareBtn, 'Share', 'bg-amber-500');
+      
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      expect(mockShare).toHaveBeenCalled();
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(shareText);
+      
+      consoleError.mockRestore();
+    });
+
+    it('should not use Web Share API if user cancels share', async () => {
+      // Mock Web Share API to reject with AbortError (user cancellation)
+      const abortError = new Error('User cancelled');
+      abortError.name = 'AbortError';
+      const mockShare = vi.fn(() => Promise.reject(abortError));
+      navigator.share = mockShare;
+      
+      const shareBtn = document.createElement('button');
+      shareBtn.textContent = 'Share';
+      shareBtn.className = 'bg-amber-500';
+      document.body.appendChild(shareBtn);
+      
+      const shareText = 'Test share message\nhttps://sum-tile.uk/puzzle.html';
+      const puzzleUrl = 'https://sum-tile.uk/puzzle.html';
+      
+      copyShareMessage(shareText, puzzleUrl, shareBtn, 'Share', 'bg-amber-500');
+      
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      expect(mockShare).toHaveBeenCalled();
+      // Should fall back to clipboard on cancellation
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(shareText);
     });
   });
 
@@ -793,7 +870,7 @@ describe('modals.js', () => {
     it('should handle button element not found via ID', () => {
       // Don't create a button - test when button is not found by ID
       // Call without buttonElement parameter and without button in DOM
-      expect(() => copyShareMessage('Test', null, 'Share', 'bg-amber-500')).not.toThrow();
+      expect(() => copyShareMessage('Test', 'https://sum-tile.uk/puzzle.html', null, 'Share', 'bg-amber-500')).not.toThrow();
       
       // Function should return early when button is not found
       // No button exists, so nothing should happen
@@ -808,7 +885,7 @@ describe('modals.js', () => {
       
       const originalClassName = shareBtn.className;
       
-      copyShareMessage('Test', shareBtn, 'Share', originalClassName);
+      copyShareMessage('Test', 'https://sum-tile.uk/puzzle.html', shareBtn, 'Share', originalClassName);
       
       await new Promise(resolve => setTimeout(resolve, 100));
       

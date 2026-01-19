@@ -14,6 +14,11 @@ let touchMoveHandler = null;
 // Store triggering element for focus restoration
 let triggeringElement = null;
 
+// Check if Web Share API is available
+function isWebShareAvailable() {
+    return typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+}
+
 // Mobile-compatible scroll lock utility
 function lockBodyScroll() {
     modalCount++;
@@ -300,30 +305,37 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
         const newShareBtn = shareBtn.cloneNode(true);
         shareBtn.parentNode.replaceChild(newShareBtn, shareBtn);
         
+        // Set button text based on Web Share API availability
+        const canUseWebShare = isWebShareAvailable();
+        const buttonText = canUseWebShare ? 'Share' : 'Copy';
+        newShareBtn.textContent = buttonText;
+        
         // Store original state - store the full className to preserve all classes
-        const originalText = newShareBtn.textContent;
+        const originalText = buttonText;
         const originalClassName = newShareBtn.className;
         
         // Add event listener to the new button
         newShareBtn.addEventListener('click', () => {
-            copyShareMessage(shareText, newShareBtn, originalText, originalClassName, prefix, day);
+            copyShareMessage(shareText, puzzleUrl, newShareBtn, originalText, originalClassName, prefix, day);
         });
     }
 }
 
-// Copy share message to clipboard
-export function copyShareMessage(shareText, buttonElement, originalText, originalClassName, prefix = '', day = null) {
+// Copy share message to clipboard or use Web Share API
+export function copyShareMessage(shareText, puzzleUrl, buttonElement, originalText, originalClassName, prefix = '', day = null) {
     const shareBtn = buttonElement || document.getElementById('share-btn');
     if (!shareBtn) return;
     
-    // Track Google Analytics event for daily puzzle copy button click
+    const canUseWebShare = isWebShareAvailable();
     const isDaily = prefix === 'daily-';
+    
+    // Track Google Analytics event for daily puzzle share/copy button click
     if (isDaily && typeof window.gtag !== 'undefined') {
         window.gtag('event', 'copy_button_click', {
             'event_category': 'game_interaction',
             'event_label': 'daily_puzzle',
             'puzzle_day': day,
-            'method': 'share_message'
+            'method': canUseWebShare ? 'web_share' : 'share_message'
         });
         
         // Debug logging (remove in production if desired)
@@ -331,11 +343,62 @@ export function copyShareMessage(shareText, buttonElement, originalText, origina
             console.log('📊 GA Event: copy_button_click', {
                 day,
                 prefix,
+                method: canUseWebShare ? 'web_share' : 'share_message',
                 dataLayerLength: window.dataLayer?.length || 0
             });
         }
     }
     
+    // Use Web Share API if available
+    if (canUseWebShare) {
+        // Extract text from shareText (everything except the URL)
+        // The shareText format is: emoji grid, hints message, challenge message, empty line, URL
+        // Remove the URL from shareText to get just the text content
+        const shareTextOnly = shareText.replace(puzzleUrl, '').replace(/\n\n$/, '').trim();
+        
+        // Show immediate feedback
+        shareBtn.textContent = 'Sharing...';
+        shareBtn.disabled = true;
+        
+        // Use requestAnimationFrame to ensure the "Sharing..." text is rendered
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                navigator.share({
+                    title: 'Sum Tile Puzzle',
+                    text: shareTextOnly,
+                    url: puzzleUrl
+                })
+                .then(() => {
+                    // Update button text and color
+                    shareBtn.textContent = 'Shared!';
+                    shareBtn.disabled = false;
+                    shareBtn.classList.remove('bg-hint-button', 'hover:opacity-90', 'focus:ring-hint-button');
+                    shareBtn.classList.add('bg-green-600', 'hover:bg-green-800', 'focus:ring-green-600');
+                    
+                    // Restore after 2 seconds
+                    setTimeout(() => {
+                        shareBtn.textContent = originalText;
+                        shareBtn.className = originalClassName;
+                    }, 2000);
+                })
+                .catch((error) => {
+                    // User cancelled or error occurred - fall back to clipboard copy
+                    if (error.name !== 'AbortError') {
+                        console.error('Error sharing:', error);
+                    }
+                    // Fall through to clipboard copy
+                    copyToClipboard(shareText, shareBtn, originalText, originalClassName);
+                });
+            }, 50);
+        });
+    } else {
+        // Fall back to clipboard copy
+        copyToClipboard(shareText, shareBtn, originalText, originalClassName);
+    }
+}
+
+// Copy share message to clipboard (helper function)
+function copyToClipboard(shareText, shareBtn, originalText, originalClassName) {
     // Show immediate feedback and ensure it renders
     shareBtn.textContent = 'Copying...';
     shareBtn.disabled = true;
