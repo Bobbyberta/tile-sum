@@ -4,6 +4,7 @@ import { formatDateString, getDateForPuzzleNumber, isAdventMode, PUZZLE_DATA } f
 import { getTestModeParamWithAmpersand } from './utils.js';
 import { handleModalKeyDown } from './keyboard.js';
 import { savePuzzleCompletion, markHelpAsSeen } from './completion.js';
+import { showDailyPuzzleCountdown } from './ui.js';
 
 // Track modal count for scroll lock management
 let modalCount = 0;
@@ -238,6 +239,11 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
 
     // Save completion status
     savePuzzleCompletion(day, puzzleDate);
+
+    // Show countdown message for daily puzzles (so it's visible when modal closes)
+    if (isDaily) {
+        showDailyPuzzleCountdown();
+    }
 
     modal.classList.remove('hidden');
     modal.setAttribute('aria-hidden', 'false');

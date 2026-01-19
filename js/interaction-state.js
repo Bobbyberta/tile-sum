@@ -24,7 +24,8 @@ let touchDragState = {
     placeTileCallback: null,
     removeTileCallback: null,
     documentTouchMoveHandler: null,
-    documentTouchEndHandler: null
+    documentTouchEndHandler: null,
+    originalBodyOverflow: null
 };
 
 // Export getters and setters for interaction state
@@ -93,4 +94,5 @@ export function resetTouchDragState() {
     touchDragState.removeTileCallback = null;
     touchDragState.documentTouchMoveHandler = null;
     touchDragState.documentTouchEndHandler = null;
+    touchDragState.originalBodyOverflow = null;
 }

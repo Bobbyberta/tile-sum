@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent overscroll bounce on mobile browsers */
+html,
+body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
 /* Banner visibility padding - ensures title is visible when banner is shown */
 #main-content.banner-visible {
   padding-top: 6rem; /* 96px - extra padding for mobile where text may wrap */

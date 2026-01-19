@@ -74,7 +74,7 @@ export function createTile(letter, index, isLocked = false, handlers = {}) {
         }
         // Touch handlers for mobile drag support
         if (handlers.onTouchStart) {
-            tile.addEventListener('touchstart', handlers.onTouchStart, { passive: true });
+            tile.addEventListener('touchstart', handlers.onTouchStart, { passive: false });
         }
         if (handlers.onTouchMove) {
             tile.addEventListener('touchmove', handlers.onTouchMove, { passive: false });

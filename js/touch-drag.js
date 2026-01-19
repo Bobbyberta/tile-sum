@@ -30,6 +30,9 @@ export function handleTouchStart(e, placeTileCallback, removeTileCallback) {
         return;
     }
     
+    // Prevent scrolling immediately when tile is touched
+    e.preventDefault();
+    
     const touch = e.touches[0];
     
     // Mark touch interaction as active to prevent click events
@@ -37,6 +40,11 @@ export function handleTouchStart(e, placeTileCallback, removeTileCallback) {
     setLastTouchTime(Date.now());
     
     debugLog('handleTouchStart: Touch started on tile', tile.getAttribute('data-letter'));
+    
+    // Store original body overflow style and disable scrolling
+    const body = document.body;
+    const originalOverflow = body.style.overflow;
+    body.style.overflow = 'hidden';
     
     // Initialize touch drag state
     const rect = tile.getBoundingClientRect();
@@ -51,7 +59,8 @@ export function handleTouchStart(e, placeTileCallback, removeTileCallback) {
         removeTileCallback: removeTileCallback,
         dragGhost: null,
         originalLeft: rect.left,
-        originalTop: rect.top
+        originalTop: rect.top,
+        originalBodyOverflow: originalOverflow
     });
 }
 
@@ -229,6 +238,11 @@ export function handleTouchEnd(e) {
 // Clean up touch drag state
 function cleanupTouchDrag() {
     const touchDragState = getTouchDragState();
+    
+    // Restore body overflow style
+    if (touchDragState.originalBodyOverflow !== null) {
+        document.body.style.overflow = touchDragState.originalBodyOverflow;
+    }
     
     // Remove document-level listeners
     if (touchDragState.documentTouchMoveHandler) {

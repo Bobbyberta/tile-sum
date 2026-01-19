@@ -119,7 +119,7 @@ export function attachTileHandlers(tile, context, isInSlot = false) {
     // Attach touch handlers if available in context
     if (context.handlers) {
         if (context.handlers.onTouchStart) {
-            tile.addEventListener('touchstart', context.handlers.onTouchStart, { passive: true });
+            tile.addEventListener('touchstart', context.handlers.onTouchStart, { passive: false });
         }
         if (context.handlers.onTouchMove) {
             tile.addEventListener('touchmove', context.handlers.onTouchMove, { passive: false });
@@ -132,7 +132,7 @@ export function attachTileHandlers(tile, context, isInSlot = false) {
         }
     } else {
         // Fallback: create touch handlers with callbacks from context
-        tile.addEventListener('touchstart', (e) => handleTouchStart(e, placeTileCallback, removeTileCallback), { passive: true });
+        tile.addEventListener('touchstart', (e) => handleTouchStart(e, placeTileCallback, removeTileCallback), { passive: false });
         tile.addEventListener('touchmove', handleTouchMove, { passive: false });
         tile.addEventListener('touchend', handleTouchEnd, { passive: true });
         tile.addEventListener('touchcancel', handleTouchCancel, { passive: true });

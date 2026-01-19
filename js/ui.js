@@ -180,6 +180,107 @@ export function initDailyPuzzle() {
     }
 }
 
+// Calculate when the next puzzle unlocks (midnight tomorrow)
+function getNextPuzzleUnlockTime() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    return tomorrow;
+}
+
+// Format countdown time as a human-readable string
+function formatCountdown(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    
+    const parts = [];
+    if (hours > 0) {
+        parts.push(`${hours} hour${hours !== 1 ? 's' : ''}`);
+    }
+    if (minutes > 0) {
+        parts.push(`${minutes} minute${minutes !== 1 ? 's' : ''}`);
+    }
+    if (seconds > 0 || parts.length === 0) {
+        parts.push(`${seconds} second${seconds !== 1 ? 's' : ''}`);
+    }
+    
+    // Join with commas and "and" for the last part
+    if (parts.length === 1) {
+        return parts[0];
+    } else if (parts.length === 2) {
+        return parts.join(' and ');
+    } else {
+        return parts.slice(0, -1).join(', ') + ', and ' + parts[parts.length - 1];
+    }
+}
+
+// Start countdown timer for next puzzle unlock
+function startNextPuzzleCountdown(countdownElement) {
+    const updateCountdown = () => {
+        // Check if element still exists in DOM
+        if (!document.contains(countdownElement)) {
+            return null; // Signal to stop the interval
+        }
+        
+        const now = new Date();
+        const nextUnlock = getNextPuzzleUnlockTime();
+        const timeRemaining = nextUnlock.getTime() - now.getTime();
+        
+        if (timeRemaining <= 0) {
+            countdownElement.textContent = 'Puzzle complete! A new puzzle is available now!';
+            return null; // Signal to stop the interval
+        }
+        
+        const countdownText = formatCountdown(timeRemaining);
+        countdownElement.textContent = `Puzzle complete! Next puzzle available in ${countdownText}`;
+        return true; // Continue the interval
+    };
+    
+    // Update immediately
+    updateCountdown();
+    
+    // Update every second
+    const intervalId = setInterval(() => {
+        const shouldContinue = updateCountdown();
+        if (shouldContinue === null) {
+            clearInterval(intervalId);
+        }
+    }, 1000);
+    
+    // Return interval ID for cleanup
+    return intervalId;
+}
+
+// Show countdown for daily puzzle completion (exported for use by modals)
+export function showDailyPuzzleCountdown() {
+    // Hide or remove existing completion message if present
+    const existingMessage = document.getElementById('daily-completion-message');
+    if (existingMessage) {
+        // Clear any existing countdown interval
+        if (existingMessage.dataset.countdownIntervalId) {
+            clearInterval(parseInt(existingMessage.dataset.countdownIntervalId));
+        }
+        existingMessage.remove();
+    }
+    
+    // Create and display completion message with countdown
+    const header = document.querySelector('#daily-puzzle-container header');
+    const tilesContainer = document.getElementById('daily-tiles-container');
+    if (header && tilesContainer) {
+        const completionMessage = document.createElement('div');
+        completionMessage.id = 'daily-completion-message';
+        completionMessage.className = 'text-lg text-text-primary text-center mb-8 font-rem';
+        // Insert after header, before tiles container
+        header.insertAdjacentElement('afterend', completionMessage);
+        
+        // Start countdown timer and store interval ID
+        const intervalId = startNextPuzzleCountdown(completionMessage);
+        completionMessage.dataset.countdownIntervalId = intervalId.toString();
+    }
+}
+
 // Display completed puzzle (read-only)
 function displayCompletedPuzzle(puzzleNumber, displayDate) {
     const puzzle = PUZZLE_DATA[puzzleNumber];
@@ -187,25 +288,11 @@ function displayCompletedPuzzle(puzzleNumber, displayDate) {
     
     // Title is hidden, no need to update it
     
-    // Hide or remove existing completion message if present
-    const existingMessage = document.getElementById('daily-completion-message');
-    if (existingMessage) {
-        existingMessage.remove();
-    }
-    
-    // Create and display completion message
-    const header = document.querySelector('#daily-puzzle-container header');
-    const tilesContainer = document.getElementById('daily-tiles-container');
-    if (header && tilesContainer) {
-        const completionMessage = document.createElement('div');
-        completionMessage.id = 'daily-completion-message';
-        completionMessage.className = 'text-lg text-text-primary text-center mb-8 font-rem';
-        completionMessage.textContent = 'Puzzle complete! Come back tomorrow for another daily puzzle';
-        // Insert after header, before tiles container
-        header.insertAdjacentElement('afterend', completionMessage);
-    }
+    // Show countdown message
+    showDailyPuzzleCountdown();
     
     // Hide interactive elements
+    const tilesContainer = document.getElementById('daily-tiles-container');
     const wordSlots = document.getElementById('daily-word-slots');
     const hintBtn = document.getElementById('daily-hint-btn');
     const submitBtn = document.getElementById('daily-submit-btn');
