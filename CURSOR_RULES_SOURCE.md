@@ -30,7 +30,7 @@ This file is the single source of truth for all Cursor rules. Edit this file, th
 - Build config: `tailwind.config.js`, `postcss.config.js`
 - Scripts: `scripts/encode-puzzle-data.js` for encoding puzzle data, `scripts/update-cursor-rules.js` for generating Cursor rules, `scripts/validation/` for puzzle data validation
 - Testing: Vitest for unit/integration tests, Playwright for E2E tests
-- Static assets: `favicon.svg`, `og-image.svg`, `CNAME`, `robots.txt`, `sitemap.xml`
+- Static assets: `favicon.svg`, `social_share.svg`, `social_share.png`, `CNAME`, `robots.txt`, `sitemap.xml`
 
 ### Deployment Requirements
 - Always use relative paths (not absolute) for GitHub Pages compatibility

@@ -222,7 +222,7 @@ describe('seo.js', () => {
     updateSocialMetaTags(1);
     
     const twitterImageSrc = document.getElementById('twitter-image-src');
-    expect(twitterImageSrc.getAttribute('content')).toBe('https://sum-tile.uk/og-image.png');
+    expect(twitterImageSrc.getAttribute('content')).toBe('https://sum-tile.uk/social_share.png');
   });
 
   it('should update page title', () => {

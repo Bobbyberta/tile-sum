@@ -172,7 +172,8 @@ tile-sum/
 ├── CNAME                   # Custom domain configuration
 ├── .nojekyll               # Prevents Jekyll processing
 ├── favicon.svg             # Site favicon
-├── og-image.svg            # Open Graph image
+├── social_share.svg         # Social sharing image (SVG)
+├── social_share.png         # Social sharing image (PNG)
 ├── robots.txt              # Search engine instructions
 ├── sitemap.xml             # XML sitemap
 └── README.md               # This file

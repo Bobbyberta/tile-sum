@@ -66,11 +66,13 @@ export function updateSocialMetaTags(day) {
     // Update Open Graph tags
     const ogTitle = document.getElementById('og-title');
     const ogDescription = document.getElementById('og-description');
+    const ogImage = document.getElementById('og-image');
     const ogUrl = document.getElementById('og-url');
     const ogType = document.getElementById('og-type');
     
     if (ogTitle) ogTitle.setAttribute('content', title);
     if (ogDescription) ogDescription.setAttribute('content', description);
+    if (ogImage) ogImage.setAttribute('content', `${baseUrl}/social_share.png`);
     if (ogUrl) ogUrl.setAttribute('content', puzzleUrl);
     if (ogType) ogType.setAttribute('content', 'article');
     
@@ -96,7 +98,7 @@ export function updateSocialMetaTags(day) {
     if (twitterDescription) twitterDescription.setAttribute('content', description);
     // Ensure twitter:image:src is updated if element exists
     if (twitterImageSrc) {
-        twitterImageSrc.setAttribute('content', `${baseUrl}/og-image.png`);
+        twitterImageSrc.setAttribute('content', `${baseUrl}/social_share.png`);
     }
     
     // Update page title
