@@ -182,9 +182,9 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
     // Generate emoji grid for hint usage and count actual hints from locked slots
     const { emojiGrid, hintsCount: actualHintsUsed } = generateHintEmojiGrid(day, prefix);
     
-    // Use the actual count from locked slots instead of the passed parameter
-    // This ensures the count matches what's shown in the emoji grid
-    const displayHintsUsed = actualHintsUsed > 0 ? actualHintsUsed : hintsUsed;
+    // Always use the actual count from locked slots (this is always accurate and matches the emoji grid)
+    // Fall back to the passed parameter clamped to 0 minimum only if actual count is unavailable
+    const displayHintsUsed = actualHintsUsed !== undefined ? actualHintsUsed : Math.max(0, hintsUsed);
     
     // Format the share message with emoji grid
     let shareText;
@@ -198,9 +198,11 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
         messageParts.push(''); // Empty line
     }
     
-    // Add hints used message (only if hints were used)
-    if (displayHintsUsed > 0 || solutionShown) {
-        messageParts.push(`I used ${displayHintsUsed} hint${displayHintsUsed !== 1 ? 's' : ''} on todays puzzle`);
+    // Add hints used message (always show, including 0)
+    if (solutionShown) {
+        messageParts.push('Solution shown');
+    } else {
+        messageParts.push(`Hints used: ${displayHintsUsed}`);
     }
     
     // Add challenge message (always shown)
@@ -240,6 +242,12 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
     const shareMessage = document.getElementById(`${prefix}share-message`);
     if (shareMessage) {
         shareMessage.textContent = shareText;
+    }
+
+    // Clear hints used message paragraph (now shown in share message)
+    const hintsUsedMessage = document.getElementById(`${prefix}hints-used-message`);
+    if (hintsUsedMessage) {
+        hintsUsedMessage.textContent = '';
     }
 
     // Save completion status

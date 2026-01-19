@@ -276,8 +276,7 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
                 day,
                 () => showErrorModal(prefix),
                 (day, word1Score, word2Score, word1MaxScore, word2MaxScore) => {
-                    const totalLetters = puzzle.solution[0].length + puzzle.solution[1].length;
-                    const hintsUsed = totalLetters - stateManager.getHintsRemaining();
+                    const hintsUsed = 3 - stateManager.getHintsRemaining();
                     const solutionShown = stateManager.getSolutionShown();
                     showSuccessModal(day, word1Score, word2Score, word1MaxScore, word2MaxScore, prefix, hintsUsed, solutionShown);
                 },
