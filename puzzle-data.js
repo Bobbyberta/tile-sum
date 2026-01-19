@@ -41,7 +41,7 @@ export const PUZZLE_DATA = {
     6: {
         words: ['WREATH', 'HOLLY'],
         solution: ['WREATH', 'HOLLY'],
-        categories: ['noun', 'adverb']
+        categories: ['noun', 'noun']
 },
     7: {
         words: ['COOKIE', 'MILK'],
@@ -61,7 +61,7 @@ export const PUZZLE_DATA = {
     10: {
         words: ['BOX', 'UNWRAP'],
         solution: ['BOX', 'UNWRAP'],
-        categories: ['noun', 'adjective']
+        categories: ['noun', 'verb']
 },
     11: {
         words: ['FROSTY', 'WINTER'],
@@ -86,7 +86,7 @@ export const PUZZLE_DATA = {
     15: {
         words: ['NOEL', 'EVE'],
         solution: ['NOEL', 'EVE'],
-        categories: ['noun', 'adjective']
+        categories: ['noun', 'noun']
 },
     16: {
         words: ['COZY', 'FIRE'],
@@ -251,7 +251,7 @@ export const PUZZLE_DATA = {
     48: {
         words: ['OFF', 'ABILITY'],
         solution: ['OFF', 'ABILITY'],
-        categories: ['', 'noun']
+        categories: ['adverb', 'noun']
 },
     49: {
         words: ['BOND', 'COLUMN'],
@@ -311,7 +311,7 @@ export const PUZZLE_DATA = {
     60: {
         words: ['FRY', 'SURVIVE'],
         solution: ['FRY', 'SURVIVE'],
-        categories: ['FRY', 'verb']
+        categories: ['verb', 'verb']
 },
     61: {
         words: ['HOBBY', 'RUGBY'],
@@ -691,7 +691,7 @@ export const PUZZLE_DATA = {
     136: {
         words: ['BALL', 'BEHIND'],
         solution: ['BALL', 'BEHIND'],
-        categories: ['noun', '']
+        categories: ['noun', 'preposition']
 },
     137: {
         words: ['FACT', 'BUTTON'],
@@ -761,7 +761,7 @@ export const PUZZLE_DATA = {
     150: {
         words: ['JULY', 'MUSEUM'],
         solution: ['JULY', 'MUSEUM'],
-        categories: ['adverb', 'noun']
+        categories: ['noun', 'noun']
 },
     151: {
         words: ['CLICK', 'WEIGH'],
@@ -1066,7 +1066,7 @@ export const PUZZLE_DATA = {
     211: {
         words: ['LEND', 'CLEVER'],
         solution: ['LEND', 'CLEVER'],
-        categories: ['verb', 'noun']
+        categories: ['verb', 'adjective']
 },
     212: {
         words: ['CLUB', 'EXCUSE'],
@@ -1086,7 +1086,7 @@ export const PUZZLE_DATA = {
     215: {
         words: ['ROOF', 'FROZEN'],
         solution: ['ROOF', 'FROZEN'],
-        categories: ['noun', 'verb']
+        categories: ['noun', 'adjective']
 },
     216: {
         words: ['BEE', 'ANALYSE'],
