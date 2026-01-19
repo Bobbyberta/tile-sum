@@ -62,6 +62,28 @@ export function handleTouchStart(e, placeTileCallback, removeTileCallback) {
         originalTop: rect.top,
         originalBodyOverflow: originalOverflow
     });
+    
+    // Attach document-level touch handlers immediately to prevent scrolling
+    // This ensures scrolling is prevented even if user drags quickly before threshold
+    const documentTouchMoveHandler = (e) => {
+        // Always prevent scrolling while tile is being touched
+        e.preventDefault();
+        // Handle the drag logic
+        handleTouchMove(e);
+    };
+    
+    const documentTouchEndHandler = (e) => {
+        handleTouchEnd(e);
+    };
+    
+    setTouchDragState({
+        documentTouchMoveHandler: documentTouchMoveHandler,
+        documentTouchEndHandler: documentTouchEndHandler
+    });
+    
+    document.addEventListener('touchmove', documentTouchMoveHandler, { passive: false });
+    document.addEventListener('touchend', documentTouchEndHandler, { passive: false });
+    document.addEventListener('touchcancel', handleTouchCancel, { passive: true });
 }
 
 export function handleTouchMove(e) {
@@ -75,6 +97,9 @@ export function handleTouchMove(e) {
         return;
     }
     
+    // Prevent scrolling immediately when tile is being touched (even before threshold)
+    e.preventDefault();
+    
     const touch = e.touches[0];
     touchDragState.currentX = touch.clientX;
     touchDragState.currentY = touch.clientY;
@@ -87,9 +112,6 @@ export function handleTouchMove(e) {
     // If threshold exceeded and not yet dragging, start drag
     if (!touchDragState.isDragging && distance > touchDragState.threshold) {
         touchDragState.isDragging = true;
-        
-        // Prevent scrolling during drag
-        e.preventDefault();
         
         // Set dragged tile state
         setDraggedTile(touchDragState.tile);
@@ -109,18 +131,12 @@ export function handleTouchMove(e) {
         // Hide original tile slightly
         touchDragState.tile.style.opacity = '0.5';
         
-        // Attach document-level touch handlers for dragging outside tile bounds
-        touchDragState.documentTouchMoveHandler = handleTouchMove;
-        touchDragState.documentTouchEndHandler = handleTouchEnd;
-        document.addEventListener('touchmove', touchDragState.documentTouchMoveHandler, { passive: false });
-        document.addEventListener('touchend', touchDragState.documentTouchEndHandler, { passive: false });
-        document.addEventListener('touchcancel', handleTouchCancel, { passive: true });
+        // Document-level handlers are already attached in handleTouchStart
+        // No need to attach them again here
     }
     
     // If actively dragging, update position and check drop targets
     if (touchDragState.isDragging) {
-        e.preventDefault(); // Prevent scrolling
-        
         // Update ghost position
         if (touchDragState.dragGhost) {
             touchDragState.dragGhost.style.left = (touch.clientX - touchDragState.dragGhost.offsetWidth / 2) + 'px';
