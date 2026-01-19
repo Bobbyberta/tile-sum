@@ -16,19 +16,30 @@ function debugLog(...args) {
 
 // Export handlers for use in puzzle-core
 export function handleDragStart(e) {
+    // Use currentTarget instead of this for Windows browser compatibility
+    const tile = e.currentTarget;
+    
     // Don't allow dragging locked tiles
-    if (this.getAttribute('data-locked') === 'true') {
+    if (tile.getAttribute('data-locked') === 'true') {
         e.preventDefault();
         return false;
     }
-    setDraggedTile(this);
-    this.classList.add('dragging');
+    setDraggedTile(tile);
+    tile.classList.add('dragging');
+    
+    // Set effectAllowed before setData for Windows compatibility (order-sensitive)
     e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', this.outerHTML);
+    
+    // Set multiple MIME types for Windows browser compatibility
+    // Some Windows browsers require 'text/plain' in addition to 'text/html'
+    e.dataTransfer.setData('text/html', tile.outerHTML);
+    e.dataTransfer.setData('text/plain', tile.outerHTML);
 }
 
 export function handleDragEnd(e) {
-    this.classList.remove('dragging');
+    // Use currentTarget instead of this for Windows browser compatibility
+    const tile = e.currentTarget;
+    tile.classList.remove('dragging');
     document.querySelectorAll('.slot').forEach(slot => {
         slot.classList.remove('drag-over');
     });
