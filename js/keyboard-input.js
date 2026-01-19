@@ -906,3 +906,22 @@ export function handleTileKeyDown(e, context) {
         return;
     }
 }
+
+// Keyboard handler for buttons (hint and submit)
+export function handleButtonKeyDown(e, context) {
+    // Use context from parameter or stored context
+    const activeContext = context || keyboardContext;
+    if (!activeContext) {
+        console.warn('handleButtonKeyDown: No context available');
+        return;
+    }
+    
+    // Handle Tab navigation
+    if (e.key === 'Tab') {
+        handleTabNavigation(e, e.currentTarget, activeContext);
+        return;
+    }
+    
+    // Other keys (Enter, Space) are handled by default button behavior
+    // No need to prevent default or handle them here
+}

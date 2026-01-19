@@ -292,7 +292,7 @@ export function createPuzzleDOMStructure(containerElement, prefix, titleText) {
     
     const hintBtn = document.createElement('button');
     hintBtn.id = `${prefix}hint-btn`;
-    hintBtn.className = 'flex-1 md:flex-none md:w-auto px-8 py-3 bg-hint text-white font-bold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-rem';
+    hintBtn.className = 'flex-1 md:flex-none md:w-auto px-8 py-3 bg-hint-button text-white font-bold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint-button focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-rem';
     hintBtn.style.fontSize = '20px';
     hintBtn.style.lineHeight = '25px';
     hintBtn.textContent = 'Hint';

@@ -36,6 +36,7 @@ import {
 import { 
     handleTileKeyDown,
     handleSlotKeyDown,
+    handleButtonKeyDown,
     handleSlotFocus,
     handleSlotBlur
 } from './js/keyboard.js';
@@ -266,6 +267,9 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
                 () => triggerSnowflakeConfetti()
             );
         });
+        
+        // Add keyboard handler for Tab navigation
+        newSubmitBtn.addEventListener('keydown', (e) => handleButtonKeyDown(e, keyboardContext));
     }
 
     // Initialize hint counter and reset solution shown state
@@ -315,6 +319,9 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
                 handleHintRequest();
             }
         });
+        
+        // Add keyboard handler for Tab navigation
+        newHintBtn.addEventListener('keydown', (e) => handleButtonKeyDown(e, keyboardContext));
     }
 
     // Setup help modal (only for daily puzzle, regular puzzle handles it in HTML)

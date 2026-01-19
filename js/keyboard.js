@@ -2,7 +2,7 @@
 
 import { getSelectedTile, setSelectedTile, clearSelectedTile } from './puzzle-state.js';
 import { SCRABBLE_SCORES } from '../puzzle-data-encoded.js';
-import { handleTileKeyDown as handleTileKeyDownInput, handleSlotKeyDown as handleSlotKeyDownInput, getKeyboardContext } from './keyboard-input.js';
+import { handleTileKeyDown as handleTileKeyDownInput, handleSlotKeyDown as handleSlotKeyDownInput, handleButtonKeyDown as handleButtonKeyDownInput, getKeyboardContext } from './keyboard-input.js';
 
 /**
  * Keyboard handler for tiles - delegates to keyboard-input module.
@@ -183,3 +183,10 @@ export function handleHelpModalKeyDown(e) {
     handleModalKeyDown(e, 'help-modal');
 }
 
+// Keyboard handler for buttons - delegates to keyboard-input module
+export function handleButtonKeyDown(e, context) {
+    // Use provided context or fall back to stored context
+    const activeContext = context || getKeyboardContext();
+    // Delegate to keyboard-input module
+    handleButtonKeyDownInput(e, activeContext);
+}

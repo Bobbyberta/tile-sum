@@ -82,8 +82,8 @@
         }
         .tile.locked {
             cursor: not-allowed;
-            border: 4px solid #FB5E52;
-            background-color: #FB5E52;
+            border: 4px solid #CF1D6B;
+            background-color: #CF1D6B;
             color: #FFFFFF;
         }
         .tile:focus {
@@ -106,8 +106,8 @@
             border-width: 0;
         }
         .slot.locked {
-            border-color: #FB5E52;
-            background-color: rgba(251, 94, 82, 0.2);
+            border-color: #CF1D6B;
+            background-color: rgba(207, 29, 107, 0.2);
         }
         #archive-success-modal, #archive-error-modal {
             animation: fadeIn 0.3s ease-in;
@@ -124,7 +124,7 @@
 </head>
 <body class="bg-bg-primary min-h-screen font-rem flex flex-col">
     <!-- Skip to main content link -->
-    <a href="#main-content" class="sr-only focus:w-auto focus:h-auto focus:p-4 focus:m-0 focus:overflow-visible focus:clip-auto focus:whitespace-normal focus:border-0 focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-hint focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2">
+    <a href="#main-content" class="sr-only focus:w-auto focus:h-auto focus:p-4 focus:m-0 focus:overflow-visible focus:clip-auto focus:whitespace-normal focus:border-0 focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-hint-button focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-hint-button focus:ring-offset-2">
         Skip to main content
     </a>
     <main class="container mx-auto px-4 py-8 max-w-4xl flex-1 flex flex-col justify-center" id="main-content">
@@ -208,7 +208,7 @@
 
             <div class="flex justify-center gap-4">
 
-                <button id="archive-share-btn" class="px-8 py-3 bg-hint text-white font-semibold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                <button id="archive-share-btn" class="px-8 py-3 bg-hint-button text-white font-semibold rounded-[24px] shadow-button hover:bg-hint-button-hover focus:outline-none focus:ring-2 focus:ring-hint-button focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
 
                     Copy
 

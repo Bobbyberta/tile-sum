@@ -303,7 +303,7 @@ export function copyShareMessage(shareText, buttonElement, originalText, origina
                     // Update button text and color - only change the background color classes
                     shareBtn.textContent = 'Copied!';
                     shareBtn.disabled = false;
-                    shareBtn.classList.remove('bg-hint', 'hover:opacity-90', 'focus:ring-hint');
+                    shareBtn.classList.remove('bg-hint-button', 'hover:opacity-90', 'focus:ring-hint-button');
                     shareBtn.classList.add('bg-green-600', 'hover:bg-green-800', 'focus:ring-green-600');
                     
                     // Restore after 2 seconds - restore all original classes to ensure nothing is missing

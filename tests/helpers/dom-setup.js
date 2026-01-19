@@ -99,7 +99,7 @@ export function createMockPuzzleDOM(prefix = '') {
 
   const hintBtn = document.createElement('button');
   hintBtn.id = `${prefix}hint-btn`;
-  hintBtn.className = 'bg-hint text-white font-bold rounded-[24px] shadow-button px-6 py-3 font-rem';
+  hintBtn.className = 'bg-hint-button text-white font-bold rounded-[24px] shadow-button px-6 py-3 font-rem';
   hintBtn.style.fontSize = '24px';
   hintBtn.style.lineHeight = '30px';
   hintBtn.textContent = 'Hint (3)';

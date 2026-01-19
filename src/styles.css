@@ -39,9 +39,9 @@
 /* Tiles locked via hints should have red background */
 .slot.locked .tile,
 .tile.locked {
-  background-color: #FB5E52 !important;
+  background-color: #CF1D6B !important;
   color: #FFFFFF !important;
-  border: 4px solid #FB5E52 !important;
+  border: 4px solid #CF1D6B !important;
 }
 
 /* Selected tile - pink border with bolder outline (separate from focus state) */
