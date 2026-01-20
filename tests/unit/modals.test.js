@@ -13,8 +13,16 @@ import { cleanupDOM, createMockPuzzleDOM, createMockSlot } from '../helpers/dom-
 
 // Mock dependencies
 const mockIsAdventMode = vi.fn(() => false);
-vi.mock('../../puzzle-data-encoded.js', () => ({
-  formatDateString: vi.fn((date) => '2024-12-01'),
+vi.mock('../../puzzle-data-today.js', () => ({
+  formatDateString: vi.fn((date) => {
+    if (date instanceof Date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+    return '2024-12-01';
+  }),
   getDateForPuzzleNumber: vi.fn((day) => new Date(2024, 11, day)),
   isAdventMode: () => mockIsAdventMode(),
   PUZZLE_DATA: {
@@ -22,7 +30,8 @@ vi.mock('../../puzzle-data-encoded.js', () => ({
       words: ['SNOW', 'FLAKE'],
       solution: ['SNOW', 'FLAKE']
     }
-  }
+  },
+  _extendPuzzleData: vi.fn() // Mock for puzzle-data-loader
 }));
 
 vi.mock('../../js/utils.js', () => ({
@@ -66,11 +75,14 @@ describe('modals.js', () => {
   });
 
   afterEach(async () => {
-    // Wait for any pending timeouts to complete
-    await new Promise(resolve => setTimeout(resolve, 150));
-    
-    // Clear any pending timeouts
+    // Clear any pending timeouts first
     vi.clearAllTimers();
+    
+    // Wait for any pending timeouts to complete (only if not using fake timers)
+    if (!vi.isFakeTimers()) {
+      await new Promise(resolve => setTimeout(resolve, 150));
+    }
+    
     vi.restoreAllMocks();
   });
 
@@ -186,14 +198,19 @@ describe('modals.js', () => {
     });
 
     it('should display share message with emoji grid', () => {
-      setupWordSlotsForEmojiGrid('', { word1: [], word2: [] }); // No hints
+      // Set up word slots BEFORE creating modal to ensure they exist
+      const { wordSlots } = setupWordSlotsForEmojiGrid('', { word1: [], word2: [] }); // No hints
+      // Verify word slots container exists
+      expect(document.getElementById('word-slots')).toBeTruthy();
+      
       const { shareMessage } = createSuccessModal();
       
       showSuccessModal(1, 7, 12, 10, 12);
       
       // Should contain emoji grid (all green boxes for no hints)
-      expect(shareMessage.textContent).toContain('🟩');
-      expect(shareMessage.textContent).toContain('can you beat my score?');
+      const content = shareMessage.textContent;
+      expect(content).toContain('🟩');
+      expect(content).toContain('can you beat my score?');
     });
 
 
@@ -829,10 +846,16 @@ describe('modals.js', () => {
   describe('showSuccessModal advent mode', () => {
     beforeEach(() => {
       mockIsAdventMode.mockReturnValue(true);
+      // Set up word slots for emoji grid generation
+      setupWordSlotsForEmojiGrid('', { word1: [], word2: [] });
     });
 
     afterEach(() => {
       mockIsAdventMode.mockReturnValue(false);
+      // Clean up fake timers if they were used
+      if (vi.isFakeTimers()) {
+        vi.useRealTimers();
+      }
     });
 
     it('should format share message for advent mode', () => {
@@ -844,6 +867,9 @@ describe('modals.js', () => {
       vi.setSystemTime(mockDate);
       
       showSuccessModal(1, 7, 12, 10, 12);
+      
+      // Advance timers to ensure all async operations complete
+      vi.advanceTimersByTime(200);
       
       expect(shareMessage.textContent).toContain('Days till Christmas!');
       expect(shareMessage.textContent).toContain('10'); // 10 days until Dec 25
@@ -860,6 +886,9 @@ describe('modals.js', () => {
       vi.setSystemTime(mockDate);
       
       showSuccessModal(1, 7, 12, 10, 12);
+      
+      // Advance timers to ensure all async operations complete
+      vi.advanceTimersByTime(200);
       
       // Should calculate for next year's Christmas
       expect(shareMessage.textContent).toContain('Days till Christmas!');
@@ -889,10 +918,18 @@ describe('modals.js', () => {
       
       copyShareMessage('Test', 'https://sum-tile.uk/puzzle.html', shareBtn, 'Share', originalClassName);
       
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for requestAnimationFrame and setTimeout
+      await new Promise(resolve => {
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            resolve();
+          }, 100);
+        });
+      });
       
       expect(shareBtn.textContent).toBe('Copied!');
       
+      // Wait for restore timeout
       await new Promise(resolve => setTimeout(resolve, 2100));
       
       expect(shareBtn.className).toBe(originalClassName);

@@ -1,6 +1,6 @@
 // SEO and social meta tags management
 
-import { PUZZLE_DATA, formatDateString, getDateForPuzzleNumber } from '../puzzle-data-encoded.js';
+import { PUZZLE_DATA, formatDateString, getDateForPuzzleNumber } from '../puzzle-data-today.js';
 import { getDaySuffix } from './utils.js';
 
 /**

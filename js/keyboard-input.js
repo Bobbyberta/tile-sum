@@ -1,6 +1,6 @@
 // Keyboard typing input handler - allows users to type letters to place tiles
 
-import { SCRABBLE_SCORES } from '../puzzle-data-encoded.js';
+import { SCRABBLE_SCORES } from '../puzzle-data-today.js';
 import { selectTile, deselectTile } from './keyboard.js';
 import { getSelectedTile } from './puzzle-state.js';
 

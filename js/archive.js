@@ -6,7 +6,8 @@ import {
     formatDateString, 
     parseDateString,
     getPuzzleNumberForDate
-} from '../puzzle-data-encoded.js';
+} from '../puzzle-data-today.js';
+import { loadArchiveData } from './puzzle-data-loader.js';
 import { isArchiveTestMode, getTestModeParam } from './utils.js';
 import { getDaySuffix } from './utils.js';
 import { createPuzzleDOMStructure } from './puzzle-core.js';
@@ -25,6 +26,12 @@ import { createStateManager } from './puzzle-state.js';
  * initArchivePage();
  */
 export function initArchivePage() {
+    // Ensure archive data is loaded for archive page
+    // Load immediately if not already loaded (don't wait for idle)
+    loadArchiveData().catch((error) => {
+        console.warn('[Archive] Failed to load archive data:', error);
+    });
+    
     const datePicker = document.getElementById('date-picker');
     const datePrevBtn = document.getElementById('date-prev-btn');
     const dateNextBtn = document.getElementById('date-next-btn');
@@ -56,18 +63,26 @@ export function initArchivePage() {
         datePicker.max = todayStr;
     }
     
-    // Load puzzle for initial date
-    loadArchivePuzzle(todayStr);
+    // Load puzzle for initial date (after archive data is loaded)
+    loadArchiveData().then(() => {
+        loadArchivePuzzle(todayStr);
+    }).catch((error) => {
+        console.warn('[Archive] Failed to load archive data:', error);
+        // Still try to load puzzle - it might be today's puzzle which is already loaded
+        loadArchivePuzzle(todayStr);
+    });
     
     // Handle date change
-    datePicker.addEventListener('change', (e) => {
+    datePicker.addEventListener('change', async (e) => {
         const selectedDate = e.target.value;
-        loadArchivePuzzle(selectedDate);
+        if (selectedDate) {
+            await loadArchivePuzzle(selectedDate);
+        }
     });
     
     // Handle previous day button
     if (datePrevBtn) {
-        datePrevBtn.addEventListener('click', () => {
+        datePrevBtn.addEventListener('click', async () => {
             const currentDate = parseDateString(datePicker.value);
             if (currentDate) {
                 currentDate.setHours(0, 0, 0, 0);
@@ -80,7 +95,7 @@ export function initArchivePage() {
                     if (newDate.getTime() >= minDate.getTime()) {
                         const newDateStr = formatDateString(newDate);
                         datePicker.value = newDateStr;
-                        loadArchivePuzzle(newDateStr);
+                        await loadArchivePuzzle(newDateStr);
                     }
                 }
             }
@@ -89,7 +104,7 @@ export function initArchivePage() {
     
     // Handle next day button
     if (dateNextBtn) {
-        dateNextBtn.addEventListener('click', () => {
+        dateNextBtn.addEventListener('click', async () => {
             const currentDate = parseDateString(datePicker.value);
             if (currentDate) {
                 currentDate.setHours(0, 0, 0, 0);
@@ -102,7 +117,7 @@ export function initArchivePage() {
                 if (isArchiveTestMode() || newDate.getTime() <= todayDate.getTime()) {
                     const newDateStr = formatDateString(newDate);
                     datePicker.value = newDateStr;
-                    loadArchivePuzzle(newDateStr);
+                    await loadArchivePuzzle(newDateStr);
                 }
             }
         });
@@ -110,9 +125,14 @@ export function initArchivePage() {
 }
 
 // Load puzzle for archive page
-export function loadArchivePuzzle(dateString) {
+export async function loadArchivePuzzle(dateString) {
     const archiveContent = document.getElementById('archive-puzzle-content');
     if (!archiveContent) return;
+    
+    // Ensure archive data is loaded before loading puzzle
+    await loadArchiveData().catch((error) => {
+        console.warn('[Archive] Failed to load archive data:', error);
+    });
     
     const date = parseDateString(dateString);
     if (!date) {

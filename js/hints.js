@@ -1,6 +1,6 @@
 // Hints system
 
-import { PUZZLE_DATA, SCRABBLE_SCORES } from '../puzzle-data-encoded.js';
+import { PUZZLE_DATA, SCRABBLE_SCORES } from '../puzzle-data-today.js';
 import { 
     getHintsRemaining, 
     decrementHintsRemaining,

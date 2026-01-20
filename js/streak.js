@@ -1,6 +1,6 @@
 // Streak tracking utilities
 
-import { formatDateString, parseDateString } from '../puzzle-data-encoded.js';
+import { formatDateString, parseDateString } from '../puzzle-data-today.js';
 
 const STREAK_STORAGE_KEY = 'puzzle-streak';
 const LAST_VISIT_STORAGE_KEY = 'puzzle-last-visit';

@@ -3,7 +3,7 @@ import { updateHintButtonText, provideHint, showSolution } from '../../js/hints.
 import { createMockPuzzleDOM, createMockTile, cleanupDOM } from '../helpers/dom-setup.js';
 
 // Mock dependencies
-vi.mock('../../puzzle-data-encoded.js', () => ({
+vi.mock('../../puzzle-data-today.js', () => ({
   PUZZLE_DATA: {
     1: {
       words: ['SNOW', 'FLAKE'],

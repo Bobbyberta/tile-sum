@@ -1,6 +1,6 @@
 // Score & validation functions
 
-import { calculateWordScore, validateSolution } from '../puzzle-data-encoded.js';
+import { calculateWordScore, validateSolution } from '../puzzle-data-today.js';
 
 /**
  * Updates the score display for both words in the puzzle.

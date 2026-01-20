@@ -1,6 +1,6 @@
 // Completion tracking utilities
 
-import { formatDateString, getDateForPuzzleNumber } from '../puzzle-data-encoded.js';
+import { formatDateString, getDateForPuzzleNumber } from '../puzzle-data-today.js';
 
 // Save puzzle completion status
 export function savePuzzleCompletion(puzzleNumber, date) {

@@ -8,7 +8,7 @@ import {
 import { createMockPuzzleDOM, createMockTile, cleanupDOM } from '../helpers/dom-setup.js';
 
 // Mock dependencies
-vi.mock('../../puzzle-data-encoded.js', () => ({
+vi.mock('../../puzzle-data-today.js', () => ({
   validateSolution: vi.fn((day, word1, word2) => {
     if (day === 1) {
       return word1 === 'SNOW' && word2 === 'FLAKE';

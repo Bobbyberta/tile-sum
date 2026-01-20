@@ -63,6 +63,68 @@ body {
   outline: 2px solid #1C2542;
   outline-offset: 2px;
 }
+/* Size constraints for dynamic content containers to prevent layout shifts */
+#tiles-container,
+#daily-tiles-container,
+#archive-tiles-container {
+  min-height: 80px; /* Reserve space for at least one row of tiles */
+}
+
+#word-slots,
+#daily-word-slots,
+#archive-word-slots {
+  min-height: 200px; /* Reserve space for word slots */
+}
+
+#calendar {
+  min-height: 400px; /* Reserve space for calendar grid */
+}
+
+#archive-puzzle-content {
+  min-height: 300px; /* Reserve space for archive puzzle content */
+}
+
+/* Typography classes to replace inline styles and prevent layout shifts */
+.text-h1-title {
+  font-size: 48px;
+  line-height: 60px;
+}
+
+.text-h2-title {
+  font-size: 48px;
+  line-height: 60px;
+}
+
+.text-subtitle {
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.text-button {
+  font-size: 20px;
+  line-height: 25px;
+}
+
+.text-help-button {
+  font-size: 24px;
+  line-height: 30px;
+}
+
+.text-tile-letter {
+  font-size: 36px;
+  line-height: 44px;
+}
+
+.text-tile-score {
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.text-date-picker-label {
+  font-size: 48px;
+  line-height: 60px;
+}
+
 /* Large screen background decorative shapes - lazy loaded */
 @media (min-width: 768px) {
   body.bg-bg-primary {

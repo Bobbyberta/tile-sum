@@ -3,37 +3,45 @@ import { updateCountdown, initDailyPuzzle, initCalendar } from '../../js/ui.js';
 import { cleanupDOM } from '../helpers/dom-setup.js';
 
 // Mock dependencies
-vi.mock('../../puzzle-data-encoded.js', () => ({
-  PUZZLE_DATA: {
-    0: { words: ['TEST', 'DUMMY'], solution: ['TEST', 'DUMMY'] },
-    1: { words: ['SNOW', 'FLAKE'], solution: ['SNOW', 'FLAKE'] },
-    15: { words: ['CHRISTMAS', 'TREE'], solution: ['CHRISTMAS', 'TREE'] }
-  },
-  SCRABBLE_SCORES: {
+vi.mock('../../puzzle-data-today.js', () => {
+  const scrabbleScores = {
     'A': 1, 'B': 3, 'C': 3, 'D': 2, 'E': 1, 'F': 4, 'G': 2, 'H': 4,
     'I': 1, 'J': 8, 'K': 5, 'L': 1, 'M': 3, 'N': 1, 'O': 1, 'P': 3,
     'Q': 10, 'R': 1, 'S': 1, 'T': 1, 'U': 1, 'V': 4, 'W': 4, 'X': 8,
     'Y': 4, 'Z': 10
-  },
-  isAdventMode: vi.fn(() => false),
-  formatDateString: (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  },
-  getPuzzleNumberForDate: (date) => {
-    const startDate = new Date(2025, 11, 1); // Dec 1, 2025
-    if (date < startDate) return null;
-    const diffTime = date.getTime() - startDate.getTime();
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays + 1;
-  },
-  calculateWordScore: vi.fn((word) => {
-    const scores = { 'S': 1, 'N': 1, 'O': 1, 'W': 4, 'F': 4, 'L': 1, 'A': 1, 'K': 5, 'E': 1 };
-    return word.split('').reduce((sum, letter) => sum + (scores[letter] || 0), 0);
-  })
-}));
+  };
+  
+  return {
+    PUZZLE_DATA: {
+      0: { words: ['TEST', 'DUMMY'], solution: ['TEST', 'DUMMY'] },
+      1: { words: ['SNOW', 'FLAKE'], solution: ['SNOW', 'FLAKE'] },
+      15: { words: ['CHRISTMAS', 'TREE'], solution: ['CHRISTMAS', 'TREE'] }
+    },
+    SCRABBLE_SCORES: scrabbleScores,
+    isAdventMode: vi.fn(() => false),
+    formatDateString: (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    },
+    getPuzzleNumberForDate: (date) => {
+      const startDate = new Date(2025, 11, 1); // Dec 1, 2025
+      const puzzleDate = new Date(date);
+      puzzleDate.setHours(0, 0, 0, 0);
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      const diffTime = puzzleDate.getTime() - start.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays + 1;
+    },
+    calculateWordScore: (word) => {
+      return word.split('').reduce((score, letter) => {
+        return score + (scrabbleScores[letter.toUpperCase()] || 0);
+      }, 0);
+    }
+  };
+});
 
 vi.mock('../../js/utils.js', () => ({
   isTestMode: vi.fn(() => false),
@@ -288,6 +296,8 @@ describe('ui.js', () => {
 
     it('should initialize puzzle for today', async () => {
       const script = await import('../../script.js');
+      const completion = await import('../../js/completion.js');
+      completion.isPuzzleCompletedToday.mockReturnValue(false);
 
       initDailyPuzzle();
 
@@ -313,6 +323,11 @@ describe('ui.js', () => {
       const tilesContainer = document.createElement('div');
       tilesContainer.id = 'daily-tiles-container';
       container.appendChild(tilesContainer);
+
+      // wordSlots is needed for displayCompletedPuzzle to create score displays
+      const wordSlots = document.createElement('div');
+      wordSlots.id = 'daily-word-slots';
+      container.appendChild(wordSlots);
 
       initDailyPuzzle();
 

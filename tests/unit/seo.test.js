@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { updateSocialMetaTags } from '../../js/seo.js';
 import { cleanupDOM } from '../helpers/dom-setup.js';
-import * as puzzleDataModule from '../../puzzle-data-encoded.js';
+import * as puzzleDataModule from '../../puzzle-data-today.js';
 
 // Mock dependencies
-vi.mock('../../puzzle-data-encoded.js', () => ({
+vi.mock('../../puzzle-data-today.js', () => ({
   PUZZLE_DATA: {
     1: { words: ['SNOW', 'FLAKE'], solution: ['SNOW', 'FLAKE'] },
     15: { words: ['CHRISTMAS', 'TREE'], solution: ['CHRISTMAS', 'TREE'] }

@@ -15,10 +15,12 @@
     <link rel="apple-touch-icon" href="/favicon.png">
     
     <!-- Google Fonts -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=REM:wght@400;500;700;900&family=Inter:wght@700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=REM:wght@400;500;700;900&family=Inter:wght@700&display=swap" rel="stylesheet"></noscript>
+    <!-- Load fonts synchronously with display=swap to prevent layout shifts -->
+    <link href="https://fonts.googleapis.com/css2?family=REM:wght@400;500;700;900&family=Inter:wght@700&display=swap" rel="stylesheet">
     
     <!-- Social Sharing Meta Tags -->
     <meta property="og:title" content="Puzzle Archive - Sum Tile">
@@ -33,17 +35,15 @@
     <meta name="twitter:image" content="https://sum-tile.uk/social_share.png">
     <meta name="twitter:image:src" content="https://sum-tile.uk/social_share.png">
     
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E4YJ359T9L"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-E4YJ359T9L');
-    </script>
+    <!-- Google Analytics - Resource hints for faster connection -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
     
-    <link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="styles.css"></noscript>
+    <!-- Preload background image for large screens to prevent layout shifts -->
+    <link rel="preload" href="bg-shapes.svg" as="image" media="(min-width: 768px)">
+    
+    <!-- Load CSS synchronously to prevent layout shifts -->
+    <link rel="stylesheet" href="styles.css">
     <style>
         @media (prefers-reduced-motion: reduce) {
             * {
@@ -140,7 +140,7 @@
 
         <!-- Date Picker -->
         <div class="mb-8">
-            <label for="date-picker" class="block text-center font-semibold text-text-primary mb-3" style="font-size: 48px; line-height: 60px;">
+            <label for="date-picker" class="block text-center font-semibold text-text-primary mb-3 text-date-picker-label">
                 Puzzle Date
             </label>
             <div class="flex items-center justify-center gap-4">
@@ -247,11 +247,38 @@
     </div>
 
     <script type="module">
+        // Register service worker for caching
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('[Service Worker] Registered successfully:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.warn('[Service Worker] Registration failed:', error);
+                    });
+            });
+        }
+        
         // Initialize archive page on load
         import { initArchivePage } from './script.js';
         
+        // Wait for fonts to load before showing content to prevent layout shifts
+        function waitForFonts() {
+            if (document.fonts && document.fonts.ready) {
+                return document.fonts.ready.then(() => {
+                    document.body.classList.add('fonts-loaded');
+                });
+            }
+            // Fallback for browsers without Font Loading API
+            document.body.classList.add('fonts-loaded');
+            return Promise.resolve();
+        }
+        
         document.addEventListener('DOMContentLoaded', () => {
-            // Check for test mode and show indicator
+            // Wait for fonts before initializing
+            waitForFonts().then(() => {
+                // Check for test mode and show indicator
             const urlParams = new URLSearchParams(window.location.search);
             const testValue = urlParams.get('test');
             const indicator = document.getElementById('test-mode-indicator');
@@ -297,13 +324,47 @@
                     loadBackgroundShapes();
                 }, 150);
             });
+            });
         });
     </script>
 
     <footer class="text-center py-6 text-gray-700 text-xs">
         © <a href="https://bobbieallsop.co.uk" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-text-primary rounded transition-colors">Bobbie Allsop</a> created Dec 2025
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    
+    <!-- Google Analytics - Loaded after page content with requestIdleCallback fallback -->
+    <script>
+        // Initialize dataLayer immediately so gtag calls can queue
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        
+        // Load Google Analytics after page is interactive
+        function loadGoogleAnalytics() {
+            gtag('js', new Date());
+            gtag('config', 'G-E4YJ359T9L', {
+                'send_page_view': false // We'll send page views manually after load
+            });
+            
+            // Load the GA script
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-E4YJ359T9L';
+            document.head.appendChild(script);
+            
+            // Send page view after script loads
+            script.onload = function() {
+                gtag('config', 'G-E4YJ359T9L');
+            };
+        }
+        
+        // Use requestIdleCallback if available, otherwise use setTimeout
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadGoogleAnalytics, { timeout: 2000 });
+        } else {
+            setTimeout(loadGoogleAnalytics, 1);
+        }
+    </script>
 </body>
 </html>
 

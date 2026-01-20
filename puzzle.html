@@ -15,10 +15,12 @@
     <link rel="apple-touch-icon" href="/favicon.png">
     
     <!-- Google Fonts -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=REM:wght@400;500;700;900&family=Inter:wght@700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=REM:wght@400;500;700;900&family=Inter:wght@700&display=swap" rel="stylesheet"></noscript>
+    <!-- Load fonts synchronously with display=swap to prevent layout shifts -->
+    <link href="https://fonts.googleapis.com/css2?family=REM:wght@400;500;700;900&family=Inter:wght@700&display=swap" rel="stylesheet">
     
     <!-- Social Sharing Meta Tags (will be updated dynamically by JavaScript) -->
     <meta property="og:title" content="Puzzle - Sum Tile | Daily Word Puzzle" id="og-title">
@@ -76,17 +78,15 @@
     }
     </script>
     
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E4YJ359T9L"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-E4YJ359T9L');
-    </script>
+    <!-- Google Analytics - Resource hints for faster connection -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
     
-    <link rel="preload" href="styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="styles.css"></noscript>
+    <!-- Preload background image for large screens to prevent layout shifts -->
+    <link rel="preload" href="bg-shapes.svg" as="image" media="(min-width: 768px)">
+    
+    <!-- Load CSS synchronously to prevent layout shifts -->
+    <link rel="stylesheet" href="styles.css">
     <style>
         @media (prefers-reduced-motion: reduce) {
             * {
@@ -196,13 +196,12 @@
             </nav>
             <p id="test-mode-indicator" class="hidden mt-2 text-sm text-orange-900 font-semibold"></p>
             <div class="flex items-center justify-between mb-2">
-                <h1 class="text-3xl md:text-4xl font-bold text-text-primary" id="puzzle-title" style="font-size: 48px; line-height: 60px;">
+                <h1 class="text-3xl md:text-4xl font-bold text-text-primary text-h1-title" id="puzzle-title">
                     <!-- Title will be set by JavaScript -->
                 </h1>
                 <button 
                     id="help-btn"
-                    class="text-text-primary hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-text-primary rounded-full w-[45px] h-[45px] border-4 border-text-primary rounded-full flex items-center justify-center font-rem font-black"
-                    style="font-size: 24px; line-height: 30px;"
+                    class="text-text-primary hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-text-primary rounded-full w-[45px] h-[45px] border-4 border-text-primary rounded-full flex items-center justify-center font-rem font-black text-help-button"
                     aria-label="Show help"
                 >
                     ?
@@ -239,15 +238,13 @@
         <div class="mb-8 flex flex-row gap-4 md:justify-center">
             <button
                 id="hint-btn"
-                class="flex-1 md:flex-none md:w-auto px-8 py-3 bg-hint-button text-white font-bold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint-button focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                style="font-size: 20px; line-height: 25px;"
+                class="flex-1 md:flex-none md:w-auto px-8 py-3 bg-hint-button text-white font-bold rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-hint-button focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-button"
             >
                 Hint
             </button>
             <button 
                 id="submit-btn" 
-                class="flex-1 md:flex-none md:w-auto px-8 py-3 bg-submit text-text-primary font-black rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-submit focus:ring-offset-2 transition-colors"
-                style="font-size: 20px; line-height: 25px;"
+                class="flex-1 md:flex-none md:w-auto px-8 py-3 bg-submit text-text-primary font-black rounded-[24px] shadow-button hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-submit focus:ring-offset-2 transition-colors text-button"
             >
                 Submit
             </button>
@@ -460,13 +457,40 @@
     </div>
 
     <script type="module">
+        // Register service worker for caching
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('[Service Worker] Registered successfully:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.warn('[Service Worker] Registration failed:', error);
+                    });
+            });
+        }
+        
         // Initialize puzzle on page load
-        import { initPuzzle, isAdventMode, parseDateString, getPuzzleNumberForDate } from './script.js';
+        import { initPuzzle, isAdventMode, parseDateString, getPuzzleNumberForDate, loadArchiveData, isArchiveDataLoaded } from './script.js';
         import { showHelpModal, closeHelpModal } from './js/modals.js';
         import { displayStreak, resetStreak } from './js/streak.js';
         
+        // Wait for fonts to load before showing content to prevent layout shifts
+        function waitForFonts() {
+            if (document.fonts && document.fonts.ready) {
+                return document.fonts.ready.then(() => {
+                    document.body.classList.add('fonts-loaded');
+                });
+            }
+            // Fallback for browsers without Font Loading API
+            document.body.classList.add('fonts-loaded');
+            return Promise.resolve();
+        }
+        
         document.addEventListener('DOMContentLoaded', () => {
-            // Setup help modal button handlers
+            // Wait for fonts before initializing
+            waitForFonts().then(() => {
+                // Setup help modal button handlers
             const helpBtn = document.getElementById('help-btn');
             const closeHelpModalBtn = document.getElementById('close-help-modal-btn');
             const closeHelpModalX = document.getElementById('close-help-modal');
@@ -549,7 +573,27 @@
             displayStreak(testDate);
             
             // Initialize puzzle
-            initPuzzle(puzzleNumber);
+            // If archive test mode is active, wait for archive data to load first
+            // Otherwise, initialize immediately (archive data loads lazily in background)
+            async function initializePuzzle() {
+                // Check if archive data is needed
+                const needsArchiveData = testValue === 'archive';
+                
+                if (needsArchiveData && !isArchiveDataLoaded()) {
+                    // Wait for archive data to load before initializing puzzle
+                    try {
+                        await loadArchiveData();
+                    } catch (error) {
+                        console.warn('[Puzzle] Failed to load archive data:', error);
+                        // Continue anyway - puzzle might exist in today's data
+                    }
+                }
+                
+                // Initialize puzzle (archive data is now loaded if needed)
+                initPuzzle(puzzleNumber);
+            }
+            
+            initializePuzzle();
             
             // Lazy load background shapes on large screens (768px+)
             function loadBackgroundShapes() {
@@ -576,6 +620,7 @@
                 resizeTimeout = setTimeout(() => {
                     loadBackgroundShapes();
                 }, 150);
+            });
             });
         });
         
@@ -614,7 +659,40 @@
     <footer class="text-center py-6 text-gray-700 text-xs">
         © <a href="https://bobbieallsop.co.uk" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded transition-colors">Bobbie Allsop</a> created Dec 2025
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    
+    <!-- Google Analytics - Loaded after page content with requestIdleCallback fallback -->
+    <script>
+        // Initialize dataLayer immediately so gtag calls can queue
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        
+        // Load Google Analytics after page is interactive
+        function loadGoogleAnalytics() {
+            gtag('js', new Date());
+            gtag('config', 'G-E4YJ359T9L', {
+                'send_page_view': false // We'll send page views manually after load
+            });
+            
+            // Load the GA script
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-E4YJ359T9L';
+            document.head.appendChild(script);
+            
+            // Send page view after script loads
+            script.onload = function() {
+                gtag('config', 'G-E4YJ359T9L');
+            };
+        }
+        
+        // Use requestIdleCallback if available, otherwise use setTimeout
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadGoogleAnalytics, { timeout: 2000 });
+        } else {
+            setTimeout(loadGoogleAnalytics, 1);
+        }
+    </script>
 </body>
 </html>
 

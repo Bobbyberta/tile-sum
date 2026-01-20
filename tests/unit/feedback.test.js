@@ -81,6 +81,10 @@ describe('feedback.js', () => {
   });
 
   describe('triggerSnowflakeConfetti', () => {
+    let mockScript;
+    let mockScriptOnLoad;
+    let mockScriptOnError;
+
     beforeEach(() => {
       // Mock confetti library
       global.confetti = vi.fn();
@@ -91,29 +95,68 @@ describe('feedback.js', () => {
       });
       global.clearInterval = vi.fn();
       global.Date.now = vi.fn(() => 1000);
+      
+      // Mock document.createElement for script loading
+      mockScript = {
+        src: '',
+        async: false,
+        onload: null,
+        onerror: null,
+        addEventListener: vi.fn((event, handler) => {
+          if (event === 'load') mockScriptOnLoad = handler;
+          if (event === 'error') mockScriptOnError = handler;
+        })
+      };
+      
+      const originalCreateElement = document.createElement.bind(document);
+      vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
+        if (tagName === 'script') {
+          return mockScript;
+        }
+        return originalCreateElement(tagName);
+      });
+      
+      // Mock document.head.appendChild
+      vi.spyOn(document.head, 'appendChild').mockImplementation(() => {
+        // Simulate script loading success
+        if (mockScript.onload) {
+          setTimeout(() => mockScript.onload(), 0);
+        }
+        return mockScript;
+      });
+      
+      // Mock document.querySelector to return null (no existing script)
+      vi.spyOn(document, 'querySelector').mockReturnValue(null);
     });
 
-    it('should call confetti library', () => {
-      triggerSnowflakeConfetti();
+    it('should call confetti library after loading', async () => {
+      const promise = triggerSnowflakeConfetti();
+      
+      // Wait for the promise to resolve
+      await promise;
       
       expect(global.confetti).toHaveBeenCalled();
     });
 
-    it('should return early if confetti not available', () => {
+    it('should return early if confetti not available', async () => {
       delete global.confetti;
       
-      expect(() => triggerSnowflakeConfetti()).not.toThrow();
+      // Should not throw even if confetti can't be loaded
+      await expect(triggerSnowflakeConfetti()).resolves.not.toThrow();
     });
 
-    it('should create confetti with snowflake colors', () => {
-      triggerSnowflakeConfetti();
+    it('should create confetti with snowflake colors', async () => {
+      const promise = triggerSnowflakeConfetti();
+      
+      // Wait for the promise to resolve
+      await promise;
       
       const call = global.confetti.mock.calls[0][0];
       expect(call.colors).toEqual(['#ffffff', '#e0f2fe', '#dbeafe', '#bfdbfe']);
       expect(call.shapes).toEqual(['circle']);
     });
 
-    it('should stop after duration', () => {
+    it('should stop after duration', async () => {
       let intervalId = null;
       let intervalFn = null;
       
@@ -126,7 +169,10 @@ describe('feedback.js', () => {
       let currentTime = 1000;
       global.Date.now = vi.fn(() => currentTime);
       
-      triggerSnowflakeConfetti();
+      const promise = triggerSnowflakeConfetti();
+      
+      // Wait for script to load
+      await promise;
       
       // Simulate interval calls - first call at 2000ms
       currentTime = 2000;

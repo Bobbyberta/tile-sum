@@ -3,8 +3,8 @@ import { createMockPuzzleDOM, createMockTile, cleanupDOM } from '../helpers/dom-
 import { updateScoreDisplay, checkSolution } from '../../js/scoring.js';
 import { placeTileInSlot } from '../../js/tile-operations.js';
 
-// Mock puzzle-data-encoded.js
-vi.mock('../../puzzle-data-encoded.js', () => ({
+// Mock puzzle-data-today.js
+vi.mock('../../puzzle-data-today.js', () => ({
   calculateWordScore: (word) => {
     const scores = {
       'A': 1, 'B': 3, 'C': 3, 'D': 2, 'E': 1, 'F': 4, 'G': 2, 'H': 4,

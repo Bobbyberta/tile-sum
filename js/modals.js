@@ -1,6 +1,6 @@
 // Modal management
 
-import { formatDateString, getDateForPuzzleNumber, isAdventMode, PUZZLE_DATA } from '../puzzle-data-encoded.js';
+import { formatDateString, getDateForPuzzleNumber, isAdventMode, PUZZLE_DATA } from '../puzzle-data-today.js';
 import { getTestModeParamWithAmpersand } from './utils.js';
 import { handleModalKeyDown } from './keyboard.js';
 import { savePuzzleCompletion, markHelpAsSeen } from './completion.js';

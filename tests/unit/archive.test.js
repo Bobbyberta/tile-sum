@@ -3,7 +3,7 @@ import { initArchivePage, loadArchivePuzzle } from '../../js/archive.js';
 import { createMockPuzzleDOM, cleanupDOM } from '../helpers/dom-setup.js';
 
 // Mock dependencies
-vi.mock('../../puzzle-data-encoded.js', () => ({
+vi.mock('../../puzzle-data-today.js', () => ({
   PUZZLE_DATA: {
     0: { words: ['TEST', 'DUMMY'], solution: ['TEST', 'DUMMY'] },
     1: { words: ['SNOW', 'FLAKE'], solution: ['SNOW', 'FLAKE'] },
@@ -29,6 +29,12 @@ vi.mock('../../puzzle-data-encoded.js', () => ({
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     return diffDays + 1; // Puzzle 1 is Dec 1, puzzle 2 is Dec 2, etc.
   }
+}));
+
+vi.mock('../../js/puzzle-data-loader.js', () => ({
+  loadArchiveData: vi.fn(() => Promise.resolve()),
+  loadArchiveDataIdle: vi.fn(),
+  isArchiveDataLoaded: vi.fn(() => false)
 }));
 
 vi.mock('../../js/utils.js', () => ({
@@ -315,28 +321,28 @@ describe('archive.js', () => {
       const puzzleCore = await import('../../js/puzzle-core.js');
       const script = await import('../../script.js');
 
-      loadArchivePuzzle('2025-12-01');
+      await loadArchivePuzzle('2025-12-01');
 
       expect(puzzleCore.createPuzzleDOMStructure).toHaveBeenCalled();
       expect(script.initPuzzleWithPrefix).toHaveBeenCalled();
     });
 
-    it('should show error for invalid date', () => {
-      loadArchivePuzzle('invalid-date');
+    it('should show error for invalid date', async () => {
+      await loadArchivePuzzle('invalid-date');
 
       const archiveContent = document.getElementById('archive-puzzle-content');
       expect(archiveContent.innerHTML).toContain('Invalid date selected');
     });
 
-    it('should show error for date before start date', () => {
-      loadArchivePuzzle('2025-11-30');
+    it('should show error for date before start date', async () => {
+      await loadArchivePuzzle('2025-11-30');
 
       const archiveContent = document.getElementById('archive-puzzle-content');
       expect(archiveContent.innerHTML).toContain('No puzzles available before');
     });
 
-    it('should show error for missing puzzle data', () => {
-      loadArchivePuzzle('2025-12-30'); // Puzzle 30 doesn't exist in mock
+    it('should show error for missing puzzle data', async () => {
+      await loadArchivePuzzle('2025-12-30'); // Puzzle 30 doesn't exist in mock
 
       const archiveContent = document.getElementById('archive-puzzle-content');
       expect(archiveContent.innerHTML).toContain('No puzzle available for');
@@ -345,7 +351,7 @@ describe('archive.js', () => {
     it('should format date display correctly', async () => {
       const puzzleCore = await import('../../js/puzzle-core.js');
 
-      loadArchivePuzzle('2025-12-01'); // Dec 1 maps to puzzle 1 which exists in mock
+      await loadArchivePuzzle('2025-12-01'); // Dec 1 maps to puzzle 1 which exists in mock
 
       expect(puzzleCore.createPuzzleDOMStructure).toHaveBeenCalledWith(
         expect.any(HTMLElement),
@@ -354,9 +360,9 @@ describe('archive.js', () => {
       );
     });
 
-    it('should return early if archive content is missing', () => {
+    it('should return early if archive content is missing', async () => {
       document.body.innerHTML = '';
-      expect(() => loadArchivePuzzle('2025-12-01')).not.toThrow();
+      await expect(loadArchivePuzzle('2025-12-01')).resolves.not.toThrow();
     });
   });
 });

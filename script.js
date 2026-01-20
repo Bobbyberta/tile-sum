@@ -1,6 +1,6 @@
 // Main entry point - imports and wires together all modules
 
-// Import puzzle data (must be first)
+// Import today's puzzle data (must be first)
 import { 
     PUZZLE_DATA,
     getPuzzleLetters,
@@ -9,7 +9,10 @@ import {
     parseDateString,
     getPuzzleNumberForDate,
     isAdventMode
-} from './puzzle-data-encoded.js';
+} from './puzzle-data-today.js';
+
+// Import archive data loader
+import { loadArchiveDataIdle, loadArchiveData, isArchiveDataLoaded } from './js/puzzle-data-loader.js';
 
 // Import all modules
 import { updateCountdown, initCalendar, initDailyPuzzle } from './js/ui.js';
@@ -453,6 +456,10 @@ function initPuzzle(day) {
     initPuzzleWithPrefix(day, '');
 }
 
+// Trigger archive data loading during idle time
+// This loads archive puzzles non-blockingly after page initialization
+loadArchiveDataIdle();
+
 // Export functions that are used in HTML files
 export { 
     updateCountdown, 
@@ -463,5 +470,7 @@ export {
     initArchivePage,
     isAdventMode,
     parseDateString,
-    getPuzzleNumberForDate
+    getPuzzleNumberForDate,
+    loadArchiveData,
+    isArchiveDataLoaded
 };

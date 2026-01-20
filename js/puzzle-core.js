@@ -1,6 +1,6 @@
 // Core puzzle game logic - tile/slot creation and placeholder management
 
-import { SCRABBLE_SCORES } from '../puzzle-data-encoded.js';
+import { SCRABBLE_SCORES } from '../puzzle-data-today.js';
 import { handleTileKeyDown } from './keyboard.js';
 
 /**
