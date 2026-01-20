@@ -8,6 +8,7 @@ import { getDaySuffix } from './utils.js';
 import { initPuzzleWithPrefix } from '../script.js';
 import { isPuzzleCompletedToday, isPuzzleCompletedForDate } from './completion.js';
 import { createTile, createSlot } from './puzzle-core.js';
+import { showPuzzleLoading, hidePuzzleLoading } from './loading.js';
 
 /**
  * Updates the countdown overlay for the advent calendar.
@@ -175,7 +176,7 @@ export function initDailyPuzzle() {
         if (existingMessage) {
             existingMessage.remove();
         }
-        // Show interactive puzzle
+        // Show interactive puzzle (loading is handled inside initPuzzleWithPrefix)
         initPuzzleWithPrefix(puzzleNumber, 'daily-');
     }
 }

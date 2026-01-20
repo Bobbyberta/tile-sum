@@ -1,6 +1,8 @@
 // Puzzle data loader - dynamically loads archive puzzle data
 // Merges archive chunks into the existing PUZZLE_DATA proxy
 
+import { retryWithBackoff, isOnline, showError } from './error-handling.js';
+
 let archiveDataLoaded = false;
 let archiveDataLoading = false;
 let archiveLoadPromise = null;
@@ -24,25 +26,33 @@ export async function loadArchiveData() {
     archiveDataLoading = true;
     
     archiveLoadPromise = (async () => {
+        // Check if online before attempting to load
+        if (!isOnline()) {
+            throw new Error('Network unavailable. Please check your internet connection.');
+        }
+        
         try {
-            // Dynamically import archive data
-            const archiveModule = await import('../puzzle-data-archive.js');
-            
-            // Import the extend function from today's data
-            // The extend function is exported from puzzle-data-today.js
-            const todayModule = await import('../puzzle-data-today.js');
-            
-            // Check if today module has the extend function
-            if (todayModule._extendPuzzleData) {
-                // Merge archive chunks into today's data
-                todayModule._extendPuzzleData(
-                    archiveModule._archiveChunks,
-                    archiveModule._archiveChunkData
-                );
-            } else {
-                // Fallback: manually merge if extend function doesn't exist
-                console.warn('[Puzzle Data Loader] _extendPuzzleData not found, archive data may not be fully loaded');
-            }
+            // Retry loading with exponential backoff
+            await retryWithBackoff(async () => {
+                // Dynamically import archive data
+                const archiveModule = await import('../puzzle-data-archive.js');
+                
+                // Import the extend function from today's data
+                // The extend function is exported from puzzle-data-today.js
+                const todayModule = await import('../puzzle-data-today.js');
+                
+                // Check if today module has the extend function
+                if (todayModule._extendPuzzleData) {
+                    // Merge archive chunks into today's data
+                    todayModule._extendPuzzleData(
+                        archiveModule._archiveChunks,
+                        archiveModule._archiveChunkData
+                    );
+                } else {
+                    // Fallback: manually merge if extend function doesn't exist
+                    console.warn('[Puzzle Data Loader] _extendPuzzleData not found, archive data may not be fully loaded');
+                }
+            }, 3, 1000);
             
             archiveDataLoaded = true;
             archiveDataLoading = false;
@@ -51,6 +61,22 @@ export async function loadArchiveData() {
         } catch (error) {
             archiveDataLoading = false;
             console.error('[Puzzle Data Loader] Failed to load archive data:', error);
+            
+            // Show user-friendly error message if we're on archive page
+            const archiveContent = document.getElementById('archive-puzzle-content');
+            if (archiveContent) {
+                showError(
+                    'Failed to load archive puzzle data. Please check your internet connection and try again.',
+                    'archive-puzzle-content',
+                    () => {
+                        archiveDataLoaded = false;
+                        archiveDataLoading = false;
+                        archiveLoadPromise = null;
+                        loadArchiveData();
+                    }
+                );
+            }
+            
             throw error;
         }
     })();

@@ -1,6 +1,6 @@
 // Service Worker for Sum Tile - Caches static assets for offline support and faster loading
 
-const CACHE_NAME = 'sum-tile-v1';
+const CACHE_NAME = 'sum-tile-v2';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -98,39 +98,69 @@ self.addEventListener('fetch', (event) => {
         return;
     }
     
-    // Strategy: Cache first, then network
-    event.respondWith(
-        caches.match(request)
-            .then((cachedResponse) => {
-                if (cachedResponse) {
-                    // Return cached version
-                    return cachedResponse;
-                }
-                
-                // Fetch from network
-                return fetch(request)
-                    .then((response) => {
-                        // Don't cache non-successful responses
-                        if (!response || response.status !== 200 || response.type !== 'basic') {
-                            return response;
+    // Determine if this is an HTML file
+    const isHTML = request.headers.get('accept')?.includes('text/html') || 
+                   url.pathname.endsWith('.html') || 
+                   url.pathname === '/';
+    
+    if (isHTML) {
+        // Stale-while-revalidate strategy for HTML files
+        // This ensures fresh content while providing fast cached responses
+        event.respondWith(
+            caches.open(CACHE_NAME).then((cache) => {
+                return cache.match(request).then((cachedResponse) => {
+                    // Fetch fresh content in the background
+                    const fetchPromise = fetch(request).then((networkResponse) => {
+                        // Only cache successful responses
+                        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                            cache.put(request, networkResponse.clone());
                         }
-                        
-                        // Clone the response (stream can only be consumed once)
-                        const responseToCache = response.clone();
-                        
-                        // Cache the response for future use
-                        caches.open(CACHE_NAME)
-                            .then((cache) => {
-                                cache.put(request, responseToCache);
-                            });
-                        
-                        return response;
-                    })
-                    .catch(() => {
-                        // If network fails and we have a cached version, return it
-                        // This handles offline scenarios
-                        return caches.match(request);
+                        return networkResponse;
+                    }).catch(() => {
+                        // If network fails, return cached version if available
+                        return cachedResponse || new Response('Offline', { status: 503 });
                     });
+                    
+                    // Return cached version immediately if available, otherwise wait for network
+                    return cachedResponse || fetchPromise;
+                });
             })
-    );
+        );
+    } else {
+        // Cache-first strategy for static assets (CSS, JS, images, etc.)
+        event.respondWith(
+            caches.match(request)
+                .then((cachedResponse) => {
+                    if (cachedResponse) {
+                        // Return cached version immediately
+                        return cachedResponse;
+                    }
+                    
+                    // Fetch from network
+                    return fetch(request)
+                        .then((response) => {
+                            // Don't cache non-successful responses
+                            if (!response || response.status !== 200 || response.type !== 'basic') {
+                                return response;
+                            }
+                            
+                            // Clone the response (stream can only be consumed once)
+                            const responseToCache = response.clone();
+                            
+                            // Cache the response for future use
+                            caches.open(CACHE_NAME)
+                                .then((cache) => {
+                                    cache.put(request, responseToCache);
+                                });
+                            
+                            return response;
+                        })
+                        .catch(() => {
+                            // If network fails and we have a cached version, return it
+                            // This handles offline scenarios
+                            return caches.match(request);
+                        });
+                })
+        );
+    }
 });

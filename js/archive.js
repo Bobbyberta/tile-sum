@@ -13,6 +13,7 @@ import { getDaySuffix } from './utils.js';
 import { createPuzzleDOMStructure } from './puzzle-core.js';
 import { initPuzzleWithPrefix } from '../script.js';
 import { createStateManager } from './puzzle-state.js';
+import { showArchiveLoading, hideArchiveLoading } from './loading.js';
 
 /**
  * Initializes the archive page functionality.
@@ -129,6 +130,9 @@ export async function loadArchivePuzzle(dateString) {
     const archiveContent = document.getElementById('archive-puzzle-content');
     if (!archiveContent) return;
     
+    // Show loading state
+    showArchiveLoading();
+    
     // Ensure archive data is loaded before loading puzzle
     await loadArchiveData().catch((error) => {
         console.warn('[Archive] Failed to load archive data:', error);
@@ -136,6 +140,7 @@ export async function loadArchivePuzzle(dateString) {
     
     const date = parseDateString(dateString);
     if (!date) {
+        hideArchiveLoading();
         archiveContent.innerHTML = `
             <div class="text-center p-8 bg-white rounded-lg shadow-md">
                 <p class="text-lg text-red-600">Invalid date selected.</p>
@@ -150,6 +155,7 @@ export async function loadArchivePuzzle(dateString) {
     date.setHours(0, 0, 0, 0);
     
     if (date < startDate) {
+        hideArchiveLoading();
         archiveContent.innerHTML = `
             <div class="text-center p-8 bg-white rounded-lg shadow-md">
                 <p class="text-lg text-text-primary">No puzzles available before ${formatDateString(startDate)}.</p>
@@ -163,6 +169,7 @@ export async function loadArchivePuzzle(dateString) {
     
     // Check if puzzle exists
     if (!PUZZLE_DATA[puzzleNumber]) {
+        hideArchiveLoading();
         archiveContent.innerHTML = `
             <div class="text-center p-8 bg-white rounded-lg shadow-md">
                 <p class="text-lg text-text-primary">No puzzle available for ${formatDateString(date)}.</p>

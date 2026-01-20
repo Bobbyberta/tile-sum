@@ -55,6 +55,7 @@ import { initArchivePage } from './js/archive.js';
 import { isPuzzleCompletedToday, isPuzzleCompletedForDate } from './js/completion.js';
 import { initAutoComplete } from './js/auto-complete.js';
 import { displayStreak } from './js/streak.js';
+import { showPuzzleLoading, hidePuzzleLoading } from './js/loading.js';
 
 // Shared puzzle initialization function that works with different prefixes
 function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
@@ -62,6 +63,17 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
     if (!stateManager) {
         stateManager = createStateManager(prefix);
     }
+    
+    // Show loading state for daily and archive puzzles
+    if (prefix === 'daily-') {
+        const container = document.getElementById('daily-puzzle-container');
+        if (container) {
+            showPuzzleLoading('daily-puzzle-container', 'daily-');
+        }
+    } else if (prefix === 'archive-') {
+        // Archive loading is handled in archive.js
+    }
+    
     // Get date for this puzzle number
     const puzzleDate = getDateForPuzzleNumber(day);
     
@@ -84,6 +96,7 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
     // Check if puzzle exists
     if (!PUZZLE_DATA[day]) {
         if (prefix === 'daily-') {
+            hidePuzzleLoading('daily-puzzle-container');
             const dailyPuzzleContent = document.getElementById('daily-puzzle-content');
             if (dailyPuzzleContent) {
                 dailyPuzzleContent.innerHTML = `
@@ -149,13 +162,19 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
     handlers.onTouchStart = (e) => handleTouchStart(e, placeTileCallback, removeTileCallback);
     handlers.onKeyDown = (e) => handleTileKeyDown(e, keyboardContext);
     
-    tilesContainer.addEventListener('dragover', handleTilesContainerDragOver);
-    tilesContainer.addEventListener('drop', (e) => handleTilesContainerDrop(e, dragDropContext));
-    tilesContainer.addEventListener('dragleave', handleTilesContainerDragLeave);
+    // Remove existing listeners before adding new ones to prevent duplicates
+    // Clone the container to remove all event listeners (innerHTML already cleared above)
+    const newTilesContainer = tilesContainer.cloneNode(false);
+    tilesContainer.parentNode?.replaceChild(newTilesContainer, tilesContainer);
+    
+    // Add event listeners to the new container
+    newTilesContainer.addEventListener('dragover', handleTilesContainerDragOver);
+    newTilesContainer.addEventListener('drop', (e) => handleTilesContainerDrop(e, dragDropContext));
+    newTilesContainer.addEventListener('dragleave', handleTilesContainerDragLeave);
     
     letters.forEach((letter, index) => {
         const tile = createTile(letter, index, false, handlers);
-        tilesContainer.appendChild(tile);
+        newTilesContainer.appendChild(tile);
     });
     
     // Update placeholder visibility
@@ -448,6 +467,13 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
         debugLog('[AutoComplete] Initialization called in initPuzzleWithPrefix', { day, prefix });
     } else {
         console.error('[AutoComplete] ERROR: day is null or undefined, cannot initialize auto-complete', { day, prefix });
+    }
+    
+    // Hide loading state if it was shown
+    const containerId = prefix === 'daily-' ? 'daily-puzzle-container' : 
+                       prefix === 'archive-' ? 'archive-puzzle-content' : null;
+    if (containerId) {
+        hidePuzzleLoading(containerId);
     }
 }
 

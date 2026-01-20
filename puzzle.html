@@ -87,97 +87,6 @@
     
     <!-- Load CSS synchronously to prevent layout shifts -->
     <link rel="stylesheet" href="styles.css">
-    <style>
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-        .tile {
-            cursor: grab;
-            user-select: none;
-            touch-action: none; /* Prevent default touch behaviors - we handle dragging and scrolling ourselves */
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-        }
-        .tile:active {
-            cursor: grabbing;
-        }
-        .tile.dragging {
-            opacity: 0.5;
-        }
-        .slot {
-            min-height: 60px;
-            border: 3px dashed #4E2E07;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        .slot.drag-over {
-            border-color: #4E2E07;
-            background-color: rgba(230, 189, 83, 0.3);
-        }
-        .tile.drag-over {
-            outline: 2px solid #4E2E07;
-            outline-offset: 2px;
-            transform: scale(1.05);
-        }
-        .slot.filled {
-            border: none;
-            background-color: transparent;
-        }
-        .tile.locked {
-            cursor: not-allowed;
-            border: 4px solid #CF1D6B;
-            background-color: #CF1D6B;
-            color: #FFFFFF;
-        }
-        .tile:focus {
-            outline: 2px solid #1C2542;
-            outline-offset: 2px;
-        }
-        .tile:focus:not(.ring-4) {
-            /* Ensure focus is visible even when not selected */
-            outline: 2px solid #1C2542;
-            outline-offset: 2px;
-        }
-        .tile.ring-4:focus {
-            /* When selected and focused, show both selection ring and focus outline */
-            outline: 2px solid #1C2542;
-            outline-offset: 2px;
-        }
-        .slot:focus {
-            outline: 2px solid #1C2542;
-            outline-offset: 2px;
-        }
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
-        }
-        .slot.locked {
-            border-color: #CF1D6B;
-            background-color: rgba(207, 29, 107, 0.2);
-        }
-        #success-modal, #error-modal {
-            animation: fadeIn 0.3s ease-in;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-    </style>
 </head>
 <body class="bg-bg-primary min-h-screen font-rem">
     <!-- Skip to main content link -->
@@ -251,9 +160,12 @@
         </div>
 
         <!-- Feedback Message -->
-        <div id="feedback" class="hidden p-4 rounded-lg mb-8" role="alert" aria-live="polite">
+        <div id="feedback" class="hidden p-4 rounded-lg mb-8" role="alert" aria-live="polite" aria-atomic="true">
             <!-- Feedback will be shown here -->
         </div>
+        
+        <!-- Loading status for screen readers -->
+        <div id="loading-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
     </main>
 
     <!-- Success Modal -->
@@ -683,6 +595,55 @@
             // Send page view after script loads
             script.onload = function() {
                 gtag('config', 'G-E4YJ359T9L');
+                
+                // Track Web Vitals if available
+                if ('PerformanceObserver' in window) {
+                    try {
+                        // Largest Contentful Paint (LCP)
+                        new PerformanceObserver((entryList) => {
+                            const entries = entryList.getEntries();
+                            const lastEntry = entries[entries.length - 1];
+                            gtag('event', 'web_vitals', {
+                                'event_category': 'Web Vitals',
+                                'event_label': 'LCP',
+                                'value': Math.round(lastEntry.renderTime || lastEntry.loadTime),
+                                'non_interaction': true
+                            });
+                        }).observe({ entryTypes: ['largest-contentful-paint'] });
+                        
+                        // First Input Delay (FID)
+                        new PerformanceObserver((entryList) => {
+                            const entries = entryList.getEntries();
+                            entries.forEach((entry) => {
+                                gtag('event', 'web_vitals', {
+                                    'event_category': 'Web Vitals',
+                                    'event_label': 'FID',
+                                    'value': Math.round(entry.processingStart - entry.startTime),
+                                    'non_interaction': true
+                                });
+                            });
+                        }).observe({ entryTypes: ['first-input'] });
+                        
+                        // Cumulative Layout Shift (CLS)
+                        let clsValue = 0;
+                        new PerformanceObserver((entryList) => {
+                            const entries = entryList.getEntries();
+                            entries.forEach((entry) => {
+                                if (!entry.hadRecentInput) {
+                                    clsValue += entry.value;
+                                }
+                            });
+                            gtag('event', 'web_vitals', {
+                                'event_category': 'Web Vitals',
+                                'event_label': 'CLS',
+                                'value': Math.round(clsValue * 1000) / 1000,
+                                'non_interaction': true
+                            });
+                        }).observe({ entryTypes: ['layout-shift'] });
+                    } catch (e) {
+                        console.debug('Web Vitals tracking not available');
+                    }
+                }
             };
         }
         
