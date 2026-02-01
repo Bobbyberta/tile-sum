@@ -18,6 +18,11 @@ let solutionShown = false;
 // Archive solution shown state - track whether solution was shown (for archive puzzles)
 let archiveSolutionShown = false;
 
+// Puzzle start time tracking - track when puzzle started (per prefix)
+let puzzleStartTime = null;
+let dailyPuzzleStartTime = null;
+let archivePuzzleStartTime = null;
+
 /**
  * Gets the currently dragged tile element.
  * @returns {HTMLElement|null} The dragged tile element, or null if none
@@ -152,6 +157,88 @@ export function getArchiveSolutionShown() {
  */
 export function setArchiveSolutionShown(value) {
     archiveSolutionShown = value;
+}
+
+/**
+ * Gets the puzzle start time for regular puzzles.
+ * @returns {number|null} The start time in milliseconds (Date.now()), or null if not set
+ */
+export function getPuzzleStartTime() {
+    return puzzleStartTime;
+}
+
+/**
+ * Sets the puzzle start time for regular puzzles.
+ * @param {number|null} time - The start time in milliseconds (Date.now()), or null to clear
+ * @returns {void}
+ */
+export function setPuzzleStartTime(time) {
+    puzzleStartTime = time;
+}
+
+/**
+ * Gets the puzzle start time for daily puzzles.
+ * @returns {number|null} The start time in milliseconds (Date.now()), or null if not set
+ */
+export function getDailyPuzzleStartTime() {
+    return dailyPuzzleStartTime;
+}
+
+/**
+ * Sets the puzzle start time for daily puzzles.
+ * @param {number|null} time - The start time in milliseconds (Date.now()), or null to clear
+ * @returns {void}
+ */
+export function setDailyPuzzleStartTime(time) {
+    dailyPuzzleStartTime = time;
+}
+
+/**
+ * Gets the puzzle start time for archive puzzles.
+ * @returns {number|null} The start time in milliseconds (Date.now()), or null if not set
+ */
+export function getArchivePuzzleStartTime() {
+    return archivePuzzleStartTime;
+}
+
+/**
+ * Sets the puzzle start time for archive puzzles.
+ * @param {number|null} time - The start time in milliseconds (Date.now()), or null to clear
+ * @returns {void}
+ */
+export function setArchivePuzzleStartTime(time) {
+    archivePuzzleStartTime = time;
+}
+
+/**
+ * Gets the puzzle start time based on prefix.
+ * @param {string} [prefix=''] - Prefix to determine which start time to get
+ * @returns {number|null} The start time in milliseconds, or null if not set
+ */
+export function getPuzzleStartTimeByPrefix(prefix = '') {
+    if (prefix === 'archive-') {
+        return getArchivePuzzleStartTime();
+    } else if (prefix === 'daily-') {
+        return getDailyPuzzleStartTime();
+    } else {
+        return getPuzzleStartTime();
+    }
+}
+
+/**
+ * Sets the puzzle start time based on prefix.
+ * @param {string} [prefix=''] - Prefix to determine which start time to set
+ * @param {number|null} time - The start time in milliseconds (Date.now()), or null to clear
+ * @returns {void}
+ */
+export function setPuzzleStartTimeByPrefix(prefix = '', time) {
+    if (prefix === 'archive-') {
+        setArchivePuzzleStartTime(time);
+    } else if (prefix === 'daily-') {
+        setDailyPuzzleStartTime(time);
+    } else {
+        setPuzzleStartTime(time);
+    }
 }
 
 /**

@@ -50,7 +50,7 @@ import { showFeedback, triggerSnowflakeConfetti } from './js/feedback.js';
 import { showSuccessModal, showErrorModal, closeErrorModal, closeSuccessModal, showHelpModal, closeHelpModal } from './js/modals.js';
 import { updateSocialMetaTags } from './js/seo.js';
 import { getDaySuffix, debugLog } from './js/utils.js';
-import { setHintsRemaining, getHintsRemaining, getSolutionShown, setSolutionShown, createStateManager } from './js/puzzle-state.js';
+import { setHintsRemaining, getHintsRemaining, getSolutionShown, setSolutionShown, createStateManager, setPuzzleStartTimeByPrefix } from './js/puzzle-state.js';
 import { initArchivePage } from './js/archive.js';
 import { isPuzzleCompletedToday, isPuzzleCompletedForDate } from './js/completion.js';
 import { initAutoComplete } from './js/auto-complete.js';
@@ -63,6 +63,9 @@ function initPuzzleWithPrefix(day, prefix = '', stateManager = null) {
     if (!stateManager) {
         stateManager = createStateManager(prefix);
     }
+    
+    // Track puzzle start time
+    setPuzzleStartTimeByPrefix(prefix, Date.now());
     
     // Show loading state for daily and archive puzzles
     if (prefix === 'daily-') {

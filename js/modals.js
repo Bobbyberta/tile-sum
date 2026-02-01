@@ -3,8 +3,9 @@
 import { formatDateString, getDateForPuzzleNumber, isAdventMode, PUZZLE_DATA } from '../puzzle-data-today.js';
 import { getTestModeParamWithAmpersand } from './utils.js';
 import { handleModalKeyDown } from './keyboard.js';
-import { savePuzzleCompletion, markHelpAsSeen } from './completion.js';
+import { savePuzzleCompletion, markHelpAsSeen, savePuzzleCompletionTime, getPreviousCompletionTime, formatCompletionTime } from './completion.js';
 import { showDailyPuzzleCountdown } from './ui.js';
+import { getPuzzleStartTimeByPrefix } from './puzzle-state.js';
 
 // Track modal count for scroll lock management
 let modalCount = 0;
@@ -248,6 +249,49 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
     const hintsUsedMessage = document.getElementById(`${prefix}hints-used-message`);
     if (hintsUsedMessage) {
         hintsUsedMessage.textContent = '';
+    }
+
+    // Calculate and save completion time
+    const startTime = getPuzzleStartTimeByPrefix(prefix);
+    let completionTimeMs = null;
+    let timeMessageLines = [];
+
+    if (startTime !== null) {
+        completionTimeMs = Date.now() - startTime;
+
+        // Save completion time
+        savePuzzleCompletionTime(day, puzzleDate, completionTimeMs);
+
+        // Always show current time
+        const timeFormatted = formatCompletionTime(completionTimeMs);
+        timeMessageLines.push(`Time: ${timeFormatted}`);
+
+        // Get previous completion time for comparison
+        const previousCompletion = getPreviousCompletionTime(day, puzzleDate);
+
+        if (previousCompletion) {
+            const previousTimeMs = previousCompletion.timeMs;
+            const timeDifference = Math.abs(completionTimeMs - previousTimeMs);
+
+            // Only show comparison if difference is at least 1 second
+            if (timeDifference >= 1000) {
+                const differenceFormatted = formatCompletionTime(timeDifference);
+
+                if (completionTimeMs < previousTimeMs) {
+                    timeMessageLines.push(`That's ${differenceFormatted} faster than last time!`);
+                } else {
+                    timeMessageLines.push(`That's ${differenceFormatted} slower than last time!`);
+                }
+            } else {
+                timeMessageLines.push('That\'s the same time as last time!');
+            }
+        }
+    }
+
+    // Display time and comparison message
+    const timeComparisonElement = document.getElementById(`${prefix}time-comparison-message`);
+    if (timeComparisonElement) {
+        timeComparisonElement.textContent = timeMessageLines.join('\n');
     }
 
     // Save completion status

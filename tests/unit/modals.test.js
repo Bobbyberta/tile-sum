@@ -42,9 +42,27 @@ vi.mock('../../js/keyboard.js', () => ({
   handleModalKeyDown: vi.fn()
 }));
 
+vi.mock('../../js/puzzle-state.js', () => ({
+  getPuzzleStartTimeByPrefix: vi.fn(() => null)
+}));
+
 vi.mock('../../js/completion.js', () => ({
   savePuzzleCompletion: vi.fn(),
-  markHelpAsSeen: vi.fn()
+  markHelpAsSeen: vi.fn(),
+  savePuzzleCompletionTime: vi.fn(),
+  getPreviousCompletionTime: vi.fn(() => null),
+  formatCompletionTime: vi.fn((ms) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    if (minutes === 0) {
+      return `${seconds} ${seconds === 1 ? 'second' : 'seconds'}`;
+    } else if (seconds === 0) {
+      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`;
+    } else {
+      return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ${seconds} ${seconds === 1 ? 'second' : 'seconds'}`;
+    }
+  })
 }));
 
 // Mock clipboard API
@@ -106,6 +124,10 @@ describe('modals.js', () => {
     hintsUsedMessage.id = `${prefix}hints-used-message`;
     modal.appendChild(hintsUsedMessage);
     
+    const timeComparisonMessage = document.createElement('p');
+    timeComparisonMessage.id = `${prefix}time-comparison-message`;
+    modal.appendChild(timeComparisonMessage);
+    
     const closeBtn = document.createElement('button');
     closeBtn.id = `${prefix}close-success-modal`;
     modal.appendChild(closeBtn);
@@ -116,7 +138,7 @@ describe('modals.js', () => {
     shareBtn.className = 'bg-amber-500';
     modal.appendChild(shareBtn);
     
-    return { modal, shareMessage, hintsUsedMessage, closeBtn, shareBtn };
+    return { modal, shareMessage, hintsUsedMessage, timeComparisonMessage, closeBtn, shareBtn };
   }
 
   // Helper to set up word slots with locked attributes for emoji grid testing
@@ -360,6 +382,64 @@ describe('modals.js', () => {
       const content = shareMessage.textContent;
       expect(content).toContain('https://sum-tile.uk/archive.html');
       expect(content).toContain('date=');
+    });
+
+    it('should display completion time and comparison message when start time and previous completion exist', async () => {
+      const { getPuzzleStartTimeByPrefix } = await import('../../js/puzzle-state.js');
+      const { getPreviousCompletionTime, formatCompletionTime } = await import('../../js/completion.js');
+      
+      // Mock start time (2 minutes ago)
+      const startTime = Date.now() - 120000; // 120 seconds = 2 minutes
+      getPuzzleStartTimeByPrefix.mockReturnValue(startTime);
+      
+      // Mock previous completion (3 minutes = 180000ms)
+      const previousTimeMs = 180000;
+      getPreviousCompletionTime.mockReturnValue({
+        timeMs: previousTimeMs,
+        date: new Date(2024, 10, 30),
+        puzzleNumber: 1,
+        isYesterday: false
+      });
+      
+      setupWordSlotsForEmojiGrid('', { word1: [], word2: [] });
+      const { timeComparisonMessage } = createSuccessModal();
+      
+      showSuccessModal(1, 7, 12, 10, 12, '', 0);
+      
+      const content = timeComparisonMessage.textContent;
+      // Should contain "Time:" line
+      expect(content).toContain('Time:');
+      // Should contain "faster than last time!" (current time is 2 min, previous was 3 min)
+      expect(content).toContain('faster than last time!');
+      // Should not contain old wording
+      expect(content).not.toContain('last completion');
+      expect(content).not.toContain('yesterday');
+    });
+
+    it('should display slower message when current time is longer than previous', async () => {
+      const { getPuzzleStartTimeByPrefix } = await import('../../js/puzzle-state.js');
+      const { getPreviousCompletionTime } = await import('../../js/completion.js');
+      
+      // Mock start time (3 minutes ago)
+      const startTime = Date.now() - 180000; // 180 seconds = 3 minutes
+      getPuzzleStartTimeByPrefix.mockReturnValue(startTime);
+      
+      // Mock previous completion (2 minutes = 120000ms)
+      getPreviousCompletionTime.mockReturnValue({
+        timeMs: 120000,
+        date: new Date(2024, 10, 30),
+        puzzleNumber: 1,
+        isYesterday: false
+      });
+      
+      setupWordSlotsForEmojiGrid('', { word1: [], word2: [] });
+      const { timeComparisonMessage } = createSuccessModal();
+      
+      showSuccessModal(1, 7, 12, 10, 12, '', 0);
+      
+      const content = timeComparisonMessage.textContent;
+      expect(content).toContain('Time:');
+      expect(content).toContain('slower than last time!');
     });
   });
 
