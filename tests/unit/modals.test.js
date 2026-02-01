@@ -340,15 +340,15 @@ describe('modals.js', () => {
       expect(content).toContain('https://sum-tile.uk/puzzle.html');
     });
 
-    it('should link to home screen for daily puzzle', () => {
+    it('should link to puzzle page for daily puzzle', () => {
       setupWordSlotsForEmojiGrid('daily-', { word1: [], word2: [] });
       const { shareMessage } = createSuccessModal('daily-');
       
       showSuccessModal(1, 7, 12, 10, 12, 'daily-', 0);
       
       const content = shareMessage.textContent;
-      expect(content).toContain('https://sum-tile.uk/index.html');
-      expect(content).not.toContain('puzzle.html');
+      expect(content).toContain('https://sum-tile.uk/puzzle.html');
+      expect(content).not.toContain('index.html');
     });
 
     it('should link to archive page for archive puzzle', () => {

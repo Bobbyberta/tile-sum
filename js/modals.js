@@ -164,8 +164,8 @@ export function showSuccessModal(day, word1Score, word2Score, word1MaxScore, wor
             puzzleUrl = `${baseUrl}/archive.html?day=${day}${testParam}`;
         }
     } else if (isDaily) {
-        // Daily puzzle: link to home screen (index.html)
-        puzzleUrl = `${baseUrl}/index.html${testParam}`;
+        // Daily puzzle: link to puzzle page (puzzle.html)
+        puzzleUrl = `${baseUrl}/puzzle.html${testParam}`;
     } else {
         // Regular puzzle: link to puzzle.html
         const urlParams = new URLSearchParams(window.location.search);

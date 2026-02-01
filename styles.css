@@ -593,6 +593,9 @@ video {
   margin-left: auto;
   margin-right: auto;
 }
+.mb-12 {
+  margin-bottom: 3rem;
+}
 .mb-2 {
   margin-bottom: 0.5rem;
 }
