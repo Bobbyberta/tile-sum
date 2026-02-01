@@ -74,7 +74,7 @@ const _puzzleDataProxy = new Proxy({}, {
     },
     ownKeys(target) {
         // Return all puzzle numbers (0 to maxPuzzle) - archive loader will extend this
-        return Array.from({ length: 275 }, (_, i) => String(i));
+        return Array.from({ length: 290 }, (_, i) => String(i));
     },
     getOwnPropertyDescriptor(target, prop) {
         const puzzleNum = Number(prop);

@@ -16,127 +16,127 @@ export const PUZZLE_DATA = {
     1: {
         words: ['SNOW', 'FLAKE'],
         solution: ['SNOW', 'FLAKE'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     2: {
         words: ['JOLLY', 'ELF'],
         solution: ['JOLLY', 'ELF'],
-        categories: ['adverb', 'noun']
+        categories: ['christmas', 'christmas']
 },
     3: {
         words: ['GIFT', 'WRAP'],
         solution: ['GIFT', 'WRAP'],
-        categories: ['noun', 'verb']
+        categories: ['christmas', 'christmas']
 },
     4: {
-        words: ['CANDLE', 'CRAGS'],
-        solution: ['CANDLE', 'CRAGS'],
-        categories: ['noun', 'noun']
+        words: ['CANDLE', 'SCARF'],
+        solution: ['CANDLE', 'SCARF'],
+        categories: ['christmas', 'christmas']
 },
     5: {
         words: ['STAR', 'TREE'],
         solution: ['STAR', 'TREE'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     6: {
         words: ['WREATH', 'HOLLY'],
         solution: ['WREATH', 'HOLLY'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     7: {
         words: ['COOKIE', 'MILK'],
         solution: ['COOKIE', 'MILK'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     8: {
         words: ['RUDOLF', 'DASHER'],
         solution: ['RUDOLF', 'DASHER'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     9: {
-        words: ['TINSEL', 'WATER'],
-        solution: ['TINSEL', 'WATER'],
-        categories: ['noun', 'noun']
+        words: ['TINSEL', 'BELLS'],
+        solution: ['TINSEL', 'BELLS'],
+        categories: ['christmas', 'christmas']
 },
     10: {
         words: ['BOX', 'UNWRAP'],
         solution: ['BOX', 'UNWRAP'],
-        categories: ['noun', 'verb']
+        categories: ['christmas', 'christmas']
 },
     11: {
         words: ['FROSTY', 'WINTER'],
         solution: ['FROSTY', 'WINTER'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     12: {
         words: ['TURKEY', 'FAMILY'],
         solution: ['TURKEY', 'FAMILY'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     13: {
         words: ['ADVENT', 'ICICLE'],
         solution: ['ADVENT', 'ICICLE'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     14: {
         words: ['EGG', 'ALCOHOL'],
         solution: ['EGG', 'ALCOHOL'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     15: {
         words: ['NOEL', 'EVE'],
         solution: ['NOEL', 'EVE'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     16: {
         words: ['COZY', 'FIRE'],
         solution: ['COZY', 'FIRE'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     17: {
         words: ['CANDY', 'STRIPE'],
         solution: ['CANDY', 'STRIPE'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     18: {
         words: ['HEARTH', 'WARM'],
         solution: ['HEARTH', 'WARM'],
-        categories: ['noun', 'adjective']
+        categories: ['christmas', 'christmas']
 },
     19: {
         words: ['COAL', 'SOCKS'],
         solution: ['COAL', 'SOCKS'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     20: {
         words: ['SLEIGH', 'BELL'],
         solution: ['SLEIGH', 'BELL'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     21: {
-        words: ['EGGNOG', 'AFTER'],
-        solution: ['EGGNOG', 'AFTER'],
-        categories: ['noun', 'preposition']
+        words: ['EGGNOG', 'STAR'],
+        solution: ['EGGNOG', 'STAR'],
+        categories: ['christmas', 'christmas']
 },
     22: {
         words: ['YULE', 'LOG'],
         solution: ['YULE', 'LOG'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     23: {
         words: ['MERRY', 'JOY'],
         solution: ['MERRY', 'JOY'],
-        categories: ['noun', 'noun']
+        categories: ['christmas', 'christmas']
 },
     24: {
-        words: ['WIN', 'BILLION'],
-        solution: ['WIN', 'BILLION'],
-        categories: ['verb', 'number']
+        words: ['CARROT', 'PIE'],
+        solution: ['CARROT', 'PIE'],
+        categories: ['christmas', 'christmas']
 },
     25: {
-        words: ['CALL', 'FORMAL'],
-        solution: ['CALL', 'FORMAL'],
-        categories: ['verb', 'adjective']
+        words: ['RIBBON', 'HAPPY'],
+        solution: ['RIBBON', 'HAPPY'],
+        categories: ['christmas', 'christmas']
 },
     26: {
         words: ['DRY', 'AMAZING'],
@@ -559,59 +559,59 @@ export const PUZZLE_DATA = {
         categories: ['adjective', 'noun']
 },
     110: {
-        words: ['QUEEN', 'PENNY'],
-        solution: ['QUEEN', 'PENNY'],
-        categories: ['noun', 'noun']
+        words: ['BUD', 'BLOOM'],
+        solution: ['BUD', 'BLOOM'],
+        categories: ['spring', 'spring']
 },
     111: {
-        words: ['CRAZY', 'FAULT'],
-        solution: ['CRAZY', 'FAULT'],
-        categories: ['adjective', 'noun']
+        words: ['RAIN', 'SUN'],
+        solution: ['RAIN', 'SUN'],
+        categories: ['spring', 'spring']
 },
     112: {
-        words: ['JOY', 'ANGRILY'],
-        solution: ['JOY', 'ANGRILY'],
-        categories: ['noun', 'adverb']
+        words: ['BEE', 'NEST'],
+        solution: ['BEE', 'NEST'],
+        categories: ['spring', 'spring']
 },
     113: {
-        words: ['PLAN', 'HAPPEN'],
-        solution: ['PLAN', 'HAPPEN'],
-        categories: ['noun', 'verb']
+        words: ['SEED', 'SOIL'],
+        solution: ['SEED', 'SOIL'],
+        categories: ['spring', 'spring']
 },
     114: {
-        words: ['CYCLE', 'FUNNY'],
-        solution: ['CYCLE', 'FUNNY'],
-        categories: ['noun', 'adjective']
+        words: ['MAY', 'JUNE'],
+        solution: ['MAY', 'JUNE'],
+        categories: ['spring', 'spring']
 },
     115: {
-        words: ['KID', 'ARRIVAL'],
-        solution: ['KID', 'ARRIVAL'],
-        categories: ['noun', 'noun']
+        words: ['DEW', 'MIST'],
+        solution: ['DEW', 'MIST'],
+        categories: ['spring', 'spring']
 },
     116: {
-        words: ['TALL', 'GLOBAL'],
-        solution: ['TALL', 'GLOBAL'],
-        categories: ['adjective', 'adjective']
+        words: ['IRIS', 'LILY'],
+        solution: ['IRIS', 'LILY'],
+        categories: ['spring', 'spring']
 },
     117: {
-        words: ['JOKE', 'INVITE'],
-        solution: ['JOKE', 'INVITE'],
-        categories: ['noun', 'verb']
+        words: ['CHICK', 'EGG'],
+        solution: ['CHICK', 'EGG'],
+        categories: ['spring', 'spring']
 },
     118: {
-        words: ['GIVE', 'SETTLE'],
-        solution: ['GIVE', 'SETTLE'],
-        categories: ['verb', 'verb']
+        words: ['MUD', 'PUDDLE'],
+        solution: ['MUD', 'PUDDLE'],
+        categories: ['spring', 'spring']
 },
     119: {
-        words: ['HELP', 'THOUGH'],
-        solution: ['HELP', 'THOUGH'],
-        categories: ['verb', 'conjunction']
+        words: ['WARM', 'THAW'],
+        solution: ['WARM', 'THAW'],
+        categories: ['spring', 'spring']
 },
     120: {
-        words: ['HOUR', 'HONOUR'],
-        solution: ['HOUR', 'HONOUR'],
-        categories: ['noun', 'noun']
+        words: ['TULIP', 'STEM'],
+        solution: ['TULIP', 'STEM'],
+        categories: ['spring', 'spring']
 },
     121: {
         words: ['WHOM', 'SHADOW'],
@@ -624,24 +624,24 @@ export const PUZZLE_DATA = {
         categories: ['noun', 'verb']
 },
     123: {
-        words: ['IMAGE', 'TWICE'],
-        solution: ['IMAGE', 'TWICE'],
-        categories: ['noun', 'adverb']
+        words: ['HUNT', 'PEEP'],
+        solution: ['HUNT', 'PEEP'],
+        categories: ['easter', 'easter']
 },
     124: {
-        words: ['HELL', 'VICTIM'],
-        solution: ['HELL', 'VICTIM'],
-        categories: ['noun', 'noun']
+        words: ['LAMB', 'CROSS'],
+        solution: ['LAMB', 'CROSS'],
+        categories: ['easter', 'easter']
 },
     125: {
-        words: ['FOOD', 'FEMALE'],
-        solution: ['FOOD', 'FEMALE'],
-        categories: ['noun', 'adjective']
+        words: ['DYE', 'BASKET'],
+        solution: ['DYE', 'BASKET'],
+        categories: ['easter', 'easter']
 },
     126: {
-        words: ['BLACK', 'HAPPY'],
-        solution: ['BLACK', 'HAPPY'],
-        categories: ['adjective', 'adjective']
+        words: ['EGG', 'BUNNY'],
+        solution: ['EGG', 'BUNNY'],
+        categories: ['easter', 'easter']
 },
     127: {
         words: ['ERROR', 'THIRD'],
@@ -1382,6 +1382,81 @@ export const PUZZLE_DATA = {
         words: ['SKY', 'UNUSUAL'],
         solution: ['SKY', 'UNUSUAL'],
         categories: ['noun', 'adjective']
+},
+    275: {
+        words: ['QUEEN', 'PENNY'],
+        solution: ['QUEEN', 'PENNY'],
+        categories: ['noun', 'noun']
+},
+    276: {
+        words: ['CRAZY', 'FAULT'],
+        solution: ['CRAZY', 'FAULT'],
+        categories: ['adjective', 'noun']
+},
+    277: {
+        words: ['JOY', 'ANGRILY'],
+        solution: ['JOY', 'ANGRILY'],
+        categories: ['noun', 'adverb']
+},
+    278: {
+        words: ['PLAN', 'HAPPEN'],
+        solution: ['PLAN', 'HAPPEN'],
+        categories: ['noun', 'verb']
+},
+    279: {
+        words: ['CYCLE', 'FUNNY'],
+        solution: ['CYCLE', 'FUNNY'],
+        categories: ['noun', 'adjective']
+},
+    280: {
+        words: ['KID', 'ARRIVAL'],
+        solution: ['KID', 'ARRIVAL'],
+        categories: ['noun', 'noun']
+},
+    281: {
+        words: ['TALL', 'GLOBAL'],
+        solution: ['TALL', 'GLOBAL'],
+        categories: ['adjective', 'adjective']
+},
+    282: {
+        words: ['JOKE', 'INVITE'],
+        solution: ['JOKE', 'INVITE'],
+        categories: ['noun', 'verb']
+},
+    283: {
+        words: ['GIVE', 'SETTLE'],
+        solution: ['GIVE', 'SETTLE'],
+        categories: ['verb', 'verb']
+},
+    284: {
+        words: ['HELP', 'THOUGH'],
+        solution: ['HELP', 'THOUGH'],
+        categories: ['verb', 'conjunction']
+},
+    285: {
+        words: ['HOUR', 'HONOUR'],
+        solution: ['HOUR', 'HONOUR'],
+        categories: ['noun', 'noun']
+},
+    286: {
+        words: ['IMAGE', 'TWICE'],
+        solution: ['IMAGE', 'TWICE'],
+        categories: ['noun', 'adverb']
+},
+    287: {
+        words: ['HELL', 'VICTIM'],
+        solution: ['HELL', 'VICTIM'],
+        categories: ['noun', 'noun']
+},
+    288: {
+        words: ['FOOD', 'FEMALE'],
+        solution: ['FOOD', 'FEMALE'],
+        categories: ['noun', 'adjective']
+},
+    289: {
+        words: ['BLACK', 'HAPPY'],
+        solution: ['BLACK', 'HAPPY'],
+        categories: ['adjective', 'adjective']
 }
 };
 
