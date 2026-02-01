@@ -92,7 +92,7 @@
 
         <div class="text-center max-w-xl mx-auto mb-12 px-4">
             <p class="text-lg md:text-xl text-text-primary leading-relaxed">
-                Can you arrange these letter tiles to form two words with the exact Scrabble score?
+                A daily word puzzle where you arrange letter tiles to form two words with the exact Scrabble score.
             </p>
         </div>
 
@@ -108,91 +108,48 @@
     </main>
 
     <footer class="text-center py-6 text-gray-700 text-xs">
-        © <a href="https://bobbieallsop.co.uk" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-text-primary rounded transition-colors">Bobbie Allsop</a> created Dec 2025
+        © <a href="https://bobbieallsop.co.uk" target="_blank" rel="noopener noreferrer" class="underline hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-text-primary rounded transition-colors">Bobbie Allsop</a> created Dec 2025 | <a href="privacy.html" class="underline hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-text-primary rounded transition-colors">Privacy Policy</a>
     </footer>
+
+    <!-- Cookie Consent Banner -->
+    <div id="consent-banner" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-300 shadow-lg z-50 p-4 md:p-6" role="dialog" aria-modal="true" aria-labelledby="consent-banner-title" aria-describedby="consent-banner-description">
+        <div class="container mx-auto max-w-4xl">
+            <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
+                <div class="flex-1">
+                    <h3 id="consent-banner-title" class="font-bold text-text-primary mb-2">Cookie Consent</h3>
+                    <p id="consent-banner-description" class="text-sm text-gray-700 mb-2">
+                        I use cookies to improve the game and check nothing is broken! Do you accept these cookies?
+                    </p>
+                    <a href="privacy.html" class="text-sm text-hint-button underline hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-hint-button rounded">
+                        Learn more
+                    </a>
+                </div>
+                <div class="flex gap-3">
+                    <button 
+                        id="consent-accept"
+                        class="px-6 py-2 bg-submit text-text-primary font-bold rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-submit focus:ring-offset-2 transition-colors"
+                        aria-label="Accept analytics cookies"
+                    >
+                        Accept
+                    </button>
+                    <button 
+                        id="consent-reject"
+                        class="px-6 py-2 bg-gray-200 text-text-primary font-bold rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-colors"
+                        aria-label="Reject analytics cookies"
+                    >
+                        Reject
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <script>
-        // Initialize dataLayer immediately so gtag calls can queue
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        window.gtag = gtag;
+    <!-- Google Analytics - Conditional loading based on consent -->
+    <script type="module">
+        import { initConsent } from './js/consent.js';
+        initConsent();
         
-        // Load Google Analytics after page is interactive
-        function loadGoogleAnalytics() {
-            gtag('js', new Date());
-            gtag('config', 'G-E4YJ359T9L', {
-                'send_page_view': false // We'll send page views manually after load
-            });
-            
-            // Load the GA script
-            const script = document.createElement('script');
-            script.async = true;
-            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-E4YJ359T9L';
-            document.head.appendChild(script);
-            
-            // Send page view after script loads
-            script.onload = function() {
-                gtag('config', 'G-E4YJ359T9L');
-                
-                // Track Web Vitals if available
-                if ('PerformanceObserver' in window) {
-                    try {
-                        // Largest Contentful Paint (LCP)
-                        new PerformanceObserver((entryList) => {
-                            const entries = entryList.getEntries();
-                            const lastEntry = entries[entries.length - 1];
-                            gtag('event', 'web_vitals', {
-                                'event_category': 'Web Vitals',
-                                'event_label': 'LCP',
-                                'value': Math.round(lastEntry.renderTime || lastEntry.loadTime),
-                                'non_interaction': true
-                            });
-                        }).observe({ entryTypes: ['largest-contentful-paint'] });
-                        
-                        // First Input Delay (FID)
-                        new PerformanceObserver((entryList) => {
-                            const entries = entryList.getEntries();
-                            entries.forEach((entry) => {
-                                gtag('event', 'web_vitals', {
-                                    'event_category': 'Web Vitals',
-                                    'event_label': 'FID',
-                                    'value': Math.round(entry.processingStart - entry.startTime),
-                                    'non_interaction': true
-                                });
-                            });
-                        }).observe({ entryTypes: ['first-input'] });
-                        
-                        // Cumulative Layout Shift (CLS)
-                        let clsValue = 0;
-                        new PerformanceObserver((entryList) => {
-                            const entries = entryList.getEntries();
-                            entries.forEach((entry) => {
-                                if (!entry.hadRecentInput) {
-                                    clsValue += entry.value;
-                                }
-                            });
-                            gtag('event', 'web_vitals', {
-                                'event_category': 'Web Vitals',
-                                'event_label': 'CLS',
-                                'value': Math.round(clsValue * 1000) / 1000,
-                                'non_interaction': true
-                            });
-                        }).observe({ entryTypes: ['layout-shift'] });
-                    } catch (e) {
-                        console.debug('Web Vitals tracking not available');
-                    }
-                }
-            };
-        }
-        
-        // Use requestIdleCallback if available, otherwise use setTimeout
-        if ('requestIdleCallback' in window) {
-            requestIdleCallback(loadGoogleAnalytics, { timeout: 2000 });
-        } else {
-            setTimeout(loadGoogleAnalytics, 1);
-        }
-        
-        // Track play button click
+        // Track play button click (only if analytics consent given)
         document.addEventListener('DOMContentLoaded', () => {
             const playButton = document.getElementById('play-button');
             if (playButton) {

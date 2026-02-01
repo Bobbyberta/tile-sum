@@ -143,14 +143,15 @@ body {
   }
 
   /* Ensure all content is above the background */
-  /* Exclude modals - they need position: fixed and higher z-index */
-  body.bg-bg-primary > *:not([id$="-modal"]) {
+  /* Exclude modals and consent banner - they need position: fixed and higher z-index */
+  body.bg-bg-primary > *:not([id$="-modal"]):not(#consent-banner) {
     position: relative;
     z-index: 1;
   }
 
-  /* Ensure modals appear above all content */
-  body.bg-bg-primary > [id$="-modal"] {
+  /* Ensure modals and consent banner appear above all content */
+  body.bg-bg-primary > [id$="-modal"],
+  body.bg-bg-primary > #consent-banner {
     position: fixed !important;
     z-index: 50 !important;
   }
