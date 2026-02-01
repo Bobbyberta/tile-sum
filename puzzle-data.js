@@ -364,34 +364,34 @@ export const PUZZLE_DATA = {
         categories: ['verb', 'adjective']
 },
     71: {
-        words: ['CIVIL', 'WORRY'],
-        solution: ['CIVIL', 'WORRY'],
-        categories: ['adjective', 'verb']
+        words: ['LOVE', 'KISS'],
+        solution: ['LOVE', 'KISS'],
+        categories: ['valentines', 'valentines']
 },
     72: {
-        words: ['BEE', 'EXPENSE'],
-        solution: ['BEE', 'EXPENSE'],
-        categories: ['noun', 'noun']
+        words: ['HUG', 'HEART'],
+        solution: ['HUG', 'HEART'],
+        categories: ['valentines', 'valentines']
 },
     73: {
-        words: ['FACT', 'JACKET'],
-        solution: ['FACT', 'JACKET'],
-        categories: ['noun', 'noun']
+        words: ['DATE', 'GIFT'],
+        solution: ['DATE', 'GIFT'],
+        categories: ['valentines', 'valentines']
 },
     74: {
-        words: ['EGG', 'COMMENT'],
-        solution: ['EGG', 'COMMENT'],
-        categories: ['noun', 'verb']
+        words: ['DEAR', 'MINE'],
+        solution: ['DEAR', 'MINE'],
+        categories: ['valentines', 'valentines']
 },
     75: {
-        words: ['WIN', 'MAXIMUM'],
-        solution: ['WIN', 'MAXIMUM'],
-        categories: ['verb', 'adjective']
+        words: ['CARD', 'CANDY'],
+        solution: ['CARD', 'CANDY'],
+        categories: ['valentines', 'valentines']
 },
     76: {
-        words: ['SKY', 'UNUSUAL'],
-        solution: ['SKY', 'UNUSUAL'],
-        categories: ['noun', 'adjective']
+        words: ['TRUE', 'AMOR'],
+        solution: ['TRUE', 'AMOR'],
+        categories: ['valentines', 'valentines']
 },
     77: {
         words: ['DRINK', 'PROUD'],
@@ -1352,6 +1352,36 @@ export const PUZZLE_DATA = {
         words: ['YOU', 'BIOLOGY'],
         solution: ['YOU', 'BIOLOGY'],
         categories: ['pronoun', 'noun']
+},
+    269: {
+        words: ['CIVIL', 'WORRY'],
+        solution: ['CIVIL', 'WORRY'],
+        categories: ['adjective', 'verb']
+},
+    270: {
+        words: ['BEE', 'EXPENSE'],
+        solution: ['BEE', 'EXPENSE'],
+        categories: ['noun', 'noun']
+},
+    271: {
+        words: ['FACT', 'JACKET'],
+        solution: ['FACT', 'JACKET'],
+        categories: ['noun', 'noun']
+},
+    272: {
+        words: ['EGG', 'COMMENT'],
+        solution: ['EGG', 'COMMENT'],
+        categories: ['noun', 'verb']
+},
+    273: {
+        words: ['WIN', 'MAXIMUM'],
+        solution: ['WIN', 'MAXIMUM'],
+        categories: ['verb', 'adjective']
+},
+    274: {
+        words: ['SKY', 'UNUSUAL'],
+        solution: ['SKY', 'UNUSUAL'],
+        categories: ['noun', 'adjective']
 }
 };
 
