@@ -1,6 +1,7 @@
 // Completion tracking utilities
 
 import { formatDateString, getDateForPuzzleNumber } from '../puzzle-data-today.js';
+import { updateStreak } from './streak.js';
 
 // Save puzzle completion status
 export function savePuzzleCompletion(puzzleNumber, date) {
@@ -15,6 +16,9 @@ export function savePuzzleCompletion(puzzleNumber, date) {
     
     try {
         localStorage.setItem(key, 'true');
+        
+        // Update streak when puzzle is completed
+        updateStreak(date, true);
     } catch (error) {
         console.error('Error saving puzzle completion:', error);
     }

@@ -105,6 +105,18 @@
                 Play
             </a>
         </div>
+
+        <!-- Stats Display -->
+        <div id="home-stats-container" class="text-center mt-8 px-4 hidden">
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 text-text-primary">
+                <div class="text-base md:text-lg font-semibold">
+                    <span id="total-days-played" aria-label="Total days played">0 days played</span>
+                </div>
+                <div class="text-base md:text-lg font-semibold">
+                    <span id="home-streak-display" aria-label="Current streak">No streak yet</span>
+                </div>
+            </div>
+        </div>
     </main>
 
     <footer class="text-center py-6 text-gray-700 text-xs">
@@ -147,6 +159,7 @@
     <!-- Google Analytics - Conditional loading based on consent -->
     <script type="module">
         import { initConsent } from './js/consent.js';
+        import { displayStreakOnHomePage } from './js/streak.js';
         initConsent();
         
         // Track play button click (only if analytics consent given)
@@ -162,6 +175,9 @@
                     }
                 });
             }
+            
+            // Display streak and stats on home page
+            displayStreakOnHomePage();
             
             // Lazy load background shapes on large screens (768px+)
             function loadBackgroundShapes() {
