@@ -729,49 +729,49 @@ export const PUZZLE_DATA = {
         categories: ['verb', 'adjective']
 },
     144: {
-        words: ['WEEK', 'TWENTY'],
-        solution: ['WEEK', 'TWENTY'],
-        categories: ['noun', 'number']
+        words: ['PIG', 'COW'],
+        solution: ['PIG', 'COW'],
+        categories: ['animals', 'animals']
 },
     145: {
-        words: ['HALF', 'EXTENT'],
-        solution: ['HALF', 'EXTENT'],
-        categories: ['noun', 'noun']
+        words: ['ANT', 'BEE'],
+        solution: ['ANT', 'BEE'],
+        categories: ['animals', 'animals']
 },
     146: {
-        words: ['TRICK', 'LIGHT'],
-        solution: ['TRICK', 'LIGHT'],
-        categories: ['noun', 'noun']
+        words: ['RAT', 'BAT'],
+        solution: ['RAT', 'BAT'],
+        categories: ['animals', 'animals']
 },
     147: {
-        words: ['HALL', 'GROWTH'],
-        solution: ['HALL', 'GROWTH'],
-        categories: ['noun', 'noun']
+        words: ['FOX', 'WOLF'],
+        solution: ['FOX', 'WOLF'],
+        categories: ['animals', 'animals']
 },
     148: {
-        words: ['MELT', 'AMAZED'],
-        solution: ['MELT', 'AMAZED'],
-        categories: ['verb', 'verb']
+        words: ['OWL', 'HAWK'],
+        solution: ['OWL', 'HAWK'],
+        categories: ['animals', 'animals']
 },
     149: {
-        words: ['BAND', 'NOBODY'],
-        solution: ['BAND', 'NOBODY'],
-        categories: ['noun', 'noun']
+        words: ['HEN', 'DUCK'],
+        solution: ['HEN', 'DUCK'],
+        categories: ['animals', 'animals']
 },
     150: {
-        words: ['JULY', 'MUSEUM'],
-        solution: ['JULY', 'MUSEUM'],
-        categories: ['noun', 'noun']
+        words: ['LION', 'BEAR'],
+        solution: ['LION', 'BEAR'],
+        categories: ['animals', 'animals']
 },
     151: {
-        words: ['CLICK', 'WEIGH'],
-        solution: ['CLICK', 'WEIGH'],
-        categories: ['noun', 'verb']
+        words: ['FROG', 'TOAD'],
+        solution: ['FROG', 'TOAD'],
+        categories: ['animals', 'animals']
 },
     152: {
-        words: ['FOUR', 'ANYWAY'],
-        solution: ['FOUR', 'ANYWAY'],
-        categories: ['number', 'adverb']
+        words: ['DEER', 'ELK'],
+        solution: ['DEER', 'ELK'],
+        categories: ['animals', 'animals']
 },
     153: {
         words: ['KICK', 'BOTTLE'],
@@ -924,49 +924,49 @@ export const PUZZLE_DATA = {
         categories: ['noun', 'noun']
 },
     183: {
-        words: ['BILL', 'EFFECT'],
-        solution: ['BILL', 'EFFECT'],
-        categories: ['noun', 'noun']
+        words: ['HAM', 'EGG'],
+        solution: ['HAM', 'EGG'],
+        categories: ['food', 'food']
 },
     184: {
-        words: ['LORRY', 'CHECK'],
-        solution: ['LORRY', 'CHECK'],
-        categories: ['noun', 'verb']
+        words: ['FISH', 'CHIP'],
+        solution: ['FISH', 'CHIP'],
+        categories: ['food', 'food']
 },
     185: {
-        words: ['WISH', 'INSIST'],
-        solution: ['WISH', 'INSIST'],
-        categories: ['verb', 'verb']
+        words: ['PEA', 'CORN'],
+        solution: ['PEA', 'CORN'],
+        categories: ['food', 'food']
 },
     186: {
-        words: ['MALL', 'ATTACK'],
-        solution: ['MALL', 'ATTACK'],
-        categories: ['noun', 'verb']
+        words: ['BEEF', 'PORK'],
+        solution: ['BEEF', 'PORK'],
+        categories: ['food', 'food']
 },
     187: {
-        words: ['LUCK', 'FLIGHT'],
-        solution: ['LUCK', 'FLIGHT'],
-        categories: ['noun', 'noun']
+        words: ['CAKE', 'PIE'],
+        solution: ['CAKE', 'PIE'],
+        categories: ['food', 'food']
 },
     188: {
-        words: ['SPELL', 'LEVEL'],
-        solution: ['SPELL', 'LEVEL'],
-        categories: ['verb', 'noun']
+        words: ['PEAR', 'PLUM'],
+        solution: ['PEAR', 'PLUM'],
+        categories: ['food', 'food']
 },
     189: {
-        words: ['TALK', 'COMMIT'],
-        solution: ['TALK', 'COMMIT'],
-        categories: ['verb', 'verb']
+        words: ['FIG', 'DATE'],
+        solution: ['FIG', 'DATE'],
+        categories: ['food', 'food']
 },
     190: {
-        words: ['AWAY', 'COMEDY'],
-        solution: ['AWAY', 'COMEDY'],
-        categories: ['adverb', 'noun']
+        words: ['OAT', 'BRAN'],
+        solution: ['OAT', 'BRAN'],
+        categories: ['food', 'food']
 },
     191: {
-        words: ['FRUIT', 'WORLD'],
-        solution: ['FRUIT', 'WORLD'],
-        categories: ['noun', 'noun']
+        words: ['STEW', 'SOUP'],
+        solution: ['STEW', 'SOUP'],
+        categories: ['food', 'food']
 },
     192: {
         words: ['FRY', 'APPROVE'],
@@ -1024,69 +1024,69 @@ export const PUZZLE_DATA = {
         categories: ['verb', 'noun']
 },
     203: {
-        words: ['FIVE', 'EMERGE'],
-        solution: ['FIVE', 'EMERGE'],
-        categories: ['number', 'verb']
+        words: ['SUN', 'BEACH'],
+        solution: ['SUN', 'BEACH'],
+        categories: ['summer', 'summer']
 },
     204: {
-        words: ['CHEF', 'ACCESS'],
-        solution: ['CHEF', 'ACCESS'],
-        categories: ['noun', 'noun']
+        words: ['HOT', 'SWEAT'],
+        solution: ['HOT', 'SWEAT'],
+        categories: ['summer', 'summer']
 },
     205: {
-        words: ['DOWN', 'MEMORY'],
-        solution: ['DOWN', 'MEMORY'],
-        categories: ['adverb', 'noun']
+        words: ['SWIM', 'POOL'],
+        solution: ['SWIM', 'POOL'],
+        categories: ['summer', 'summer']
 },
     206: {
-        words: ['FEED', 'VOLUME'],
-        solution: ['FEED', 'VOLUME'],
-        categories: ['noun', 'noun']
+        words: ['SURF', 'WAVE'],
+        solution: ['SURF', 'WAVE'],
+        categories: ['summer', 'summer']
 },
     207: {
-        words: ['HOUSE', 'PEACE'],
-        solution: ['HOUSE', 'PEACE'],
-        categories: ['noun', 'noun']
+        words: ['ICE', 'CREAM'],
+        solution: ['ICE', 'CREAM'],
+        categories: ['summer', 'summer']
 },
     208: {
-        words: ['SAFE', 'OFFEND'],
-        solution: ['SAFE', 'OFFEND'],
-        categories: ['adjective', 'verb']
+        words: ['GOLF', 'PARK'],
+        solution: ['GOLF', 'PARK'],
+        categories: ['summer', 'summer']
 },
     209: {
-        words: ['WOOD', 'ANYONE'],
-        solution: ['WOOD', 'ANYONE'],
-        categories: ['noun', 'pronoun']
+        words: ['FAN', 'SHADE'],
+        solution: ['FAN', 'SHADE'],
+        categories: ['summer', 'summer']
 },
     210: {
-        words: ['CITY', 'CRISIS'],
-        solution: ['CITY', 'CRISIS'],
-        categories: ['noun', 'noun']
+        words: ['BOAT', 'LAKE'],
+        solution: ['BOAT', 'LAKE'],
+        categories: ['summer', 'summer']
 },
     211: {
-        words: ['LEND', 'CLEVER'],
-        solution: ['LEND', 'CLEVER'],
-        categories: ['verb', 'adjective']
+        words: ['CAMP', 'FIRE'],
+        solution: ['CAMP', 'FIRE'],
+        categories: ['summer', 'summer']
 },
     212: {
-        words: ['CLUB', 'EXCUSE'],
-        solution: ['CLUB', 'EXCUSE'],
-        categories: ['noun', 'verb']
+        words: ['PALM', 'TREE'],
+        solution: ['PALM', 'TREE'],
+        categories: ['summer', 'summer']
 },
     213: {
-        words: ['GOODS', 'AWARE'],
-        solution: ['GOODS', 'AWARE'],
-        categories: ['noun', 'adjective']
+        words: ['SHARK', 'FIN'],
+        solution: ['SHARK', 'FIN'],
+        categories: ['summer', 'summer']
 },
     214: {
-        words: ['CAKE', 'CHANCE'],
-        solution: ['CAKE', 'CHANCE'],
-        categories: ['noun', 'noun']
+        words: ['BLUE', 'SKY'],
+        solution: ['BLUE', 'SKY'],
+        categories: ['summer', 'summer']
 },
     215: {
-        words: ['ROOF', 'FROZEN'],
-        solution: ['ROOF', 'FROZEN'],
-        categories: ['noun', 'adjective']
+        words: ['FRUIT', 'JUICE'],
+        solution: ['FRUIT', 'JUICE'],
+        categories: ['summer', 'summer']
 },
     216: {
         words: ['BEE', 'ANALYSE'],
@@ -1384,49 +1384,49 @@ export const PUZZLE_DATA = {
         categories: ['noun', 'adjective']
 },
     275: {
-        words: ['QUEEN', 'PENNY'],
-        solution: ['QUEEN', 'PENNY'],
-        categories: ['noun', 'noun']
+        words: ['SEAL', 'WHALE'],
+        solution: ['SEAL', 'WHALE'],
+        categories: ['animals', 'animals']
 },
     276: {
-        words: ['CRAZY', 'FAULT'],
-        solution: ['CRAZY', 'FAULT'],
-        categories: ['adjective', 'noun']
+        words: ['CRAB', 'FISH'],
+        solution: ['CRAB', 'FISH'],
+        categories: ['animals', 'animals']
 },
     277: {
-        words: ['JOY', 'ANGRILY'],
-        solution: ['JOY', 'ANGRILY'],
-        categories: ['noun', 'adverb']
+        words: ['SWAN', 'GOOSE'],
+        solution: ['SWAN', 'GOOSE'],
+        categories: ['animals', 'animals']
 },
     278: {
-        words: ['PLAN', 'HAPPEN'],
-        solution: ['PLAN', 'HAPPEN'],
-        categories: ['noun', 'verb']
+        words: ['LAMB', 'GOAT'],
+        solution: ['LAMB', 'GOAT'],
+        categories: ['animals', 'animals']
 },
     279: {
-        words: ['CYCLE', 'FUNNY'],
-        solution: ['CYCLE', 'FUNNY'],
-        categories: ['noun', 'adjective']
+        words: ['TIGER', 'APE'],
+        solution: ['TIGER', 'APE'],
+        categories: ['animals', 'animals']
 },
     280: {
-        words: ['KID', 'ARRIVAL'],
-        solution: ['KID', 'ARRIVAL'],
-        categories: ['noun', 'noun']
+        words: ['SNAKE', 'EEL'],
+        solution: ['SNAKE', 'EEL'],
+        categories: ['animals', 'animals']
 },
     281: {
-        words: ['TALL', 'GLOBAL'],
-        solution: ['TALL', 'GLOBAL'],
-        categories: ['adjective', 'adjective']
+        words: ['MOLE', 'VOLE'],
+        solution: ['MOLE', 'VOLE'],
+        categories: ['animals', 'animals']
 },
     282: {
-        words: ['JOKE', 'INVITE'],
-        solution: ['JOKE', 'INVITE'],
-        categories: ['noun', 'verb']
+        words: ['CROW', 'JAY'],
+        solution: ['CROW', 'JAY'],
+        categories: ['animals', 'animals']
 },
     283: {
-        words: ['GIVE', 'SETTLE'],
-        solution: ['GIVE', 'SETTLE'],
-        categories: ['verb', 'verb']
+        words: ['MULE', 'PONY'],
+        solution: ['MULE', 'PONY'],
+        categories: ['animals', 'animals']
 },
     284: {
         words: ['HELP', 'THOUGH'],
@@ -1457,6 +1457,391 @@ export const PUZZLE_DATA = {
         words: ['BLACK', 'HAPPY'],
         solution: ['BLACK', 'HAPPY'],
         categories: ['adjective', 'adjective']
+},
+    290: {
+        words: ['WEEK', 'TWENTY'],
+        solution: ['WEEK', 'TWENTY'],
+        categories: ['noun', 'number']
+},
+    291: {
+        words: ['HALF', 'EXTENT'],
+        solution: ['HALF', 'EXTENT'],
+        categories: ['noun', 'noun']
+},
+    292: {
+        words: ['TRICK', 'LIGHT'],
+        solution: ['TRICK', 'LIGHT'],
+        categories: ['noun', 'noun']
+},
+    293: {
+        words: ['HALL', 'GROWTH'],
+        solution: ['HALL', 'GROWTH'],
+        categories: ['noun', 'noun']
+},
+    294: {
+        words: ['MELT', 'AMAZED'],
+        solution: ['MELT', 'AMAZED'],
+        categories: ['verb', 'verb']
+},
+    295: {
+        words: ['BAND', 'NOBODY'],
+        solution: ['BAND', 'NOBODY'],
+        categories: ['noun', 'noun']
+},
+    296: {
+        words: ['JULY', 'MUSEUM'],
+        solution: ['JULY', 'MUSEUM'],
+        categories: ['noun', 'noun']
+},
+    297: {
+        words: ['CLICK', 'WEIGH'],
+        solution: ['CLICK', 'WEIGH'],
+        categories: ['noun', 'verb']
+},
+    298: {
+        words: ['FOUR', 'ANYWAY'],
+        solution: ['FOUR', 'ANYWAY'],
+        categories: ['number', 'adverb']
+},
+    299: {
+        words: ['BILL', 'EFFECT'],
+        solution: ['BILL', 'EFFECT'],
+        categories: ['noun', 'noun']
+},
+    300: {
+        words: ['LORRY', 'CHECK'],
+        solution: ['LORRY', 'CHECK'],
+        categories: ['noun', 'verb']
+},
+    301: {
+        words: ['WISH', 'INSIST'],
+        solution: ['WISH', 'INSIST'],
+        categories: ['verb', 'verb']
+},
+    302: {
+        words: ['MALL', 'ATTACK'],
+        solution: ['MALL', 'ATTACK'],
+        categories: ['noun', 'verb']
+},
+    303: {
+        words: ['LUCK', 'FLIGHT'],
+        solution: ['LUCK', 'FLIGHT'],
+        categories: ['noun', 'noun']
+},
+    304: {
+        words: ['SPELL', 'LEVEL'],
+        solution: ['SPELL', 'LEVEL'],
+        categories: ['verb', 'noun']
+},
+    305: {
+        words: ['KIWI', 'LIME'],
+        solution: ['KIWI', 'LIME'],
+        categories: ['food', 'food']
+},
+    306: {
+        words: ['TOFU', 'NUTS'],
+        solution: ['TOFU', 'NUTS'],
+        categories: ['food', 'food']
+},
+    307: {
+        words: ['BUN', 'ROLL'],
+        solution: ['BUN', 'ROLL'],
+        categories: ['food', 'food']
+},
+    308: {
+        words: ['SALT', 'DILL'],
+        solution: ['SALT', 'DILL'],
+        categories: ['food', 'food']
+},
+    309: {
+        words: ['JAM', 'JELLY'],
+        solution: ['JAM', 'JELLY'],
+        categories: ['food', 'food']
+},
+    310: {
+        words: ['BACON', 'HAM'],
+        solution: ['BACON', 'HAM'],
+        categories: ['food', 'food']
+},
+    311: {
+        words: ['MILK', 'BRIE'],
+        solution: ['MILK', 'BRIE'],
+        categories: ['food', 'food']
+},
+    312: {
+        words: ['CYCLE', 'FUNNY'],
+        solution: ['CYCLE', 'FUNNY'],
+        categories: ['noun', 'adjective']
+},
+    313: {
+        words: ['KID', 'ARRIVAL'],
+        solution: ['KID', 'ARRIVAL'],
+        categories: ['noun', 'noun']
+},
+    314: {
+        words: ['TALL', 'GLOBAL'],
+        solution: ['TALL', 'GLOBAL'],
+        categories: ['adjective', 'adjective']
+},
+    315: {
+        words: ['JOKE', 'INVITE'],
+        solution: ['JOKE', 'INVITE'],
+        categories: ['noun', 'verb']
+},
+    316: {
+        words: ['GIVE', 'SETTLE'],
+        solution: ['GIVE', 'SETTLE'],
+        categories: ['verb', 'verb']
+},
+    317: {
+        words: ['TALK', 'COMMIT'],
+        solution: ['TALK', 'COMMIT'],
+        categories: ['verb', 'verb']
+},
+    318: {
+        words: ['AWAY', 'COMEDY'],
+        solution: ['AWAY', 'COMEDY'],
+        categories: ['adverb', 'noun']
+},
+    319: {
+        words: ['FRUIT', 'WORLD'],
+        solution: ['FRUIT', 'WORLD'],
+        categories: ['noun', 'noun']
+},
+    320: {
+        words: ['QUEEN', 'PENNY'],
+        solution: ['QUEEN', 'PENNY'],
+        categories: ['noun', 'noun']
+},
+    321: {
+        words: ['CRAZY', 'FAULT'],
+        solution: ['CRAZY', 'FAULT'],
+        categories: ['adjective', 'noun']
+},
+    322: {
+        words: ['JOY', 'ANGRILY'],
+        solution: ['JOY', 'ANGRILY'],
+        categories: ['noun', 'adverb']
+},
+    323: {
+        words: ['PLAN', 'HAPPEN'],
+        solution: ['PLAN', 'HAPPEN'],
+        categories: ['noun', 'verb']
+},
+    324: {
+        words: ['DARK', 'VOID'],
+        solution: ['DARK', 'VOID'],
+        categories: ['adjective', 'noun']
+},
+    325: {
+        words: ['PLUTO', 'SKY'],
+        solution: ['PLUTO', 'SKY'],
+        categories: ['noun', 'noun']
+},
+    326: {
+        words: ['CAT', 'WITCH'],
+        solution: ['CAT', 'WITCH'],
+        categories: ['halloween', 'halloween']
+},
+    327: {
+        words: ['BOO', 'SCARY'],
+        solution: ['BOO', 'SCARY'],
+        categories: ['halloween', 'halloween']
+},
+    328: {
+        words: ['PUMPKIN', 'OWL'],
+        solution: ['PUMPKIN', 'OWL'],
+        categories: ['halloween', 'halloween']
+},
+    329: {
+        words: ['WEB', 'SPIDER'],
+        solution: ['WEB', 'SPIDER'],
+        categories: ['halloween', 'halloween']
+},
+    330: {
+        words: ['BONE', 'SKULL'],
+        solution: ['BONE', 'SKULL'],
+        categories: ['halloween', 'halloween']
+},
+    331: {
+        words: ['WOLF', 'MOON'],
+        solution: ['WOLF', 'MOON'],
+        categories: ['halloween', 'halloween']
+},
+    332: {
+        words: ['TOMB', 'GRAVE'],
+        solution: ['TOMB', 'GRAVE'],
+        categories: ['halloween', 'halloween']
+},
+    333: {
+        words: ['CAKE', 'CANDY'],
+        solution: ['CAKE', 'CANDY'],
+        categories: ['halloween', 'halloween']
+},
+    334: {
+        words: ['SPELL', 'HEX'],
+        solution: ['SPELL', 'HEX'],
+        categories: ['halloween', 'halloween']
+},
+    335: {
+        words: ['MUMMY', 'FOG'],
+        solution: ['MUMMY', 'FOG'],
+        categories: ['halloween', 'halloween']
+},
+    336: {
+        words: ['FIVE', 'EMERGE'],
+        solution: ['FIVE', 'EMERGE'],
+        categories: ['number', 'verb']
+},
+    337: {
+        words: ['CHEF', 'ACCESS'],
+        solution: ['CHEF', 'ACCESS'],
+        categories: ['noun', 'noun']
+},
+    338: {
+        words: ['DOWN', 'MEMORY'],
+        solution: ['DOWN', 'MEMORY'],
+        categories: ['adverb', 'noun']
+},
+    339: {
+        words: ['FEED', 'VOLUME'],
+        solution: ['FEED', 'VOLUME'],
+        categories: ['noun', 'noun']
+},
+    340: {
+        words: ['HOUSE', 'PEACE'],
+        solution: ['HOUSE', 'PEACE'],
+        categories: ['noun', 'noun']
+},
+    341: {
+        words: ['SAFE', 'OFFEND'],
+        solution: ['SAFE', 'OFFEND'],
+        categories: ['adjective', 'verb']
+},
+    342: {
+        words: ['WOOD', 'ANYONE'],
+        solution: ['WOOD', 'ANYONE'],
+        categories: ['noun', 'pronoun']
+},
+    343: {
+        words: ['CITY', 'CRISIS'],
+        solution: ['CITY', 'CRISIS'],
+        categories: ['noun', 'noun']
+},
+    344: {
+        words: ['LEND', 'CLEVER'],
+        solution: ['LEND', 'CLEVER'],
+        categories: ['verb', 'adjective']
+},
+    345: {
+        words: ['CLUB', 'EXCUSE'],
+        solution: ['CLUB', 'EXCUSE'],
+        categories: ['noun', 'verb']
+},
+    346: {
+        words: ['GOODS', 'AWARE'],
+        solution: ['GOODS', 'AWARE'],
+        categories: ['noun', 'adjective']
+},
+    347: {
+        words: ['CAKE', 'CHANCE'],
+        solution: ['CAKE', 'CHANCE'],
+        categories: ['noun', 'noun']
+},
+    348: {
+        words: ['ROOF', 'FROZEN'],
+        solution: ['ROOF', 'FROZEN'],
+        categories: ['noun', 'adjective']
+},
+    349: {
+        words: ['ICE', 'SNOW'],
+        solution: ['ICE', 'SNOW'],
+        categories: ['winter', 'winter']
+},
+    350: {
+        words: ['COLD', 'CHILL'],
+        solution: ['COLD', 'CHILL'],
+        categories: ['winter', 'winter']
+},
+    351: {
+        words: ['PINE', 'HOLLY'],
+        solution: ['PINE', 'HOLLY'],
+        categories: ['winter', 'winter']
+},
+    352: {
+        words: ['DEER', 'HUSKY'],
+        solution: ['DEER', 'HUSKY'],
+        categories: ['winter', 'winter']
+},
+    353: {
+        words: ['GIFT', 'TOY'],
+        solution: ['GIFT', 'TOY'],
+        categories: ['winter', 'winter']
+},
+    354: {
+        words: ['FROST', 'FOG'],
+        solution: ['FROST', 'FOG'],
+        categories: ['winter', 'winter']
+},
+    355: {
+        words: ['SCARF', 'HAT'],
+        solution: ['SCARF', 'HAT'],
+        categories: ['winter', 'winter']
+},
+    356: {
+        words: ['WHITE', 'GREY'],
+        solution: ['WHITE', 'GREY'],
+        categories: ['winter', 'winter']
+},
+    357: {
+        words: ['SLED', 'HILL'],
+        solution: ['SLED', 'HILL'],
+        categories: ['winter', 'winter']
+},
+    358: {
+        words: ['GLOVE', 'MITT'],
+        solution: ['GLOVE', 'MITT'],
+        categories: ['winter', 'winter']
+},
+    359: {
+        words: ['SHIP', 'ROCKET'],
+        solution: ['SHIP', 'ROCKET'],
+        categories: ['space', 'space']
+},
+    360: {
+        words: ['STAR', 'DUST'],
+        solution: ['STAR', 'DUST'],
+        categories: ['space', 'space']
+},
+    361: {
+        words: ['MARS', 'EARTH'],
+        solution: ['MARS', 'EARTH'],
+        categories: ['space', 'space']
+},
+    362: {
+        words: ['SUN', 'MOON'],
+        solution: ['SUN', 'MOON'],
+        categories: ['space', 'space']
+},
+    363: {
+        words: ['GAS', 'ROCK'],
+        solution: ['GAS', 'ROCK'],
+        categories: ['space', 'space']
+},
+    364: {
+        words: ['LUNA', 'SOL'],
+        solution: ['LUNA', 'SOL'],
+        categories: ['space', 'space']
+},
+    365: {
+        words: ['NOVA', 'COMET'],
+        solution: ['NOVA', 'COMET'],
+        categories: ['space', 'space']
+},
+    366: {
+        words: ['ALIEN', 'UFO'],
+        solution: ['ALIEN', 'UFO'],
+        categories: ['space', 'space']
 }
 };
 
